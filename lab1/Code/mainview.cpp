@@ -91,12 +91,16 @@ void MainView::createShaderProgram() {
  *
  */
 void MainView::paintGL() {
+    shaderProgram.bind();
+
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindVertexArray(this->_cube.vao_id);
 
-    shaderProgram.bind();
     glDrawArrays(GL_TRIANGLES, 0,36);
+
+    glBindVertexArray(this->_pyramid.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, 18);
 
     // Draw here
 

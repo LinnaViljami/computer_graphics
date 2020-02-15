@@ -17,8 +17,6 @@ out vec3 vertColor;
 void main()
 {
     // gl_Position is the output (a vec4) of the vertex shader
-    // Currently without any transformation
-    mat4 test = modelTranslation;
     gl_Position = modelTranslation * modelTransformation * vec4(vertCoordinates_in, 1.0);
     vertColor = vertColor_in;
 }

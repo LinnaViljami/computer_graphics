@@ -25,6 +25,8 @@ MainView::~MainView() {
     qDebug() << "MainView destructor";
     glDeleteBuffers(1, &this->_cube.vbo_id);
     glDeleteVertexArrays(1, &this->_cube.vao_id);
+    glDeleteBuffer(1, &this->_pyramid.vbo_id);
+    glDeleteVertexArrays(1, &this->_pyramid.vao_id);
     makeCurrent();
 }
 

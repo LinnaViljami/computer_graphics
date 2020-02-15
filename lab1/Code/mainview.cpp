@@ -72,10 +72,10 @@ void MainView::initializeGL() {
     translationUniformName = "modelTranslation";
 
     _translationUniformLocation = shaderProgram.uniformLocation(translationUniformName);
-    if (_translationUniformLocation == -1) {
+    _transformationUniformLocation = shaderProgram.uniformLocation("modelTransformation");
+    if (_translationUniformLocation == -1 || _transformationUniformLocation == -1) {
         // Did not find uniform
         qDebug() << "Failed to find uniform in createShaderProgram()";
-        return;
     }
 
     initializeCube();
@@ -114,31 +114,35 @@ void MainView::paintGL() {
             2, 0, -6, 1,
     };
 
+    // l = -4, r = 4, b = -4, t = 4, n = -1
+    // alpha = 60
+    // f = - (t - b) / tan(alpha) = -25
     QMatrix4x4 cubeTransformation = {
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
+        0.25f, 0, 0, 0,
+        0, 0.25f, 0, 0,
+        0, 0, -1.0833f, -2.0833f,
+        0, 0, -1, 0,
     };
 
     glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, cubeTranslation.data());
+    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, cubeTransformation.data());
 
     glBindVertexArray(this->_cube.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
     // --- PAINT PYRAMID ---
-    QMatrix4x4 pyramidTranslation = {
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1,
-    };
+//    QMatrix4x4 pyramidTranslation = {
+//            1, 0, 0, 0,
+//            0, 1, 0, 0,
+//            0, 0, 1, 0,
+//            0, 0, 0, 1,
+//    };
 
-    glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, pyramidTranslation.data());
+//    glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, pyramidTranslation.data());
 
-    glBindVertexArray(this->_pyramid.vao_id);
-    glDrawArrays(GL_TRIANGLES, 0, 18);
+//    glBindVertexArray(this->_pyramid.vao_id);
+//    glDrawArrays(GL_TRIANGLES, 0, 18);
 
     shaderProgram.release();
 }

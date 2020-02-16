@@ -108,22 +108,30 @@ void MainView::paintGL() {
 
     // --- PAINT CUBE ---
     QMatrix4x4 cubeTranslation = {
-            1, 0, 0, 0,
+            1, 0, 0, 2,
             0, 1, 0, 0,
-            0, 0, 1, 0,
-            2, 0, -6, 1,
+            0, 0, 1, -6,
+            0, 0, 0, 1,
     };
 
     // l = -4, r = 4, b = -4, t = 4, n = -1
     // alpha = 60
     // f = - (t - b) / tan(alpha / 2) = -6.928
+
+
+    //projection transformation
+    float n = 2.0f;
+    float f = 10.0f;
+    float t = 1.0f;
+    float l = -1.0f;
+    float r = 1.0f;
+    float b = -1.0f;
     QMatrix4x4 transformation = {
-        0.25f, 0, 0, 0,
-        0, 0.25f, 0, 0,
-        0, 0, -1.337f, -2.337f,
+        (2*n/r-l), 0, (r+l)/(r-l), 0,
+        0, (2*n/t-b), (t+b)/(t-b), 0,
+        0, 0, (n+f)/(n-f), (2*n*f)/(n-f),
         0, 0, -1, 0,
     };
-
     glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, cubeTranslation.data());
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, transformation.data());
 
@@ -133,10 +141,10 @@ void MainView::paintGL() {
 
     // --- PAINT PYRAMID --- (currently commented out to only show cube)
     QMatrix4x4 pyramidTranslation = {
-            1, 0, 0, 0,
+            1, 0, 0, -2,
             0, 1, 0, 0,
-            0, 0, 1, 0,
-            -2, 0, -6, 1,
+            0, 0, 1, -6,
+            0, 0, 0, 1,
     };
 
     glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, pyramidTranslation.data());

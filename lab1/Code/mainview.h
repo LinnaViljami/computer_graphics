@@ -58,9 +58,11 @@ private:
     Cube _cube;
     pyramid _pyramid;
     QOpenGLShaderProgram shaderProgram;
-
-    GLint _translationUniformLocation;
+    QMatrix4x4 _rotation_matrix;
+    QMatrix4x4 _cube_translation_matrix;
+    QMatrix4x4 _pyramid_translation_matrix;
     GLint _transformationUniformLocation;
+    GLint _projectionUniformLocation;
 
     void createShaderProgram();
 };

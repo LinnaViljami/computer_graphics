@@ -1,5 +1,6 @@
 #include "mainview.h"
 #include <QDateTime>
+#include <QtMath>
 /**
  * @brief MainView::MainView
  *
@@ -11,6 +12,12 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
     qDebug() << "MainView constructor";
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
+    _rotation_matrix = {
+        1 , 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1,
+};
 }
 
 /**
@@ -58,7 +65,7 @@ void MainView::initializeGL() {
     glEnable(GL_DEPTH_TEST);
 
     // Enable backface culling
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     // Default is GL_LESS
     glDepthFunc(GL_LEQUAL);
@@ -71,9 +78,9 @@ void MainView::initializeGL() {
     const char *translationUniformName;
     translationUniformName = "modelTranslation";
 
-    _translationUniformLocation = shaderProgram.uniformLocation(translationUniformName);
-    _transformationUniformLocation = shaderProgram.uniformLocation("modelTransformation");
-    if (_translationUniformLocation == -1 || _transformationUniformLocation == -1) {
+    _transformationUniformLocation = shaderProgram.uniformLocation(translationUniformName);
+    _projectionUniformLocation = shaderProgram.uniformLocation("projection");
+    if (_transformationUniformLocation == -1 || _projectionUniformLocation == -1) {
         // Did not find uniform
         qDebug() << "Failed to find uniform in createShaderProgram()";
     }
@@ -107,12 +114,13 @@ void MainView::paintGL() {
 
 
     // --- PAINT CUBE ---
-    QMatrix4x4 cubeTranslation = {
+    QMatrix4x4 cubeTranslation_matrix = {
             1, 0, 0, 2,
             0, 1, 0, 0,
             0, 0, 1, -6,
             0, 0, 0, 1,
     };
+    _cube_translation_matrix = cubeTranslation_matrix;
 
     // l = -4, r = 4, b = -4, t = 4, n = -1
     // alpha = 60
@@ -120,35 +128,40 @@ void MainView::paintGL() {
 
 
     //projection transformation
-    float n = 2.0f;
-    float f = 10.0f;
+    float n = 0.2f;
+    float f = 20.0f;
     float t = 1.0f;
     float l = -1.0f;
     float r = 1.0f;
     float b = -1.0f;
-    QMatrix4x4 transformation = {
+    QMatrix4x4 projection_matrix = {
         (2*n/r-l), 0, (r+l)/(r-l), 0,
         0, (2*n/t-b), (t+b)/(t-b), 0,
         0, 0, (n+f)/(n-f), (2*n*f)/(n-f),
         0, 0, -1, 0,
     };
-    glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, cubeTranslation.data());
-    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, transformation.data());
+
+    QMatrix4x4 cube_transformation_matrix = _cube_translation_matrix * _rotation_matrix;
+    qDebug() << cube_transformation_matrix;
+    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
+    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
 
     glBindVertexArray(this->_cube.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
     // --- PAINT PYRAMID --- (currently commented out to only show cube)
-    QMatrix4x4 pyramidTranslation = {
+    QMatrix4x4 pyramidTranslationMatrix = {
             1, 0, 0, -2,
             0, 1, 0, 0,
             0, 0, 1, -6,
             0, 0, 0, 1,
     };
+    _pyramid_translation_matrix = pyramidTranslationMatrix;
 
-    glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, pyramidTranslation.data());
-    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, transformation.data());
+    QMatrix4x4 pyramid_transformation_matrix = _pyramid_translation_matrix * _rotation_matrix;
+    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
+    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
 
     glBindVertexArray(this->_pyramid.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 18);
@@ -173,8 +186,34 @@ void MainView::resizeGL(int newWidth, int newHeight) {
 // --- Public interface
 
 void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
+
+    qreal rotx_rad = static_cast<qreal>(rotateX)*2.0*3.141/360.0;
+    QMatrix4x4 x_rotation_matrix = {
+            1 , 0, 0, 0,
+            0, static_cast<float>(qCos(rotx_rad)), static_cast<float>(-qSin(rotx_rad)), 0,
+            0, static_cast<float>(qSin(rotx_rad)), static_cast<float>(qCos(rotx_rad)), 0,
+            0, 0, 0, 1,
+    };
+
+    qreal roty_rad = static_cast<qreal>(rotateY)*2.0*3.141/360.0;
+    QMatrix4x4 y_rotation_matrix = {
+            static_cast<float>(qCos(roty_rad)) , 0, static_cast<float>(qSin(roty_rad)), 0,
+            0, 1, 0, 0,
+            static_cast<float>(-qSin(roty_rad)), 0, static_cast<float>(qCos(roty_rad)), 0,
+            0, 0, 0, 1,
+    };
+
+    qreal rotz_rad = static_cast<qreal>(rotateZ)*2.0*3.141/360.0;
+    QMatrix4x4 z_rotation_matrix = {
+        static_cast<float>(qCos(rotz_rad)), static_cast<float>(-qSin(rotz_rad)), 0,0,
+        static_cast<float>(qSin(rotz_rad)), static_cast<float>(qCos(rotz_rad)), 0, 0,
+        0,0,1,0,
+        0, 0, 0, 1,
+    };
+
+    _rotation_matrix = x_rotation_matrix * y_rotation_matrix * z_rotation_matrix;
+    update();
     qDebug() << "Rotation changed to (" << rotateX << "," << rotateY << "," << rotateZ << ")";
-    Q_UNIMPLEMENTED();
 }
 
 void MainView::setScale(int scale) {

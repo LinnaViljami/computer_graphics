@@ -83,6 +83,8 @@ void MainView::initializeGL() {
     createShaderProgram();
     setUniformLocation();
 
+    initializePerspectiveMatrix();
+
     initializeObject();
     initializeCube();
     initializePyramid();
@@ -104,6 +106,22 @@ void MainView::setUniformLocation() {
         // Did not find uniform
         qDebug() << "Failed to find uniform in setUniformLocation()";
     }
+}
+
+void MainView::initializePerspectiveMatrix() {
+    //projection transformation
+    float n = 0.2f;
+    float f = 20.0f;
+    float t = 1.0f;
+    float l = -1.0f;
+    float r = 1.0f;
+    float b = -1.0f;
+    _perspective_transformation_matrix = {
+        (2*n/r-l), 0, (r+l)/(r-l), 0,
+        0, (2*n/t-b), (t+b)/(t-b), 0,
+        0, 0, (n+f)/(n-f), (2*n*f)/(n-f),
+        0, 0, -1, 0,
+    };
 }
 
 // --- OpenGL drawing
@@ -129,24 +147,10 @@ void MainView::paintGL() {
             0, 0, 0, 1,
     };
 
-    //projection transformation
-    float n = 0.2f;
-    float f = 20.0f;
-    float t = 1.0f;
-    float l = -1.0f;
-    float r = 1.0f;
-    float b = -1.0f;
-    QMatrix4x4 projection_matrix = {
-        (2*n/r-l), 0, (r+l)/(r-l), 0,
-        0, (2*n/t-b), (t+b)/(t-b), 0,
-        0, 0, (n+f)/(n-f), (2*n*f)/(n-f),
-        0, 0, -1, 0,
-    };
-
     QMatrix4x4 cube_transformation_matrix = _cube_translation_matrix * _rotation_matrix * _scaling_matrix;
     qDebug() << cube_transformation_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
-    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
+    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
 
     glBindVertexArray(this->_cube.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -162,7 +166,7 @@ void MainView::paintGL() {
 
     QMatrix4x4 pyramid_transformation_matrix = _pyramid_translation_matrix * _rotation_matrix * _scaling_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
-    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
+    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
 
     glBindVertexArray(this->_pyramid.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 18);
@@ -178,7 +182,7 @@ void MainView::paintGL() {
 
     QMatrix4x4 objectTransformationMatrix = _object_translation_matrix * _rotation_matrix * _scaling_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
-    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
+    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
 
     glBindVertexArray(_object.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, _object.vertices.size());
@@ -195,9 +199,9 @@ void MainView::paintGL() {
  * @param newHeight
  */
 void MainView::resizeGL(int newWidth, int newHeight) {
-    // TODO: Update projection to fit the new aspect ratio
-    Q_UNUSED(newWidth)
-    Q_UNUSED(newHeight)
+    // This time use .perspective function. For own implementation, see initializePerspectiveMatrix() method.
+    _perspective_transformation_matrix.setToIdentity();
+    _perspective_transformation_matrix.perspective(60, ((float)newWidth)/newHeight, 0.2f, 20.0f);
 }
 
 // --- Public interface

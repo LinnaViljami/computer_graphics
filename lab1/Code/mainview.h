@@ -50,6 +50,7 @@ protected:
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
     void setUniformLocation();
+    void initializePerspectiveMatrix();
     void initializeObject();
     void initializeCube();
     void initializePyramid();
@@ -62,6 +63,7 @@ private:
     Pyramid _pyramid;
     ImportedObject _object;
     QOpenGLShaderProgram shaderProgram;
+    QMatrix4x4 _perspective_transformation_matrix;
     QMatrix4x4 _rotation_matrix;
     QMatrix4x4 _scaling_matrix;
     QMatrix4x4 _cube_translation_matrix;

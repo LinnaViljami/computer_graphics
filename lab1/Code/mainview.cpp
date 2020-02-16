@@ -25,7 +25,7 @@ MainView::~MainView() {
     qDebug() << "MainView destructor";
     glDeleteBuffers(1, &this->_cube.vbo_id);
     glDeleteVertexArrays(1, &this->_cube.vao_id);
-    glDeleteBuffer(1, &this->_pyramid.vbo_id);
+    glDeleteBuffers(1, &this->_pyramid.vbo_id);
     glDeleteVertexArrays(1, &this->_pyramid.vao_id);
     makeCurrent();
 }
@@ -66,10 +66,17 @@ void MainView::initializeGL() {
     // Set the color to be used by glClear. This is, effectively, the background color.
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
-
-
-
     createShaderProgram();
+
+    const char *translationUniformName;
+    translationUniformName = "modelTranslation";
+
+    _translationUniformLocation = shaderProgram.uniformLocation(translationUniformName);
+    _transformationUniformLocation = shaderProgram.uniformLocation("modelTransformation");
+    if (_translationUniformLocation == -1 || _transformationUniformLocation == -1) {
+        // Did not find uniform
+        qDebug() << "Failed to find uniform in createShaderProgram()";
+    }
 
     initializeCube();
     initializePyramid();
@@ -97,14 +104,46 @@ void MainView::paintGL() {
 
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindVertexArray(this->_cube.vao_id);
 
-    glDrawArrays(GL_TRIANGLES, 0,36);
+
+    // --- PAINT CUBE ---
+    QMatrix4x4 cubeTranslation = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            2, 0, -6, 1,
+    };
+
+    // l = -4, r = 4, b = -4, t = 4, n = -1
+    // alpha = 60
+    // f = - (t - b) / tan(alpha / 2) = -6.928
+    QMatrix4x4 transformation = {
+        0.25f, 0, 0, 0,
+        0, 0.25f, 0, 0,
+        0, 0, -1.337f, -2.337f,
+        0, 0, -1, 0,
+    };
+
+    glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, cubeTranslation.data());
+    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, transformation.data());
+
+    glBindVertexArray(this->_cube.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+    // --- PAINT PYRAMID --- (currently commented out to only show cube)
+    QMatrix4x4 pyramidTranslation = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            -2, 0, -6, 1,
+    };
+
+    glUniformMatrix4fv(_translationUniformLocation, 1, GL_FALSE, pyramidTranslation.data());
+    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, transformation.data());
 
     glBindVertexArray(this->_pyramid.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 18);
-
-    // Draw here
 
     shaderProgram.release();
 }
@@ -172,7 +211,14 @@ void MainView::initializeCube()
     GLintptr coordinate_ptr_index = 0*sizeof(float);
     GLintptr color_ptr_index = 3*sizeof(float);
 
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
+    glVertexAttribPointer(
+                0,                              // Index of the attribute defined by glEnableVertexAttribArray
+                3,                              // Number of elements per vertex
+                GL_FLOAT,                       // Type of the elements
+                GL_FALSE,
+                sizeof(vertex_3d),              // Offset between different vertices
+                (GLvoid*)(coordinate_ptr_index) // Offset from the start of this vertex
+    );
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
 }
 

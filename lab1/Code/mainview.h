@@ -59,6 +59,9 @@ private:
     pyramid _pyramid;
     QOpenGLShaderProgram shaderProgram;
 
+    GLint _translationUniformLocation;
+    GLint _transformationUniformLocation;
+
     void createShaderProgram();
 };
 

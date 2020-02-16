@@ -17,7 +17,7 @@ Cube::Cube()
             =
     {point1, point2, point4,
     point2, point6, point4,
-     point4, point8, point7,
+    point4, point8, point7,
     point4, point6, point8,
     point1, point4, point3,
     point4, point7, point3,

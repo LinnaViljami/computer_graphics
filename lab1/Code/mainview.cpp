@@ -219,9 +219,9 @@ void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
 
 void MainView::setScale(int scale) {
     _scaling_matrix = {
-            static_cast<float>(scale)/10 , 0, 0, 0,
-            0, static_cast<float>(scale)/10, 0, 0,
-            0, 0, static_cast<float>(scale)/10, 0,
+            static_cast<float>(scale)/100 , 0, 0, 0,
+            0, static_cast<float>(scale)/100, 0, 0,
+            0, 0, static_cast<float>(scale)/100, 0,
             0, 0, 0, 1,
     };
     update();

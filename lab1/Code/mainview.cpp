@@ -18,6 +18,7 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
         0, 0, 1, 0,
         0, 0, 0, 1,
 };
+    _scaling_matrix = _rotation_matrix;
 }
 
 /**
@@ -141,7 +142,7 @@ void MainView::paintGL() {
         0, 0, -1, 0,
     };
 
-    QMatrix4x4 cube_transformation_matrix = _cube_translation_matrix * _rotation_matrix;
+    QMatrix4x4 cube_transformation_matrix = _cube_translation_matrix * _rotation_matrix * _scaling_matrix;
     qDebug() << cube_transformation_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
     glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
@@ -159,7 +160,7 @@ void MainView::paintGL() {
     };
     _pyramid_translation_matrix = pyramidTranslationMatrix;
 
-    QMatrix4x4 pyramid_transformation_matrix = _pyramid_translation_matrix * _rotation_matrix;
+    QMatrix4x4 pyramid_transformation_matrix = _pyramid_translation_matrix * _rotation_matrix * _scaling_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
     glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
 
@@ -217,8 +218,14 @@ void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
 }
 
 void MainView::setScale(int scale) {
+    _scaling_matrix = {
+            static_cast<float>(scale)/10 , 0, 0, 0,
+            0, static_cast<float>(scale)/10, 0, 0,
+            0, 0, static_cast<float>(scale)/10, 0,
+            0, 0, 0, 1,
+    };
+    update();
     qDebug() << "Scale changed to " << scale;
-    Q_UNIMPLEMENTED();
 }
 
 void MainView::setShadingMode(ShadingMode shading) {

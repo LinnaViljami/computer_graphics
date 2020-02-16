@@ -3,7 +3,8 @@
 
 #include "model.h"
 #include "cube.h"
-#include  "pyramid.h"
+#include "pyramid.h"
+#include "object.h"
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QOpenGLWidget>
@@ -48,6 +49,9 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
+    void setUniformLocation();
+    void initializePerspectiveMatrix();
+    void initializeObject();
     void initializeCube();
     void initializePyramid();
 
@@ -56,12 +60,15 @@ private:
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
     Cube _cube;
-    pyramid _pyramid;
+    Pyramid _pyramid;
+    ImportedObject _object;
     QOpenGLShaderProgram shaderProgram;
+    QMatrix4x4 _perspective_transformation_matrix;
     QMatrix4x4 _rotation_matrix;
     QMatrix4x4 _scaling_matrix;
     QMatrix4x4 _cube_translation_matrix;
     QMatrix4x4 _pyramid_translation_matrix;
+    QMatrix4x4 _object_translation_matrix;
     GLint _transformationUniformLocation;
     GLint _projectionUniformLocation;
 

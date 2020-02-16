@@ -75,16 +75,7 @@ void MainView::initializeGL() {
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
     createShaderProgram();
-
-    const char *translationUniformName;
-    translationUniformName = "modelTranslation";
-
-    _transformationUniformLocation = shaderProgram.uniformLocation(translationUniformName);
-    _projectionUniformLocation = shaderProgram.uniformLocation("projection");
-    if (_transformationUniformLocation == -1 || _projectionUniformLocation == -1) {
-        // Did not find uniform
-        qDebug() << "Failed to find uniform in createShaderProgram()";
-    }
+    setUniformLocation();
 
     initializeCube();
     initializePyramid();
@@ -97,6 +88,15 @@ void MainView::createShaderProgram() {
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
                                            ":/shaders/fragshader.glsl");
     shaderProgram.link();
+}
+
+void MainView::setUniformLocation() {
+    _transformationUniformLocation = shaderProgram.uniformLocation("transformation");
+    _projectionUniformLocation = shaderProgram.uniformLocation("projection");
+    if (_transformationUniformLocation == -1 || _projectionUniformLocation == -1) {
+        // Did not find uniform
+        qDebug() << "Failed to find uniform in createShaderProgram()";
+    }
 }
 
 // --- OpenGL drawing

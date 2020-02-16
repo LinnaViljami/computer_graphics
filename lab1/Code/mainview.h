@@ -48,6 +48,7 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
+    void setUniformLocation();
     void initializeCube();
     void initializePyramid();
 

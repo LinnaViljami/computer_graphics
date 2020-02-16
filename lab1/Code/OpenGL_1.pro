@@ -14,7 +14,8 @@ SOURCES += \
     mainview.cpp \
     pyramid.cpp \
     user_input.cpp \
-    model.cpp
+    model.cpp \
+    object.cpp
 
 HEADERS += \
     cube.h \
@@ -22,7 +23,8 @@ HEADERS += \
     mainview.h \
     model.h \
     pyramid.h \
-    vertex_3d.h
+    vertex_3d.h \
+    object.h
 
 FORMS += \
     mainwindow.ui

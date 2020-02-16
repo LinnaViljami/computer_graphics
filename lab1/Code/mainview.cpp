@@ -1,6 +1,10 @@
 #include "mainview.h"
 #include <QDateTime>
 #include <QtMath>
+#include <cstdlib>
+
+float OBJECT_SCALING_FACTOR = 0.04;
+
 /**
  * @brief MainView::MainView
  *
@@ -35,6 +39,8 @@ MainView::~MainView() {
     glDeleteVertexArrays(1, &this->_cube.vao_id);
     glDeleteBuffers(1, &this->_pyramid.vbo_id);
     glDeleteVertexArrays(1, &this->_pyramid.vao_id);
+    glDeleteBuffers(1, &_object.vbo_id);
+    glDeleteVertexArrays(1, &_object.vao_id);
     makeCurrent();
 }
 
@@ -77,6 +83,7 @@ void MainView::initializeGL() {
     createShaderProgram();
     setUniformLocation();
 
+    initializeObject();
     initializeCube();
     initializePyramid();
 }
@@ -95,7 +102,7 @@ void MainView::setUniformLocation() {
     _projectionUniformLocation = shaderProgram.uniformLocation("projection");
     if (_transformationUniformLocation == -1 || _projectionUniformLocation == -1) {
         // Did not find uniform
-        qDebug() << "Failed to find uniform in createShaderProgram()";
+        qDebug() << "Failed to find uniform in setUniformLocation()";
     }
 }
 
@@ -123,11 +130,6 @@ void MainView::paintGL() {
     };
     _cube_translation_matrix = cubeTranslation_matrix;
 
-    // l = -4, r = 4, b = -4, t = 4, n = -1
-    // alpha = 60
-    // f = - (t - b) / tan(alpha / 2) = -6.928
-
-
     //projection transformation
     float n = 0.2f;
     float f = 20.0f;
@@ -151,7 +153,7 @@ void MainView::paintGL() {
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
-    // --- PAINT PYRAMID --- (currently commented out to only show cube)
+    // --- PAINT PYRAMID ---
     QMatrix4x4 pyramidTranslationMatrix = {
             1, 0, 0, -2,
             0, 1, 0, 0,
@@ -166,6 +168,23 @@ void MainView::paintGL() {
 
     glBindVertexArray(this->_pyramid.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 18);
+
+
+    // --- PAINT OBJECT ---
+    QMatrix4x4 objectTranslationMatrix = {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, -10,
+        0, 0, 0, 1,
+    };
+    _object_translation_matrix = objectTranslationMatrix;
+
+    QMatrix4x4 objectTransformationMatrix = _object_translation_matrix * _rotation_matrix * _scaling_matrix;
+    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
+    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, projection_matrix.data());
+
+    glBindVertexArray(_object.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, _object.vertices.size());
 
     shaderProgram.release();
 }
@@ -249,6 +268,8 @@ void MainView::onMessageLogged( QOpenGLDebugMessage Message ) {
 void MainView::initializeCube()
 {
     this->_cube = Cube();
+
+    // Generate VBO and VAO
     glGenBuffers(1, &this->_cube.vbo_id);
     glGenVertexArrays(1, &this->_cube.vao_id);
 
@@ -258,9 +279,10 @@ void MainView::initializeCube()
     glBindVertexArray(this->_cube.vao_id);
     glBindBuffer(GL_ARRAY_BUFFER, this->_cube.vbo_id);
     glBufferData(GL_ARRAY_BUFFER,36*sizeof(vertex_3d), buffer_void_pointer, GL_STATIC_DRAW);
+
+    // Tell OpenGL what attributes to expect; how the data is laid out
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-
 
     GLintptr coordinate_ptr_index = 0*sizeof(float);
     GLintptr color_ptr_index = 3*sizeof(float);
@@ -297,5 +319,46 @@ void MainView::initializePyramid()
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
+
+}
+
+void MainView::initializeObject() {
+    Model model(":/models/sphere.obj");
+    QVector<QVector3D> vertexLocations = model.getVertices();
+
+    std::vector<vertex_3d> vertices(vertexLocations.size());
+    for (QVector3D vector: vertexLocations) {
+        float randomRed = std::rand() / (static_cast<float>(RAND_MAX));
+        float randomGreen = std::rand() / (static_cast<float>(RAND_MAX));
+        float randomBlue = std::rand() / (static_cast<float>(RAND_MAX));
+        vertices.push_back({
+           vector.x() * OBJECT_SCALING_FACTOR,
+           vector.y() * OBJECT_SCALING_FACTOR,
+           vector.z() * OBJECT_SCALING_FACTOR,
+           randomRed,
+           randomGreen,
+           randomBlue
+       });
+    }
+
+    _object = object();
+    _object.vertices = vertices;
+
+    glGenBuffers(1, &this->_object.vbo_id);
+    glGenVertexArrays(1, &this->_object.vao_id);
+
+    glBindVertexArray(_object.vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_object.vbo_id);
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vertex_3d), vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    GLintptr coordinate_ptr_index = 0*sizeof(float);
+    GLintptr color_ptr_index = 3*sizeof(float);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
+
 
 }

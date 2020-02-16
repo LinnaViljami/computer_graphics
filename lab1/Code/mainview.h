@@ -59,8 +59,8 @@ private:
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
     Cube _cube;
-    pyramid _pyramid;
-    object _object;
+    Pyramid _pyramid;
+    ImportedObject _object;
     QOpenGLShaderProgram shaderProgram;
     QMatrix4x4 _rotation_matrix;
     QMatrix4x4 _scaling_matrix;

@@ -1,6 +1,6 @@
 #include "object.h"
 
-object::object()
+ImportedObject::ImportedObject()
 {
 
 }

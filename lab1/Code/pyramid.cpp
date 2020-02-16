@@ -1,6 +1,6 @@
 #include "pyramid.h"
 
-pyramid::pyramid()
+Pyramid::Pyramid()
 {
     vertex_3d point1 = {-1, -1, -1, 1,0,0};
     vertex_3d point2 = {1, -1,-1, 1,1,1};
@@ -17,7 +17,7 @@ pyramid::pyramid()
 
 }
 
-std::vector<vertex_3d> *pyramid::get_triangles()
+std::vector<vertex_3d> *Pyramid::get_triangles()
 {
     return &_triangles;
 }

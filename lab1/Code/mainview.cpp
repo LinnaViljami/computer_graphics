@@ -122,13 +122,12 @@ void MainView::paintGL() {
 
 
     // --- PAINT CUBE ---
-    QMatrix4x4 cubeTranslation_matrix = {
+    _cube_translation_matrix = {
             1, 0, 0, 2,
             0, 1, 0, 0,
             0, 0, 1, -6,
             0, 0, 0, 1,
     };
-    _cube_translation_matrix = cubeTranslation_matrix;
 
     //projection transformation
     float n = 0.2f;
@@ -154,13 +153,12 @@ void MainView::paintGL() {
 
 
     // --- PAINT PYRAMID ---
-    QMatrix4x4 pyramidTranslationMatrix = {
+    _pyramid_translation_matrix = {
             1, 0, 0, -2,
             0, 1, 0, 0,
             0, 0, 1, -6,
             0, 0, 0, 1,
     };
-    _pyramid_translation_matrix = pyramidTranslationMatrix;
 
     QMatrix4x4 pyramid_transformation_matrix = _pyramid_translation_matrix * _rotation_matrix * _scaling_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
@@ -171,13 +169,12 @@ void MainView::paintGL() {
 
 
     // --- PAINT OBJECT ---
-    QMatrix4x4 objectTranslationMatrix = {
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, -10,
-        0, 0, 0, 1,
+    _object_translation_matrix = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, -10,
+            0, 0, 0, 1,
     };
-    _object_translation_matrix = objectTranslationMatrix;
 
     QMatrix4x4 objectTransformationMatrix = _object_translation_matrix * _rotation_matrix * _scaling_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
@@ -285,7 +282,7 @@ void MainView::initializeCube()
     glEnableVertexAttribArray(1);
 
     GLintptr coordinate_ptr_index = 0*sizeof(float);
-    GLintptr color_ptr_index = 3*sizeof(float);
+    GLintptr color_ptr_index = offsetof(vertex_3d, R);
 
     glVertexAttribPointer(
                 0,                              // Index of the attribute defined by glEnableVertexAttribArray
@@ -300,7 +297,7 @@ void MainView::initializeCube()
 
 void MainView::initializePyramid()
 {
-    this->_pyramid = pyramid();
+    this->_pyramid = Pyramid();
     glGenBuffers(1, &this->_pyramid.vbo_id);
     glGenVertexArrays(1, &this->_pyramid.vao_id);
 
@@ -313,9 +310,8 @@ void MainView::initializePyramid()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-
     GLintptr coordinate_ptr_index = 0*sizeof(float);
-    GLintptr color_ptr_index = 3*sizeof(float);
+    GLintptr color_ptr_index = offsetof(vertex_3d, R);
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
@@ -341,7 +337,7 @@ void MainView::initializeObject() {
        });
     }
 
-    _object = object();
+    _object = ImportedObject();
     _object.vertices = vertices;
 
     glGenBuffers(1, &this->_object.vbo_id);
@@ -356,9 +352,8 @@ void MainView::initializeObject() {
     glEnableVertexAttribArray(1);
 
     GLintptr coordinate_ptr_index = 0*sizeof(float);
-    GLintptr color_ptr_index = 3*sizeof(float);
+    GLintptr color_ptr_index = offsetof(vertex_3d, R);
+
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
-
-
 }

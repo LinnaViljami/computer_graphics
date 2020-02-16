@@ -4,10 +4,10 @@
 #include "vertex_3d.h"
 #include <vector>
 #include <GL/gl.h>
-class pyramid
+class Pyramid
 {
 public:
-    pyramid();
+    Pyramid();
     std::vector<vertex_3d>* get_triangles();
     GLuint vbo_id;
     GLuint vao_id;

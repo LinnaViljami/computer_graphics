@@ -5,10 +5,10 @@
 #include <vector>
 #include <GL/gl.h>
 
-class object
+class ImportedObject
 {
 public:
-    object();
+    ImportedObject();
     std::vector<vertex_3d> vertices;
     GLuint vbo_id;
     GLuint vao_id;

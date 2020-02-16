@@ -59,6 +59,7 @@ private:
     pyramid _pyramid;
     QOpenGLShaderProgram shaderProgram;
     QMatrix4x4 _rotation_matrix;
+    QMatrix4x4 _scaling_matrix;
     QMatrix4x4 _cube_translation_matrix;
     QMatrix4x4 _pyramid_translation_matrix;
     GLint _transformationUniformLocation;

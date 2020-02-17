@@ -9,6 +9,7 @@ class ImportedObject
 {
 public:
     ImportedObject();
+    ImportedObject(float scaling_factor);
     std::vector<vertex_3d> vertices;
     GLuint vbo_id;
     GLuint vao_id;

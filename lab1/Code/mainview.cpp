@@ -3,7 +3,6 @@
 #include <QtMath>
 #include <cstdlib>
 
-float OBJECT_SCALING_FACTOR = 0.04;
 
 /**
  * @brief MainView::MainView
@@ -148,7 +147,6 @@ void MainView::paintGL() {
     };
 
     QMatrix4x4 cube_transformation_matrix = _cube_translation_matrix * _rotation_matrix * _scaling_matrix;
-    qDebug() << cube_transformation_matrix;
     glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
     glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
 
@@ -200,6 +198,7 @@ void MainView::paintGL() {
  */
 void MainView::resizeGL(int newWidth, int newHeight) {
     // This time use .perspective function. For own implementation, see initializePerspectiveMatrix() method.
+    qDebug() << "resize called.";
     _perspective_transformation_matrix.setToIdentity();
     _perspective_transformation_matrix.perspective(60, ((float)newWidth)/newHeight, 0.2f, 20.0f);
 }
@@ -323,26 +322,9 @@ void MainView::initializePyramid()
 }
 
 void MainView::initializeObject() {
-    Model model(":/models/sphere.obj");
-    QVector<QVector3D> vertexLocations = model.getVertices();
 
-    std::vector<vertex_3d> vertices(vertexLocations.size());
-    for (QVector3D vector: vertexLocations) {
-        float randomRed = std::rand() / (static_cast<float>(RAND_MAX));
-        float randomGreen = std::rand() / (static_cast<float>(RAND_MAX));
-        float randomBlue = std::rand() / (static_cast<float>(RAND_MAX));
-        vertices.push_back({
-           vector.x() * OBJECT_SCALING_FACTOR,
-           vector.y() * OBJECT_SCALING_FACTOR,
-           vector.z() * OBJECT_SCALING_FACTOR,
-           randomRed,
-           randomGreen,
-           randomBlue
-       });
-    }
-
-    _object = ImportedObject();
-    _object.vertices = vertices;
+    float object_scaling_factor = 0.04f;
+    _object = ImportedObject(object_scaling_factor);
 
     glGenBuffers(1, &this->_object.vbo_id);
     glGenVertexArrays(1, &this->_object.vao_id);
@@ -350,7 +332,7 @@ void MainView::initializeObject() {
     glBindVertexArray(_object.vao_id);
     glBindBuffer(GL_ARRAY_BUFFER, this->_object.vbo_id);
 
-    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(vertex_3d), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, _object.vertices.size()*sizeof(vertex_3d), _object.vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);

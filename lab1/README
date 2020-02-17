@@ -6,13 +6,4 @@ We put all the code that used OpenGl-functions, in the mainView class. We were n
 
 We consider model transformation matrices in the mainView class multiplying rotation, scaling, and translation matrices. After that, we passed the transformation matrix to the vertex shader program. Similarly, we deal with the projection matrix.
 
-There was a lot of confusion with the projection transformation. We were not able to understand how it works in OpenGl. We were mixed with coordinate systems. For example, we expected that since the objects are located in space where z<0 and the camera is located to (0,0,0), we would have to set near and far plane somewhere z<0. In reality, we had to set near and far plane so that z>0. Also top, left, bottom and right plane locating were irrational, and we did not understand how they should work. It would be better being more information provided in the assessment about that problem.
-
-This is a README file
-
-When submitting your assignment, describe (briefly) the changes you made and what difficulties you encountered in this file.
-
-Also describe what controls (key short-cuts, mouse clicks, mouse movement etc) and possible bonus assignments you implemented, so we can check them more easily.
-
-If you have any suggestions/feedback for improving the practical assignments or support from teaching assistants, you may include it here OR post in anonymously on Nestor under Feedback.
-
+There was a lot of confusion with the projection transformation. We were not able to understand how it works in OpenGl. We were mixed with coordinate systems. For example, we expected that since the objects are located in space where z<0 and the camera is located to (0,0,0), we would have to set near and far plane somewhere z<0. In reality, we had to set near and far plane so that z>0. It would be better being more information provided in the assessment about that problem.

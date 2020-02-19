@@ -2,6 +2,10 @@
 
 #include <cmath>
 
+
+std::pair<double, double> solve_quadratic_equation(double a, double b, double c);
+std::pair<bool, double> get_intersection_point(std::pair<double, double> roots, Triple origin, Triple vector);
+
 using namespace std;
 
 Hit Sphere::intersect(Ray const &ray)
@@ -22,7 +26,19 @@ Hit Sphere::intersect(Ray const &ray)
     * intersection point from the ray origin in *t (see example).
     ****************************************************/
 
-    // Placeholder for actual intersection calculation.
+
+    //ray.O origin of the ray = O
+    // ray.D = v, ray vector
+    // C = this->position
+    // r = this->r
+
+    double a = ray.D.dot(ray.D);
+    double b = 2*(ray.O-this->position).dot(ray.D);
+    double c = (ray.O-this->position).dot(ray.O-this->position) - pow(this->r, 2);
+    std::pair<double, double> roots = solve_quadratic_equation(a,b,c);
+    std::pair<bool, Triple> intersection_point = get_intersection_point(roots, ray.O, ray.D);
+
+
     Vector OC = (position - ray.O).normalized();
     if (OC.dot(ray.D) < 0.999) {
         return Hit::NO_HIT();
@@ -48,3 +64,52 @@ Sphere::Sphere(Point const &pos, double radius)
     position(pos),
     r(radius)
 {}
+
+std::pair<double, double> solve_quadratic_equation(double a, double b, double c){
+
+    double discriminant, root1, root2;
+    root1 = -1;
+    root2 = -1;
+    discriminant = b * b - 4 * a * c;
+
+    // condition for real and different roots
+    if (discriminant > 0) {
+        root1 = (-b + sqrt(discriminant)) / (2 * a);
+        root2 = (-b - sqrt(discriminant)) / (2 * a);
+    }
+    // condition for real and equal roots
+    else if (discriminant >= 0) {
+        root1 = root2 = -b / (2 * a);
+    }
+    return std::pair<double, double>(root1, root2);
+}
+
+std::pair<bool, double> get_intersection_point(std::pair<double, double> roots, Triple origin, Triple vector){
+
+    // intersection origin + root*vector with smallest positive root
+    std::pair<bool, double> result;
+    double root1 = roots.first;
+    double root2 = roots.second;
+
+    if (root1 >= 0 && root2 < 0){
+        result = std::pair<bool, double>(true, root1);
+    }
+
+    else if (root2 >= 0 && root1 < 0){
+        result = std::pair<bool, double>(true, root2);
+    }
+
+    else if (root1 >= 0 && root2 >= 0){
+        double smaller = root1;
+        if (root1>root2){
+            smaller = root2;
+        }
+        result = std::pair<bool, double>(true, smaller);
+    }
+    else{
+        result = std::pair<bool, double>(false, -1);
+    }
+
+    return result;
+}
+

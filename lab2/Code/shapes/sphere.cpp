@@ -4,7 +4,8 @@
 
 
 std::pair<double, double> solve_quadratic_equation(double a, double b, double c);
-std::pair<bool, double> get_intersection_point(std::pair<double, double> roots, Triple origin, Triple vector);
+std::pair<bool, double> get_intersection_point(std::pair<double, double> roots);
+Vector get_normal_vector(Point in_surface);
 
 using namespace std;
 
@@ -32,18 +33,28 @@ Hit Sphere::intersect(Ray const &ray)
     // C = this->position
     // r = this->r
 
+    // solve possible intersection points
     double a = ray.D.dot(ray.D);
     double b = 2*(ray.O-this->position).dot(ray.D);
     double c = (ray.O-this->position).dot(ray.O-this->position) - pow(this->r, 2);
     std::pair<double, double> roots = solve_quadratic_equation(a,b,c);
-    std::pair<bool, Triple> intersection_point = get_intersection_point(roots, ray.O, ray.D);
+    std::pair<bool, double> intersection_info = get_intersection_point(roots);
+    bool hit_detected = intersection_info.first;
+    double t = intersection_info.second;
 
+    if (hit_detected){
+        Hit(t, get_normal_vector(ray.O + ));
+    }
+    else{
 
-    Vector OC = (position - ray.O).normalized();
-    if (OC.dot(ray.D) < 0.999) {
         return Hit::NO_HIT();
     }
-    double t = 1000;
+
+//    Vector OC = (position - ray.O).normalized();
+//    if (OC.dot(ray.D) < 0.999) {
+//        return Hit::NO_HIT();
+//    }
+//    double t = 1000;
 
     /****************************************************
     * RT1.2: NORMAL CALCULATION
@@ -54,10 +65,8 @@ Hit Sphere::intersect(Ray const &ray)
     * Insert calculation of the sphere's normal at the intersection point.
     ****************************************************/
 
-    Vector N /* = ... */;
-
-    return Hit(t, N);
 }
+
 
 Sphere::Sphere(Point const &pos, double radius)
 :
@@ -65,26 +74,13 @@ Sphere::Sphere(Point const &pos, double radius)
     r(radius)
 {}
 
-std::pair<double, double> solve_quadratic_equation(double a, double b, double c){
-
-    double discriminant, root1, root2;
-    root1 = -1;
-    root2 = -1;
-    discriminant = b * b - 4 * a * c;
-
-    // condition for real and different roots
-    if (discriminant > 0) {
-        root1 = (-b + sqrt(discriminant)) / (2 * a);
-        root2 = (-b - sqrt(discriminant)) / (2 * a);
-    }
-    // condition for real and equal roots
-    else if (discriminant >= 0) {
-        root1 = root2 = -b / (2 * a);
-    }
-    return std::pair<double, double>(root1, root2);
+Vector Sphere::get_normal_vector(Point in_surface)
+{
+    return (in_surface - position).normalized();
 }
 
-std::pair<bool, double> get_intersection_point(std::pair<double, double> roots, Triple origin, Triple vector){
+
+std::pair<bool, double> get_intersection_point(std::pair<double, double> roots){
 
     // intersection origin + root*vector with smallest positive root
     std::pair<bool, double> result;
@@ -113,3 +109,21 @@ std::pair<bool, double> get_intersection_point(std::pair<double, double> roots, 
     return result;
 }
 
+std::pair<double, double> solve_quadratic_equation(double a, double b, double c){
+
+    double discriminant, root1, root2;
+    root1 = -1;
+    root2 = -1;
+    discriminant = b * b - 4 * a * c;
+
+    // condition for real and different roots
+    if (discriminant > 0) {
+        root1 = (-b + sqrt(discriminant)) / (2 * a);
+        root2 = (-b - sqrt(discriminant)) / (2 * a);
+    }
+    // condition for real and equal roots
+    else if (discriminant >= 0) {
+        root1 = root2 = -b / (2 * a);
+    }
+    return std::pair<double, double>(root1, root2);
+}

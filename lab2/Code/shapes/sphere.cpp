@@ -43,27 +43,12 @@ Hit Sphere::intersect(Ray const &ray)
     double t = intersection_info.second;
 
     if (hit_detected){
-        Hit(t, get_normal_vector(ray.O + ));
+        return Hit(t, get_normal_vector(ray.O + t*ray.D));
     }
     else{
 
         return Hit::NO_HIT();
     }
-
-//    Vector OC = (position - ray.O).normalized();
-//    if (OC.dot(ray.D) < 0.999) {
-//        return Hit::NO_HIT();
-//    }
-//    double t = 1000;
-
-    /****************************************************
-    * RT1.2: NORMAL CALCULATION
-    *
-    * Given: t, C, r
-    * Sought: N
-    *
-    * Insert calculation of the sphere's normal at the intersection point.
-    ****************************************************/
 
 }
 

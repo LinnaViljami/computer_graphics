@@ -51,8 +51,8 @@ Color Scene::trace(Ray const &ray)
     *        Color * Color      ditto
     *        pow(a,b)           a to the power of b
     ****************************************************/
-
-    Color color = material.color;               // placeholder
+    double Ia = 1.0;
+    Color color = Ia * material.ka * material.color;
 
     return color;
 }

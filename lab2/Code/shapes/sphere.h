@@ -9,7 +9,7 @@ class Sphere: public Object
         Sphere(Point const &pos, double radius);
 
         virtual Hit intersect(Ray const &ray);
-        Vector get_normal_vector(Point in_surface);
+        Vector get_normal_vector(Point in_surface, Ray ray);
         Point const position;
         double const r;
 };

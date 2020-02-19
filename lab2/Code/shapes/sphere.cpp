@@ -5,7 +5,6 @@
 
 std::pair<double, double> solve_quadratic_equation(double a, double b, double c);
 std::pair<bool, double> get_intersection_point(std::pair<double, double> roots);
-Vector get_normal_vector(Point in_surface);
 
 using namespace std;
 
@@ -43,7 +42,7 @@ Hit Sphere::intersect(Ray const &ray)
     double t = intersection_info.second;
 
     if (hit_detected){
-        return Hit(t, get_normal_vector(ray.O + t*ray.D));
+        return Hit(t, get_normal_vector(ray.O + t*ray.D, ray));
     }
     else{
 
@@ -59,9 +58,15 @@ Sphere::Sphere(Point const &pos, double radius)
     r(radius)
 {}
 
-Vector Sphere::get_normal_vector(Point in_surface)
+Vector Sphere::get_normal_vector(Point in_surface, Ray ray)
 {
-    return (in_surface - position).normalized();
+    Vector normal_vector = (in_surface - position).normalized();
+    if(ray.D.dot(normal_vector) >= 0){
+        return normal_vector;
+    }
+    else {
+        return -1*normal_vector;
+    }
 }
 
 

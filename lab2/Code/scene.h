@@ -25,13 +25,15 @@ class Scene
         // render the scene to the given image
         void render(Image &img);
 
-
         void addObject(ObjectPtr obj);
         void addLight(Light const &light);
         void setEye(Triple const &position);
 
         unsigned getNumObject();
         unsigned getNumLights();
+
+    private:
+        double calculateDiffuseComponent(Vector normal, Point hit);
 };
 
 #endif

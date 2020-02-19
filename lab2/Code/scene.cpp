@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <limits>
+#include <iostream>
 
 using namespace std;
 
@@ -51,9 +52,16 @@ Color Scene::trace(Ray const &ray)
     *        Color * Color      ditto
     *        pow(a,b)           a to the power of b
     ****************************************************/
-    double Ia = 1.0;
-//    Color color = Ia * material.ka * material.color;  // Phong illumination model (incomplete)
-    Color color = (N + 1) / 2;   // Use this to visualize normal vectors
+    double Ia = 1;
+
+    double Id = calculateDiffuseComponent(N, hit);
+
+    // Determine color based on Phon illuminatin model
+    Color color =
+            Ia * material.ka * material.color +
+            Id * material.kd * lights.at(0)->color * material.color;
+
+//    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
 
     return color;
 }
@@ -100,4 +108,18 @@ unsigned Scene::getNumObject()
 unsigned Scene::getNumLights()
 {
     return lights.size();
+}
+
+double Scene::calculateDiffuseComponent(Vector normal, Point hit)
+{
+    Point lightPosition = lights.at(0)->position;
+    Vector lightVector = lightPosition - hit;
+    Vector normalizedLightVector = lightVector.normalized();
+
+    double diffuseComponent = normal.dot(normalizedLightVector);
+    if (diffuseComponent >= 0) {
+        return diffuseComponent;
+    } else {
+        return 0;
+    }
 }

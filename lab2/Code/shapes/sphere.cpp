@@ -45,7 +45,6 @@ Hit Sphere::intersect(Ray const &ray)
         return Hit(t, get_normal_vector(ray.O + t*ray.D, ray));
     }
     else{
-
         return Hit::NO_HIT();
     }
 
@@ -61,11 +60,11 @@ Sphere::Sphere(Point const &pos, double radius)
 Vector Sphere::get_normal_vector(Point in_surface, Ray ray)
 {
     Vector normal_vector = (in_surface - position).normalized();
-    if(ray.D.dot(normal_vector) >= 0){
+    if(normal_vector.dot(ray.D) < 0){
         return normal_vector;
     }
     else {
-        return -1*normal_vector;
+        return -1.0 * normal_vector;
     }
 }
 

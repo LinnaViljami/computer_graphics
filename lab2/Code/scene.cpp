@@ -52,7 +52,8 @@ Color Scene::trace(Ray const &ray)
     *        pow(a,b)           a to the power of b
     ****************************************************/
     double Ia = 1.0;
-    Color color = Ia * material.ka * material.color;
+//    Color color = Ia * material.ka * material.color;  // Phong illumination model (incomplete)
+    Color color = (N + 1) / 2;   // Use this to visualize normal vectors
 
     return color;
 }

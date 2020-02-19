@@ -33,7 +33,9 @@ class Scene
         unsigned getNumLights();
 
     private:
+        Vector getNormalizedLightVectorFromPosition(Point position);
         double calculateDiffuseComponent(Vector normal, Point hit);
+        double calculateSpecularComponent(Vector normal, Point hit, int p);
 };
 
 #endif

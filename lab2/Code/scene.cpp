@@ -56,10 +56,14 @@ Color Scene::trace(Ray const &ray)
 
     double Id = calculateDiffuseComponent(N, hit);
 
+    int pSpecular = 25;
+    double Is = calculateSpecularComponent(N, hit, pSpecular);
+
     // Determine color based on Phon illuminatin model
     Color color =
             Ia * material.ka * material.color +
-            Id * material.kd * lights.at(0)->color * material.color;
+            Id * material.kd * lights.at(0)->color * material.color +
+            Is * material.ks * material.color;
 
 //    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
 
@@ -110,16 +114,35 @@ unsigned Scene::getNumLights()
     return lights.size();
 }
 
-double Scene::calculateDiffuseComponent(Vector normal, Point hit)
+Vector Scene::getNormalizedLightVectorFromPosition(Point position)
 {
     Point lightPosition = lights.at(0)->position;
-    Vector lightVector = lightPosition - hit;
-    Vector normalizedLightVector = lightVector.normalized();
+    Vector lightVector = lightPosition - position;
+    return lightVector.normalized();
+}
 
-    double diffuseComponent = normal.dot(normalizedLightVector);
-    if (diffuseComponent >= 0) {
-        return diffuseComponent;
-    } else {
-        return 0;
+double Scene::calculateDiffuseComponent(Vector normal, Point hit)
+{
+    Vector lightVector = getNormalizedLightVectorFromPosition(hit);
+
+    double diffuseComponent = normal.dot(lightVector);
+    if (diffuseComponent < 0) {
+        diffuseComponent = 0;
     }
+    return diffuseComponent;
+}
+
+double Scene::calculateSpecularComponent(Vector normal, Point hit, int p)
+{
+    Vector lightVector = getNormalizedLightVectorFromPosition(hit);
+
+    Vector R = 2 * (normal.dot(lightVector)) * normal - lightVector;
+
+    Vector viewAngle = (eye - hit).normalized();
+
+    double specularComponent = R.dot(viewAngle);
+    if (specularComponent < 0) {
+        specularComponent = 0;
+    }
+    return pow(specularComponent, p);
 }

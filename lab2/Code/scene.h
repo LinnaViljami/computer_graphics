@@ -35,7 +35,7 @@ class Scene
     private:
         Vector getNormalizedLightVectorFromPosition(Point position);
         double calculateDiffuseComponent(Vector normal, Point hit);
-        double calculateSpecularComponent(Vector normal, Point hit, int p);
+        double calculateSpecularComponent(Vector normal, Point hit, double p);
 };
 
 #endif

@@ -33,7 +33,7 @@ Color Scene::trace(Ray const &ray)
     Material material = obj->material;          // the hit objects material
     Point hit = ray.at(min_hit.t);              // the hit point
     Vector N = min_hit.N;                       // the normal at hit point
-    Vector V = -ray.D;                          // the view vector
+    //Vector V = -ray.D;                          // the view vector
 
     /****************************************************
     * This is where you should insert the color
@@ -56,14 +56,13 @@ Color Scene::trace(Ray const &ray)
 
     double Id = calculateDiffuseComponent(N, hit);
 
-    int pSpecular = 25;
-    double Is = calculateSpecularComponent(N, hit, pSpecular);
+    double Is = calculateSpecularComponent(N, hit, material.n);
 
     // Determine color based on Phon illuminatin model
     Color color =
             Ia * material.ka * material.color +
             Id * material.kd * lights.at(0)->color * material.color +
-            Is * material.ks * material.color;
+            Is * material.ks * lights.at(0)->color;
 
 //    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
 
@@ -132,7 +131,7 @@ double Scene::calculateDiffuseComponent(Vector normal, Point hit)
     return diffuseComponent;
 }
 
-double Scene::calculateSpecularComponent(Vector normal, Point hit, int p)
+double Scene::calculateSpecularComponent(Vector normal, Point hit, double p)
 {
     Vector lightVector = getNormalizedLightVectorFromPosition(hit);
 

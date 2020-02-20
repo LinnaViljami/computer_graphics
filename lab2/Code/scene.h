@@ -33,9 +33,10 @@ class Scene
         unsigned getNumLights();
 
     private:
-        Vector getNormalizedLightVectorFromPosition(Point position);
-        double calculateDiffuseComponent(Vector normal, Point hit);
-        double calculateSpecularComponent(Vector normal, Point hit, double p);
+        Color getPhongIlluminationColor(Vector N, Point hit, Material material);
+        Vector getNormalizedLightVectorFromPosition(Point position, Light light);
+        double calculateDiffuseComponent(Vector normal, Point hit, Light light);
+        double calculateSpecularComponent(Vector normal, Point hit, double p, Light light);
 };
 
 #endif

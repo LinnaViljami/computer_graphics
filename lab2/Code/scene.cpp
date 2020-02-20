@@ -52,20 +52,21 @@ Color Scene::trace(Ray const &ray)
     *        Color * Color      ditto
     *        pow(a,b)           a to the power of b
     ****************************************************/
-    double Ia = 1;
 
-    double Id = calculateDiffuseComponent(N, hit);
+//    double Ia = 1;
 
-    double Is = calculateSpecularComponent(N, hit, material.n);
+//    double Id = calculateDiffuseComponent(N, hit,);
 
-    // Determine color based on Phon illuminatin model
-    Color color =
-            Ia * material.ka * material.color +
-            Id * material.kd * lights.at(0)->color * material.color +
-            Is * material.ks * lights.at(0)->color;
+//    double Is = calculateSpecularComponent(N, hit, material.n);
 
-//    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
+//    // Determine color based on Phon illuminatin model
+//    Color color =
+//            Ia * material.ka * material.color +
+//            Id * material.kd * lights.at(0)->color * material.color +
+//            Is * material.ks * lights.at(0)->color;
 
+////    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
+    Color color = getPhongIlluminationColor(N, hit, material);
     return color;
 }
 
@@ -113,16 +114,30 @@ unsigned Scene::getNumLights()
     return lights.size();
 }
 
-Vector Scene::getNormalizedLightVectorFromPosition(Point position)
+Color Scene::getPhongIlluminationColor(Vector N, Point hit, Material material)
 {
-    Point lightPosition = lights.at(0)->position;
-    Vector lightVector = lightPosition - position;
+    double Ia = 1;
+    Color color = Ia * material.ka * material.color;
+    for (auto light_ptr : lights){
+        color += calculateDiffuseComponent(N, hit, *light_ptr) * material.kd * light_ptr->color * material.color;
+        color += calculateSpecularComponent(N, hit, material.n, *light_ptr) * material.ks * light_ptr->color;
+    }
+
+    //    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
+
+    return color;
+
+}
+
+Vector Scene::getNormalizedLightVectorFromPosition(Point position, Light light)
+{
+    Vector lightVector = light.position - position;
     return lightVector.normalized();
 }
 
-double Scene::calculateDiffuseComponent(Vector normal, Point hit)
+double Scene::calculateDiffuseComponent(Vector normal, Point hit, Light light)
 {
-    Vector lightVector = getNormalizedLightVectorFromPosition(hit);
+    Vector lightVector = getNormalizedLightVectorFromPosition(hit, light);
 
     double diffuseComponent = normal.dot(lightVector);
     if (diffuseComponent < 0) {
@@ -131,9 +146,9 @@ double Scene::calculateDiffuseComponent(Vector normal, Point hit)
     return diffuseComponent;
 }
 
-double Scene::calculateSpecularComponent(Vector normal, Point hit, double p)
+double Scene::calculateSpecularComponent(Vector normal, Point hit, double p, Light light)
 {
-    Vector lightVector = getNormalizedLightVectorFromPosition(hit);
+    Vector lightVector = getNormalizedLightVectorFromPosition(hit, light);
 
     Vector R = 2 * (normal.dot(lightVector)) * normal - lightVector;
 

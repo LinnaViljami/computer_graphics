@@ -17,6 +17,13 @@ class Mesh: public Object
              Vector const &scale);
 
         virtual Hit intersect(Ray const &ray);
+
+    private: 
+        void scalePoint(Point &point, Vector scale);
+        void xRotatePoint(Point &point, Vector rotation);
+        void yRotatePoint(Point &point, Vector rotation);
+        void zRotatePoint(Point &point, Vector rotation);
+        void translatePoint(Point &point, Vector position);
 };
 
 #endif

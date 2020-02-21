@@ -16,18 +16,18 @@ Hit Mesh::intersect(Ray const &ray)
     Hit nearestHit = Hit::NO_HIT();
     for (auto object : d_tris) {
         Hit currentHit = object->intersect(ray);
+        if (!(currentHit.t >= 0)) {
+            // if currentHit.t isn't larger than 0, it's a NO_HIT (currentHit.t == NaN)
+            continue;
+        }
         if (!hitFound) {
+            cout << "Found hit with hit.t == " << currentHit.t << "\n";
             hitFound = true;
             nearestHit = currentHit;
-        } else if (currentHit.t < nearestHit.t) {
+        } else if ( currentHit.t < nearestHit.t) {
+            cout << "Found closer hit with hit.t == " << currentHit.t << "\n";
             nearestHit = currentHit;
         }
-    }
-
-    if (!hitFound) {
-        std::cout << "No hit found\n";
-    } else {
-        std::cout << "Hit found\n";
     }
     return nearestHit;
 }

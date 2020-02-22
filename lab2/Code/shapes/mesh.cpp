@@ -20,7 +20,6 @@ Hit Mesh::intersect(Ray const &ray)
             hitFound = true;
             nearestHit = currentHit;
         } else if ( currentHit.t < nearestHit.t && currentHit.t >= 0) {
-            cout << "Found closer hit with hit.t == " << currentHit.t << "\n";
             nearestHit = currentHit;
         }
     }

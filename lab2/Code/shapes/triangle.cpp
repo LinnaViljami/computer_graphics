@@ -24,12 +24,10 @@ std::pair<bool, double> Triangle::getIntersectionInfo(Ray ray)
 {
 
     if(!isIntersection(ray)){
-        //std::cout << "no intersection" << std::endl;
         return std::pair<bool, double>(false, -1);
     }
 
     double t = -1.0 * ((ray.O - this->v0).dot(this->N))/(ray.D.dot(this->N));
-    //std::cout << "intersection happened, t=" << t;
     return std::pair<bool, double>(true, t);
 }
 
@@ -56,16 +54,8 @@ bool Triangle::isIntersection(Ray ray)
 double Triangle::signedVolume(Point a, Point b, Point c, Point d)
 {
 
-    //std::cout << a << std::endl;
-    //std::cout << b << std::endl;
-
-//    std::cout << c << std::endl;
-
-  //  std::cout << d << std::endl;
 
     Point cross_product = (b-a).cross(c-a);
-
-   // std::cout << cross_product << std::endl;
 
     return (1.0/6.0) * cross_product.dot((d-a));
 

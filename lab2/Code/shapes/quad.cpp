@@ -25,6 +25,7 @@ Hit Quad::intersect(Ray const &ray)
     else{
         return Hit::NO_HIT();
     }
+
 }
 
 Quad::Quad(Point const &v0,

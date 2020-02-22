@@ -2,6 +2,7 @@
 #define QUAD_H_
 
 #include "../object.h"
+#include "triangle.h"
 
 class Quad: public Object
 {
@@ -12,6 +13,9 @@ class Quad: public Object
              Point const &v3);
 
         virtual Hit intersect(Ray const &ray);
+
+    private:
+        std::pair<Triangle, Triangle> _triangles;
 };
 
 #endif

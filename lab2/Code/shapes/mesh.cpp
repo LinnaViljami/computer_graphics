@@ -16,15 +16,10 @@ Hit Mesh::intersect(Ray const &ray)
     Hit nearestHit = Hit::NO_HIT();
     for (auto object : d_tris) {
         Hit currentHit = object->intersect(ray);
-        if (!(currentHit.t >= 0)) {
-            // if currentHit.t isn't larger than 0, it's a NO_HIT (currentHit.t == NaN)
-            continue;
-        }
-        if (!hitFound) {
-            cout << "Found hit with hit.t == " << currentHit.t << "\n";
+        if (!hitFound && currentHit.t >= 0) {
             hitFound = true;
             nearestHit = currentHit;
-        } else if ( currentHit.t < nearestHit.t) {
+        } else if ( currentHit.t < nearestHit.t && currentHit.t >= 0) {
             cout << "Found closer hit with hit.t == " << currentHit.t << "\n";
             nearestHit = currentHit;
         }
@@ -88,18 +83,24 @@ void Mesh::scalePoint(Point &point, Vector scale) {
 }
 
 void Mesh::xRotatePoint(Point &point, Vector rotation) {
-    point.y = cos(rotation.x)*point.y - sin(rotation.x)*point.z;
-    point.z = sin(rotation.x)*point.y + cos(rotation.x)*point.z;
+    double new_y = cos(rotation.x)*point.y - sin(rotation.x)*point.z;
+    double new_z = sin(rotation.x)*point.y + cos(rotation.x)*point.z;
+    point.y = new_y;
+    point.z = new_z;
 }
 
 void Mesh::yRotatePoint(Point &point, Vector rotation) {
-    point.x = cos(rotation.y)*point.x + sin(rotation.y)*point.z;
-    point.z = -sin(rotation.y)*point.x + cos(rotation.y)*point.z;
+    double new_x = cos(rotation.y)*point.x + sin(rotation.y)*point.z;
+    double new_z = -sin(rotation.y)*point.x + cos(rotation.y)*point.z;
+    point.x = new_x;
+    point.z = new_z;
 }
 
 void Mesh::zRotatePoint(Point &point, Vector rotation) {
-    point.x = cos(rotation.z)*point.x - sin(rotation.z)*point.y;
-    point.y = sin(rotation.z)*point.x + cos(rotation.z)*point.y;
+    double new_x = cos(rotation.z)*point.x - sin(rotation.z)*point.y;
+    double new_y = sin(rotation.z)*point.x + cos(rotation.z)*point.y;
+    point.y = new_y;
+    point.x = new_x;
 }
 
 void Mesh::translatePoint(Point &point, Vector position) {

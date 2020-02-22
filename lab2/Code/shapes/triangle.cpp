@@ -41,16 +41,13 @@ bool Triangle::isIntersection(Ray ray)
     Point p2 = v1;
     Point p3 = v2;
     if(signedVolume(q1,p1,p2,p3) * signedVolume(q2,p1,p2,p3) >= 0){
-        //std::cout << signedVolume(q1,p1,p2,p3) << ", " << signedVolume(q2,p1,p2,p3) << std::endl;
         return false;
     }
     else if (signedVolume(q1,q2,p1,p2) * signedVolume(q1,q2,p2,p3) >= 0
              && signedVolume(q1,q2,p3,p1) * signedVolume(q1,q2,p2,p3) >= 0){
-        //std::cout << "true" << std::endl;
         return true;
     }
     else{
-        //std::cout << "still false" << std::endl;
         return false;
     }
 

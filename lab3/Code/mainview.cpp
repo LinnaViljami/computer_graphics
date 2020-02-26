@@ -194,6 +194,7 @@ void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
     };
 
     rotationMatrix = xRotationMatrix * yRotationMatrix * zRotationMatrix;
+
     update();
     qDebug() << "Rotation changed to (" << rotateX << "," << rotateY << "," << rotateZ << ")";
 }
@@ -236,12 +237,12 @@ void MainView::initializeCube()
     glGenBuffers(1, &this->cube.vboId);
     glGenVertexArrays(1, &this->cube.vaoId);
 
-
     std::vector<vertex3d>::iterator bufferDataPointer = this->cube.getTriangles()->begin();
     void * bufferVoidPointer = &* bufferDataPointer;
     glBindVertexArray(this->cube.vaoId);
     glBindBuffer(GL_ARRAY_BUFFER, this->cube.vboId);
     glBufferData(GL_ARRAY_BUFFER,36*sizeof(vertex3d), bufferVoidPointer, GL_STATIC_DRAW);
+
 
     // Tell OpenGL what attributes to expect; how the data is laid out
     glEnableVertexAttribArray(0);
@@ -273,6 +274,7 @@ void MainView::initializePyramid()
     glBindVertexArray(this->pyramid.vaoId);
     glBindBuffer(GL_ARRAY_BUFFER, this->pyramid.vboId);
     glBufferData(GL_ARRAY_BUFFER,18*sizeof(vertex3d), bufferVoidPointer, GL_STATIC_DRAW);
+
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
@@ -318,6 +320,7 @@ void MainView::paintCube()
 
     QMatrix4x4 cubeTransformationMatrix = cubeTranslationMatrix * rotationMatrix * scalingMatrix;
     glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, cubeTransformationMatrix.data());
+
     glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
 
     glBindVertexArray(this->cube.vaoId);
@@ -335,6 +338,7 @@ void MainView::paintPyramid()
 
     QMatrix4x4 pyramidTransformationMatrix = pyramidTranslationMatrix * rotationMatrix * scalingMatrix;
     glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, pyramidTransformationMatrix.data());
+
     glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
 
     glBindVertexArray(this->pyramid.vaoId);

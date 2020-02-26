@@ -2,16 +2,16 @@
 
 Cube::Cube()
 {
-    vertex_3d point1 = {-1, -1,-1, 1,0,0};
-    vertex_3d point2 = {-1, -1,1, 1,1,1};
-    vertex_3d point3 = {-1, 1, -1,1,0,1};
-    vertex_3d point4 = {1, -1, -1,1,1,0};
-    vertex_3d point5 = {-1, 1, 1,1,0,0};
-    vertex_3d point6 = {1, -1, 1,1,0,1};
-    vertex_3d point7 = {1, 1, -1,1,1,0};
+    vertex3d point1 = {-1, -1,-1, 1,0,0};
+    vertex3d point2 = {-1, -1,1, 1,1,1};
+    vertex3d point3 = {-1, 1, -1,1,0,1};
+    vertex3d point4 = {1, -1, -1,1,1,0};
+    vertex3d point5 = {-1, 1, 1,1,0,0};
+    vertex3d point6 = {1, -1, 1,1,0,1};
+    vertex3d point7 = {1, 1, -1,1,1,0};
 
     //opposite of 1
-    vertex_3d point8 = {1, 1, 1,0,1,0};
+    vertex3d point8 = {1, 1, 1,0,1,0};
     vertices = {point1, point2, point3, point4, point5, point6, point7, point8};
     triangles
             =
@@ -29,7 +29,7 @@ Cube::Cube()
     point5, point7, point3};
 }
 
-std::vector<vertex_3d>* Cube::get_triangles()
+std::vector<vertex3d>* Cube::getTriangles()
 {
 
     return &triangles;

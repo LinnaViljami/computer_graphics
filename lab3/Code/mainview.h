@@ -63,12 +63,12 @@ private:
     Pyramid pyramid;
     ImportedObject object;
     QOpenGLShaderProgram shaderProgram;
-    QMatrix4x4 perspective_transformation_matrix;
-    QMatrix4x4 rotation_matrix;
-    QMatrix4x4 scaling_matrix;
-    QMatrix4x4 cube_translation_matrix;
-    QMatrix4x4 pyramid_translation_matrix;
-    QMatrix4x4 object_translation_matrix;
+    QMatrix4x4 perspectiveTransformationMatrix;
+    QMatrix4x4 rotationMatrix;
+    QMatrix4x4 scalingMatrix;
+    QMatrix4x4 cubeTranslationMatrix;
+    QMatrix4x4 pyramidTranslationMatrix;
+    QMatrix4x4 objectTranslationMatrix;
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;

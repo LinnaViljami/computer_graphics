@@ -12,7 +12,7 @@ ImportedObject::ImportedObject(float scaling_factor)
     QVector<QVector3D> vertexLocations = model.getVertices();
     QVector<QVector3D> vertexNormals = model.getNormals();
 
-    std::vector<vertex_3d> vertices_init(vertexLocations.size());
+    std::vector<vertex3d> vertices_init(vertexLocations.size());
     for (int i = 0; i < vertexLocations.size(); i++) {
         QVector3D location = vertexLocations.at(i);
         QVector3D normal = vertexNormals.at(i);

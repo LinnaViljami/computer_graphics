@@ -3,7 +3,7 @@
 
 #include <limits>
 
-struct vertex_3d {
+struct vertex3d {
     float x;
     float y;
     float z;

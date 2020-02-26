@@ -1,20 +1,20 @@
 #ifndef PYRAMID_H
 #define PYRAMID_H
 
-#include "vertex_3d.h"
+#include "vertex3d.h"
 #include <vector>
 #include <GL/gl.h>
 class Pyramid
 {
 public:
     Pyramid();
-    std::vector<vertex_3d>* get_triangles();
-    GLuint vbo_id;
-    GLuint vao_id;
+    std::vector<vertex3d>* getTriangles();
+    GLuint vboId;
+    GLuint vaoId;
 
 private:
-    std::vector<vertex_3d> vertices;
-    std::vector<vertex_3d> triangles;
+    std::vector<vertex3d> vertices;
+    std::vector<vertex3d> triangles;
 
 };
 

@@ -23,8 +23,8 @@ HEADERS += \
     mainview.h \
     model.h \
     pyramid.h \
-    vertex_3d.h \
-    object.h
+    object.h \
+    vertex3d.h
 
 FORMS += \
     mainwindow.ui

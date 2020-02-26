@@ -1,26 +1,45 @@
 #include "object.h"
-#include "model.h"
 
 ImportedObject::ImportedObject() : vertices({})
 {
 
 }
 
-ImportedObject::ImportedObject(float scaling_factor)
+ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType modelType)
 {
-    Model model(":/models/sphere.obj");
-    QVector<QVector3D> vertexLocations = model.getVertices();
-    QVector<QVector3D> vertexNormals = model.getNormals();
+    ImportedObjectProperties properties;
+    switch (modelType) {
+    case cat:
+        properties.model = Model(":/models/cat.obj");
+        properties.scalingFactor = 8.0f;
+        break;
+    case sphere:
+        properties.model = Model(":/models/sphere.obj");
+        properties.scalingFactor = 0.04f;
+        break;
+    case cube:
+        break;
+    case flat_surface:
+        break;
+    }
+    return properties;
+}
 
-    std::vector<vertex3d> vertices_init(vertexLocations.size());
+
+ImportedObject::ImportedObject(ImportedObjectType objectType)
+{
+    ImportedObjectProperties modelProps = getModelProperties(objectType);
+    QVector<QVector3D> vertexLocations = modelProps.model.getVertices();
+    QVector<QVector3D> vertexNormals = modelProps.model.getNormals();
+
+    std::vector<vertex3d> vertices_init = {};
     for (int i = 0; i < vertexLocations.size(); i++) {
         QVector3D location = vertexLocations.at(i);
         QVector3D normal = vertexNormals.at(i);
-
         vertices_init.push_back({
-            location.x() * scaling_factor,
-            location.y() * scaling_factor,
-            location.z() * scaling_factor,
+            location.x() * modelProps.scalingFactor,
+            location.y() * modelProps.scalingFactor,
+            location.z() * modelProps.scalingFactor,
             normal.x(),
             normal.y(),
             normal.z(),

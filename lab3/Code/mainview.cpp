@@ -284,8 +284,7 @@ void MainView::initializePyramid()
 
 void MainView::initializeObject() {
 
-    float objectScalingFactor = 0.04f;
-    object = ImportedObject(objectScalingFactor);
+    object = ImportedObject(cat);
 
     glGenBuffers(1, &this->object.vboId);
     glGenVertexArrays(1, &this->object.vaoId);

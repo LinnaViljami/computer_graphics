@@ -87,8 +87,6 @@ void MainView::initializeGL() {
     initializePerspectiveMatrix();
 
     initializeObject();
-    initializeCube();
-    initializePyramid();
 }
 
 void MainView::createShaderProgram() {
@@ -139,53 +137,7 @@ void MainView::paintGL() {
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-    // --- PAINT CUBE ---
-    cube_translation_matrix = {
-            1, 0, 0, 2,
-            0, 1, 0, 0,
-            0, 0, 1, -6,
-            0, 0, 0, 1,
-    };
-
-    QMatrix4x4 cube_transformation_matrix = cube_translation_matrix * rotation_matrix * scaling_matrix;
-    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
-    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
-
-    glBindVertexArray(this->cube.vao_id);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-    // --- PAINT PYRAMID ---
-    pyramid_translation_matrix = {
-            1, 0, 0, -2,
-            0, 1, 0, 0,
-            0, 0, 1, -6,
-            0, 0, 0, 1,
-    };
-
-    QMatrix4x4 pyramid_transformation_matrix = pyramid_translation_matrix * rotation_matrix * scaling_matrix;
-    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
-    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
-
-    glBindVertexArray(this->pyramid.vao_id);
-    glDrawArrays(GL_TRIANGLES, 0, 18);
-
-
-    // --- PAINT OBJECT ---
-    object_translation_matrix = {
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, -10,
-            0, 0, 0, 1,
-    };
-
-    QMatrix4x4 objectTransformationMatrix = object_translation_matrix * rotation_matrix * scaling_matrix;
-    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
-    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
-
-    glBindVertexArray(object.vao_id);
-    glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
+    paintObject();
 
     shaderProgram.release();
 }
@@ -254,7 +206,8 @@ void MainView::setShadingMode(ShadingMode shading) {
     Q_UNIMPLEMENTED();
 }
 
-// --- Private helpers
+
+// --- Private helpers ---
 
 /**
  * @brief MainView::onMessageLogged
@@ -344,4 +297,55 @@ void MainView::initializeObject() {
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
+}
+
+void MainView::paintCube()
+{
+    cube_translation_matrix = {
+            1, 0, 0, 2,
+            0, 1, 0, 0,
+            0, 0, 1, -6,
+            0, 0, 0, 1,
+    };
+
+    QMatrix4x4 cube_transformation_matrix = cube_translation_matrix * rotation_matrix * scaling_matrix;
+    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
+
+    glBindVertexArray(this->cube.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void MainView::paintPyramid()
+{
+    pyramid_translation_matrix = {
+            1, 0, 0, -2,
+            0, 1, 0, 0,
+            0, 0, 1, -6,
+            0, 0, 0, 1,
+    };
+
+    QMatrix4x4 pyramid_transformation_matrix = pyramid_translation_matrix * rotation_matrix * scaling_matrix;
+    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
+
+    glBindVertexArray(this->pyramid.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, 18);
+}
+
+void MainView::paintObject()
+{
+    object_translation_matrix = {
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, -10,
+            0, 0, 0, 1,
+    };
+
+    QMatrix4x4 objectTransformationMatrix = object_translation_matrix * rotation_matrix * scaling_matrix;
+    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
+
+    glBindVertexArray(object.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
 }

@@ -10,20 +10,22 @@ ImportedObject::ImportedObject(float scaling_factor)
 {
     Model model(":/models/sphere.obj");
     QVector<QVector3D> vertexLocations = model.getVertices();
+    QVector<QVector3D> vertexNormals = model.getNormals();
 
     std::vector<vertex_3d> vertices_init(vertexLocations.size());
-    for (QVector3D vector: vertexLocations) {
-        float randomRed = std::rand() / (static_cast<float>(RAND_MAX));
-        float randomGreen = std::rand() / (static_cast<float>(RAND_MAX));
-        float randomBlue = std::rand() / (static_cast<float>(RAND_MAX));
+    for (int i = 0; i < vertexLocations.size(); i++) {
+        QVector3D location = vertexLocations.at(i);
+        QVector3D normal = vertexNormals.at(i);
+
         vertices_init.push_back({
-           vector.x() * scaling_factor,
-           vector.y() * scaling_factor,
-           vector.z() * scaling_factor,
-           randomRed,
-           randomGreen,
-           randomBlue
+            vector.x() * scaling_factor,
+            vector.y() * scaling_factor,
+            vector.z() * scaling_factor,
+            normal.x(),
+            normal.y(),
+            normal.z(),
        });
     }
+
     vertices = vertices_init;
 }

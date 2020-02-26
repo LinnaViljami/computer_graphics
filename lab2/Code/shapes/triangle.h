@@ -16,6 +16,11 @@ class Triangle: public Object
         Point v1;
         Point v2;
         Vector N;
+        bool isIntersection(Ray ray);
+    private:
+        std::pair<bool, double> getIntersectionInfo(Ray ray);
+
+        double signedVolume(Point a, Point b, Point c, Point d);
 };
 
 #endif

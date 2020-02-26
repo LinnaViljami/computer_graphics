@@ -25,13 +25,18 @@ class Scene
         // render the scene to the given image
         void render(Image &img);
 
-
         void addObject(ObjectPtr obj);
         void addLight(Light const &light);
         void setEye(Triple const &position);
 
         unsigned getNumObject();
         unsigned getNumLights();
+
+    private:
+        Color getPhongIlluminationColor(Vector N, Point hit, Material material);
+        Vector getNormalizedLightVectorFromPosition(Point position, Light light);
+        double calculateDiffuseComponent(Vector normal, Point hit, Light light);
+        double calculateSpecularComponent(Vector normal, Point hit, double p, Light light);
 };
 
 #endif

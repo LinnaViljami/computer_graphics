@@ -18,9 +18,9 @@ ImportedObject::ImportedObject(float scaling_factor)
         QVector3D normal = vertexNormals.at(i);
 
         vertices_init.push_back({
-            vector.x() * scaling_factor,
-            vector.y() * scaling_factor,
-            vector.z() * scaling_factor,
+            location.x() * scaling_factor,
+            location.y() * scaling_factor,
+            location.z() * scaling_factor,
             normal.x(),
             normal.y(),
             normal.z(),

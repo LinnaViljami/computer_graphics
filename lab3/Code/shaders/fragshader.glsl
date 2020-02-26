@@ -16,5 +16,7 @@ out vec4 fColor;
 
 void main()
 {
-    fColor = vec4(vertNormal, 1.0);
+    vec3 colorMapping = vec3(0.5,0.5,0.5);
+    vec3 mappedColors = colorMapping*vertNormal + colorMapping;
+    fColor = vec4(mappedColors, 1.0);
 }

@@ -63,6 +63,8 @@ void MainView::initializeGL() {
         debugLogger.startLogging(QOpenGLDebugLogger::SynchronousLogging);
     }
 
+    //QOpenGLFunctions_3_3_Core* pointer_to_functions = (QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions();
+
     QString glVersion;
     glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     qDebug() << ":: Using OpenGL" << qPrintable(glVersion);

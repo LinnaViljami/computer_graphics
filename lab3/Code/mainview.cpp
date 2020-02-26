@@ -137,11 +137,12 @@ void MainView::paintGL() {
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    QMatrix3x3 normalTransformation = {
-        0, 0, 0,
-        0, 0, 0,
-        0, 0, 0
+    float values[] = {
+        1, 0, 0,
+        0, 1, 0,
+        0, 0, 1
     };
+    QMatrix3x3 normalTransformation(values);
     glUniformMatrix4fv(normalTransformationUniformLocation, 1, GL_FALSE, normalTransformation.data());
 
     paintObject();
@@ -246,8 +247,8 @@ void MainView::initializeCube()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    GLintptr coordinate_ptr_index = 0*sizeof(float);
-    GLintptr color_ptr_index = offsetof(vertex_3d, R);
+    GLintptr coordinatePtrIndex = 0*sizeof(float);
+    GLintptr normalPrtIndex = offsetof(vertex_3d, normalX);
 
     glVertexAttribPointer(
                 0,                              // Index of the attribute defined by glEnableVertexAttribArray
@@ -255,9 +256,9 @@ void MainView::initializeCube()
                 GL_FLOAT,                       // Type of the elements
                 GL_FALSE,
                 sizeof(vertex_3d),              // Offset between different vertices
-                (GLvoid*)(coordinate_ptr_index) // Offset from the start of this vertex
+                (GLvoid*)(coordinatePtrIndex) // Offset from the start of this vertex
     );
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(normalPrtIndex));
 }
 
 void MainView::initializePyramid()
@@ -275,11 +276,11 @@ void MainView::initializePyramid()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    GLintptr coordinate_ptr_index = 0*sizeof(float);
-    GLintptr color_ptr_index = offsetof(vertex_3d, R);
+    GLintptr coordinatePtrIndex = 0*sizeof(float);
+    GLintptr normalPrtIndex = offsetof(vertex_3d, normalX);
 
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinatePtrIndex));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(normalPrtIndex));
 
 }
 
@@ -299,11 +300,11 @@ void MainView::initializeObject() {
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    GLintptr coordinate_ptr_index = 0*sizeof(float);
-    GLintptr color_ptr_index = offsetof(vertex_3d, R);
+    GLintptr coordinatPtrIndex = 0*sizeof(float);
+    GLintptr colorPtrIndex = offsetof(vertex_3d, normalX);
 
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinate_ptr_index));
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(color_ptr_index));
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(coordinatPtrIndex));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex_3d), (GLvoid*)(colorPtrIndex));
 }
 
 void MainView::paintCube()

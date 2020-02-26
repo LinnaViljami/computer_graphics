@@ -12,8 +12,8 @@ Cube::Cube()
 
     //opposite of 1
     vertex_3d point8 = {1, 1, 1,0,1,0};
-    _verticies = {point1, point2, point3, point4, point5, point6, point7, point8};
-    _triangles
+    vertices = {point1, point2, point3, point4, point5, point6, point7, point8};
+    triangles
             =
     {point2, point1, point4,
     point6, point2, point4,
@@ -32,6 +32,6 @@ Cube::Cube()
 std::vector<vertex_3d>* Cube::get_triangles()
 {
 
-    return &_triangles;
+    return &triangles;
 }
 

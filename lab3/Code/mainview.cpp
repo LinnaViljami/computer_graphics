@@ -15,13 +15,13 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
     qDebug() << "MainView constructor";
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-    _rotation_matrix = {
+    rotation_matrix = {
         1 , 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1,
 };
-    _scaling_matrix = _rotation_matrix;
+    scaling_matrix = rotation_matrix;
 }
 
 /**
@@ -34,12 +34,12 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
  */
 MainView::~MainView() {
     qDebug() << "MainView destructor";
-    glDeleteBuffers(1, &this->_cube.vbo_id);
-    glDeleteVertexArrays(1, &this->_cube.vao_id);
-    glDeleteBuffers(1, &this->_pyramid.vbo_id);
-    glDeleteVertexArrays(1, &this->_pyramid.vao_id);
-    glDeleteBuffers(1, &_object.vbo_id);
-    glDeleteVertexArrays(1, &_object.vao_id);
+    glDeleteBuffers(1, &this->cube.vbo_id);
+    glDeleteVertexArrays(1, &this->cube.vao_id);
+    glDeleteBuffers(1, &this->pyramid.vbo_id);
+    glDeleteVertexArrays(1, &this->pyramid.vao_id);
+    glDeleteBuffers(1, &object.vbo_id);
+    glDeleteVertexArrays(1, &object.vao_id);
     makeCurrent();
 }
 
@@ -101,9 +101,9 @@ void MainView::createShaderProgram() {
 }
 
 void MainView::setUniformLocation() {
-    _transformationUniformLocation = shaderProgram.uniformLocation("transformation");
-    _projectionUniformLocation = shaderProgram.uniformLocation("projection");
-    if (_transformationUniformLocation == -1 || _projectionUniformLocation == -1) {
+    transformationUniformLocation = shaderProgram.uniformLocation("transformation");
+    projectionUniformLocation = shaderProgram.uniformLocation("projection");
+    if (transformationUniformLocation == -1 || projectionUniformLocation == -1) {
         // Did not find uniform
         qDebug() << "Failed to find uniform in setUniformLocation()";
     }
@@ -117,7 +117,7 @@ void MainView::initializePerspectiveMatrix() {
     float l = -1.0f;
     float r = 1.0f;
     float b = -1.0f;
-    _perspective_transformation_matrix = {
+    perspective_transformation_matrix = {
         (2*n/r-l), 0, (r+l)/(r-l), 0,
         0, (2*n/t-b), (t+b)/(t-b), 0,
         0, 0, (n+f)/(n-f), (2*n*f)/(n-f),
@@ -141,51 +141,51 @@ void MainView::paintGL() {
 
 
     // --- PAINT CUBE ---
-    _cube_translation_matrix = {
+    cube_translation_matrix = {
             1, 0, 0, 2,
             0, 1, 0, 0,
             0, 0, 1, -6,
             0, 0, 0, 1,
     };
 
-    QMatrix4x4 cube_transformation_matrix = _cube_translation_matrix * _rotation_matrix * _scaling_matrix;
-    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
-    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
+    QMatrix4x4 cube_transformation_matrix = cube_translation_matrix * rotation_matrix * scaling_matrix;
+    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, cube_transformation_matrix.data());
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
 
-    glBindVertexArray(this->_cube.vao_id);
+    glBindVertexArray(this->cube.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
     // --- PAINT PYRAMID ---
-    _pyramid_translation_matrix = {
+    pyramid_translation_matrix = {
             1, 0, 0, -2,
             0, 1, 0, 0,
             0, 0, 1, -6,
             0, 0, 0, 1,
     };
 
-    QMatrix4x4 pyramid_transformation_matrix = _pyramid_translation_matrix * _rotation_matrix * _scaling_matrix;
-    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
-    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
+    QMatrix4x4 pyramid_transformation_matrix = pyramid_translation_matrix * rotation_matrix * scaling_matrix;
+    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, pyramid_transformation_matrix.data());
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
 
-    glBindVertexArray(this->_pyramid.vao_id);
+    glBindVertexArray(this->pyramid.vao_id);
     glDrawArrays(GL_TRIANGLES, 0, 18);
 
 
     // --- PAINT OBJECT ---
-    _object_translation_matrix = {
+    object_translation_matrix = {
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, -10,
             0, 0, 0, 1,
     };
 
-    QMatrix4x4 objectTransformationMatrix = _object_translation_matrix * _rotation_matrix * _scaling_matrix;
-    glUniformMatrix4fv(_transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
-    glUniformMatrix4fv(_projectionUniformLocation, 1, GL_FALSE, _perspective_transformation_matrix.data());
+    QMatrix4x4 objectTransformationMatrix = object_translation_matrix * rotation_matrix * scaling_matrix;
+    glUniformMatrix4fv(transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
+    glUniformMatrix4fv(projectionUniformLocation, 1, GL_FALSE, perspective_transformation_matrix.data());
 
-    glBindVertexArray(_object.vao_id);
-    glDrawArrays(GL_TRIANGLES, 0, _object.vertices.size());
+    glBindVertexArray(object.vao_id);
+    glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
 
     shaderProgram.release();
 }
@@ -201,8 +201,8 @@ void MainView::paintGL() {
 void MainView::resizeGL(int newWidth, int newHeight) {
     // This time use .perspective function. For own implementation, see initializePerspectiveMatrix() method.
     qDebug() << "resize called.";
-    _perspective_transformation_matrix.setToIdentity();
-    _perspective_transformation_matrix.perspective(60, ((float)newWidth)/newHeight, 0.2f, 20.0f);
+    perspective_transformation_matrix.setToIdentity();
+    perspective_transformation_matrix.perspective(60, ((float)newWidth)/newHeight, 0.2f, 20.0f);
 }
 
 // --- Public interface
@@ -233,13 +233,13 @@ void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
         0, 0, 0, 1,
     };
 
-    _rotation_matrix = x_rotation_matrix * y_rotation_matrix * z_rotation_matrix;
+    rotation_matrix = x_rotation_matrix * y_rotation_matrix * z_rotation_matrix;
     update();
     qDebug() << "Rotation changed to (" << rotateX << "," << rotateY << "," << rotateZ << ")";
 }
 
 void MainView::setScale(int scale) {
-    _scaling_matrix = {
+    scaling_matrix = {
             static_cast<float>(scale)/100 , 0, 0, 0,
             0, static_cast<float>(scale)/100, 0, 0,
             0, 0, static_cast<float>(scale)/100, 0,
@@ -269,17 +269,17 @@ void MainView::onMessageLogged( QOpenGLDebugMessage Message ) {
 
 void MainView::initializeCube()
 {
-    this->_cube = Cube();
+    this->cube = Cube();
 
     // Generate VBO and VAO
-    glGenBuffers(1, &this->_cube.vbo_id);
-    glGenVertexArrays(1, &this->_cube.vao_id);
+    glGenBuffers(1, &this->cube.vbo_id);
+    glGenVertexArrays(1, &this->cube.vao_id);
 
 
-    std::vector<vertex_3d>::iterator buffer_data_pointer = this->_cube.get_triangles()->begin();
+    std::vector<vertex_3d>::iterator buffer_data_pointer = this->cube.get_triangles()->begin();
     void * buffer_void_pointer = &* buffer_data_pointer;
-    glBindVertexArray(this->_cube.vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_cube.vbo_id);
+    glBindVertexArray(this->cube.vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, this->cube.vbo_id);
     glBufferData(GL_ARRAY_BUFFER,36*sizeof(vertex_3d), buffer_void_pointer, GL_STATIC_DRAW);
 
     // Tell OpenGL what attributes to expect; how the data is laid out
@@ -302,15 +302,15 @@ void MainView::initializeCube()
 
 void MainView::initializePyramid()
 {
-    this->_pyramid = Pyramid();
-    glGenBuffers(1, &this->_pyramid.vbo_id);
-    glGenVertexArrays(1, &this->_pyramid.vao_id);
+    this->pyramid = Pyramid();
+    glGenBuffers(1, &this->pyramid.vbo_id);
+    glGenVertexArrays(1, &this->pyramid.vao_id);
 
 
-    std::vector<vertex_3d>::iterator buffer_data_pointer = this->_pyramid.get_triangles()->begin();
+    std::vector<vertex_3d>::iterator buffer_data_pointer = this->pyramid.get_triangles()->begin();
     void * buffer_void_pointer = &* buffer_data_pointer;
-    glBindVertexArray(this->_pyramid.vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_pyramid.vbo_id);
+    glBindVertexArray(this->pyramid.vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, this->pyramid.vbo_id);
     glBufferData(GL_ARRAY_BUFFER,18*sizeof(vertex_3d), buffer_void_pointer, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -326,15 +326,15 @@ void MainView::initializePyramid()
 void MainView::initializeObject() {
 
     float object_scaling_factor = 0.04f;
-    _object = ImportedObject(object_scaling_factor);
+    object = ImportedObject(object_scaling_factor);
 
-    glGenBuffers(1, &this->_object.vbo_id);
-    glGenVertexArrays(1, &this->_object.vao_id);
+    glGenBuffers(1, &this->object.vbo_id);
+    glGenVertexArrays(1, &this->object.vao_id);
 
-    glBindVertexArray(_object.vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_object.vbo_id);
+    glBindVertexArray(object.vao_id);
+    glBindBuffer(GL_ARRAY_BUFFER, this->object.vbo_id);
 
-    glBufferData(GL_ARRAY_BUFFER, _object.vertices.size()*sizeof(vertex_3d), _object.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex_3d), object.vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);

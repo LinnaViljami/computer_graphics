@@ -59,18 +59,18 @@ private slots:
 private:
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
-    Cube _cube;
-    Pyramid _pyramid;
-    ImportedObject _object;
+    Cube cube;
+    Pyramid pyramid;
+    ImportedObject object;
     QOpenGLShaderProgram shaderProgram;
-    QMatrix4x4 _perspective_transformation_matrix;
-    QMatrix4x4 _rotation_matrix;
-    QMatrix4x4 _scaling_matrix;
-    QMatrix4x4 _cube_translation_matrix;
-    QMatrix4x4 _pyramid_translation_matrix;
-    QMatrix4x4 _object_translation_matrix;
-    GLint _transformationUniformLocation;
-    GLint _projectionUniformLocation;
+    QMatrix4x4 perspective_transformation_matrix;
+    QMatrix4x4 rotation_matrix;
+    QMatrix4x4 scaling_matrix;
+    QMatrix4x4 cube_translation_matrix;
+    QMatrix4x4 pyramid_translation_matrix;
+    QMatrix4x4 object_translation_matrix;
+    GLint transformationUniformLocation;
+    GLint projectionUniformLocation;
 
     void createShaderProgram();
 };

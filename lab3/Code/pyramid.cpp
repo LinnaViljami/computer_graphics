@@ -7,8 +7,8 @@ Pyramid::Pyramid()
     vertex_3d point3 = {-1, -1, 1,1,0,1};
     vertex_3d point4 = {1, -1, 1,1,1,0};
     vertex_3d point5 = {0, 1, 0,1,0,0};
-    _verticies = {point1, point2, point3, point4, point5};
-    _triangles = {point3, point1, point2
+    vertices = {point1, point2, point3, point4, point5};
+    triangles = {point3, point1, point2
                  ,point3, point2, point4
                  ,point2, point1, point5
                  ,point5, point1, point3
@@ -19,5 +19,5 @@ Pyramid::Pyramid()
 
 std::vector<vertex_3d> *Pyramid::get_triangles()
 {
-    return &_triangles;
+    return &triangles;
 }

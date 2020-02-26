@@ -13,8 +13,8 @@ public:
     GLuint vao_id;
 
 private:
-    std::vector<vertex_3d> _verticies;
-    std::vector<vertex_3d> _triangles;
+    std::vector<vertex_3d> vertices;
+    std::vector<vertex_3d> triangles;
 
 };
 

@@ -71,6 +71,10 @@ private:
     QMatrix4x4 object_translation_matrix;
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
+    GLint normalTransformationUniformLocation;
+    void paintCube();
+    void paintPyramid();
+    void paintObject();
 
     void createShaderProgram();
 };

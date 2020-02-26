@@ -101,6 +101,7 @@ void MainView::createShaderProgram() {
 void MainView::setUniformLocation() {
     transformationUniformLocation = shaderProgram.uniformLocation("transformation");
     projectionUniformLocation = shaderProgram.uniformLocation("projection");
+    normalTransformationUniformLocation = shaderProgram.uniformLocation("normalTransformation");
     if (transformationUniformLocation == -1 || projectionUniformLocation == -1) {
         // Did not find uniform
         qDebug() << "Failed to find uniform in setUniformLocation()";
@@ -137,13 +138,8 @@ void MainView::paintGL() {
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float values[] = {
-        1, 0, 0,
-        0, 1, 0,
-        0, 0, 1
-    };
-    QMatrix3x3 normalTransformation(values);
-    glUniformMatrix4fv(normalTransformationUniformLocation, 1, GL_FALSE, normalTransformation.data());
+
+    glUniformMatrix3fv(normalTransformationUniformLocation, 1, GL_FALSE, rotationMatrix.normalMatrix().data());
 
     paintObject();
 

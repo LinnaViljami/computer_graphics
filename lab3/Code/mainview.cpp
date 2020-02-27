@@ -20,7 +20,7 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1,
-};
+    };
     scalingMatrix = rotationMatrix;
 }
 
@@ -81,7 +81,7 @@ void MainView::initializeGL() {
     // Set the color to be used by glClear. This is, effectively, the background color.
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
-    createShaderProgram();
+    createShaderProgram(normal);
     setUniformLocation();
 
     initializePerspectiveMatrix();
@@ -89,12 +89,30 @@ void MainView::initializeGL() {
     initializeObject();
 }
 
-void MainView::createShaderProgram() {
-    // Create shader program
-    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                           ":/shaders/vertshader.glsl");
-    shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                           ":/shaders/fragshader.glsl");
+// Adds and links a vertex shader and a fragment shader, based on which ShaderType
+// is passed as parameter.
+void MainView::createShaderProgram(ShaderType shaderType) {
+    switch (shaderType) {
+    case normal:
+        shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
+                                               ":/shaders/vertshader_normal.glsl");
+        shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
+                                               ":/shaders/fragshader_normal.glsl");
+        break;
+    case phong:
+        shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
+                                               ":/shaders/vertshader_phong.glsl");
+        shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
+                                               ":/shaders/fragshader_phong.glsl");
+        break;
+    case gouraud:
+        shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
+                                               ":/shaders/vertshader_gouraud.glsl");
+        shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
+                                               ":/shaders/fragshader_gouraud.glsl");
+        break;
+    }
+
     shaderProgram.link();
 }
 

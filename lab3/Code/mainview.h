@@ -15,6 +15,8 @@
 #include <QVector3D>
 #include <memory>
 
+enum ShaderType {normal, phong, gouraud};
+
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 
@@ -76,7 +78,7 @@ private:
     void paintPyramid();
     void paintObject();
 
-    void createShaderProgram();
+    void createShaderProgram(ShaderType shaderType);
 };
 
 #endif // MAINVIEW_H

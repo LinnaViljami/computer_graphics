@@ -10,7 +10,7 @@
 enum ImportedObjectType {cat, sphere, cube, flat_surface};
 
 struct ImportedObjectProperties {
-    Model model = Model("no model");
+    Model model = Model(":/models/cat.obj");
     float scalingFactor = 1.0f;
 };
 

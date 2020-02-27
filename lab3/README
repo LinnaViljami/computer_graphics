@@ -1,9 +1,1 @@
-We implemented transformations, rotation and scaling and object loading. We did not implement any shortcuts/bonus assignments.
-
-We made three additional classes: cube, pyramid and object, which in we extracted the model of the cube, pyramid and imported object.
-
-We put all the code that used OpenGl-functions, in the mainView class. We were not sure if it would be a good idea also moving all the rendering logic related to specific object from mainView to its subclasses. We tried it but were not sure how to use OpenGl-functions from multiple classes in the right way.
-
-We consider model transformation matrices in the mainView class multiplying rotation, scaling, and translation matrices. After that, we passed the transformation matrix to the vertex shader program. Similarly, we deal with the projection matrix.
-
-There was a lot of confusion with the projection transformation. We were not able to understand how it works in OpenGl. We were mixed with coordinate systems. For example, we expected that since the objects are located in space where z<0 and the camera is located to (0,0,0), we would have to set near and far plane somewhere z<0. In reality, we had to set near and far plane so that z>0. It would be better being more information provided in the assessment about that problem.
+8. The normal mapping colours the object in such a way that the colour of a pixel differs based on the angle between that normal and the camera. For example, at a location where the normal is pointing at the camera, the colour is close to blue, while a place where the normal points to the right, from the camera's perspective, the colour is red.

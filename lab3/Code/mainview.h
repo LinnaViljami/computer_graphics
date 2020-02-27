@@ -15,8 +15,6 @@
 #include <QVector3D>
 #include <memory>
 
-enum ShaderType {normal, phong, gouraud};
-
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 
@@ -51,7 +49,7 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
-    void setUniformLocation();
+    void setUniformLocations();
     void initializePerspectiveMatrix();
     void initializeObject();
     void initializeCube();
@@ -64,21 +62,37 @@ private:
     Cube cube;
     Pyramid pyramid;
     ImportedObject object;
-    QOpenGLShaderProgram shaderProgram;
+
+    // Shader programs
+    QOpenGLShaderProgram normalShaderProgram;
+    QOpenGLShaderProgram phongShaderProgram;
+    QOpenGLShaderProgram gouraudShaderProgram;
+
+    // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
     QMatrix4x4 rotationMatrix;
     QMatrix4x4 scalingMatrix;
     QMatrix4x4 cubeTranslationMatrix;
     QMatrix4x4 pyramidTranslationMatrix;
     QMatrix4x4 objectTranslationMatrix;
-    GLint transformationUniformLocation;
-    GLint projectionUniformLocation;
-    GLint normalTransformationUniformLocation;
+
+    // Uniform locations
+    GLint normalShadingTransformationUniformLocation;
+    GLint normalShadingProjectionUniformLocation;
+    GLint normalShadingNormalTransformationUniformLocation;
+    GLint phongShadingTransformationUniformLocation;
+    GLint phongShadingProjectionUniformLocation;
+    GLint phongShadingNormalTransformationUniformLocation;
+    GLint gouraudShadingTransformationUniformLocation;
+    GLint gouraudShadingProjectionUniformLocation;
+    GLint gouraudShadingNormalTransformationUniformLocation;
+
+    // Painting methods
     void paintCube();
     void paintPyramid();
     void paintObject();
 
-    void createShaderProgram(ShaderType shaderType);
+    void createShaderPrograms(ShadingMode shadingMode);
 };
 
 #endif // MAINVIEW_H

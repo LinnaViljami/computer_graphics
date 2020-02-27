@@ -5,7 +5,7 @@
 
 // Specify the inputs to the fragment shader
 // These must have the same type and name!
-in vec3 vertNormal;
+in vec3 vertColor;
 
 // Specify the Uniforms of the fragment shaders
 // uniform vec3 lightPosition; // for example
@@ -16,8 +16,8 @@ out vec4 fColor;
 
 void main()
 {
-    vec3 normalizedVertNormal = normalize(vertNormal);
+    vec3 normalizedVertColor = normalize(vertColor);
     vec3 colorMapping = vec3(0.5,0.5,0.5);
-    vec3 mappedColors = (colorMapping*normalizedVertNormal + colorMapping) / 2;
+    vec3 mappedColors = (colorMapping*normalizedVertColor + colorMapping) / 2;
     fColor = vec4(mappedColors, 1.0);
 }

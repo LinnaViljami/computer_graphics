@@ -69,7 +69,8 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
 }
 
 vec3 getPhongColor(vec3 orientedNormal) {
-    vec3 lightVector = calculateNormalizedVector(vertCoordinates_in, lightPosition);
+    // glFragCoord is the coordinate of the current pixel.
+    vec3 lightVector = calculateNormalizedVector(gl_FragCoord, lightPosition);
 
     vec3 color = calculateAmbientComponent(materialColor);
     color += calculateDiffuseComponent(orientedNormal, lightVector, materialColor);

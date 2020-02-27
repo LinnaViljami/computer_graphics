@@ -54,6 +54,7 @@ private slots:
     void initializeObject();
     void initializeCube();
     void initializePyramid();
+    void initializeLight();
 
 
 private:
@@ -100,6 +101,7 @@ private:
     GLint getCurrentProjectionUniformLocation();
     GLint getCurrentNormalTransformationUniformLocation();
     GLint getCurrentMaterialUniformLocation();
+    GLint getCurrentLightPositionUniformLocation();
     ShadingMode getCurrentShaderType();
 
     QOpenGLShaderProgram* currentShaderProgram;
@@ -108,6 +110,7 @@ private:
     void paintCube();
     void paintPyramid();
     void paintObject();
+    void paintLight();
 
     void createShaderPrograms(ShadingMode shadingMode);
 };

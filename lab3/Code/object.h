@@ -31,6 +31,7 @@ public:
     std::vector<vertex3d> vertices;
     GLuint vboId;
     GLuint vaoId;
+    ImportedObjectProperties modelProps;
 private:
     ImportedObjectProperties getModelProperties(ImportedObjectType modelType, Material material);
 

@@ -18,6 +18,6 @@ void main()
 {
     vec3 normalizedVertColor = normalize(vertColor);
     vec3 colorMapping = vec3(0.5,0.5,0.5);
-    vec3 mappedColors = (colorMapping*normalizedVertColor + colorMapping) / 2;
+    vec3 mappedColors = colorMapping*normalizedVertColor + colorMapping;
     fColor = vec4(mappedColors, 1.0);
 }

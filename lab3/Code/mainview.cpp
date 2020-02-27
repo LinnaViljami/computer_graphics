@@ -317,6 +317,51 @@ void MainView::initializePyramid()
 
 }
 
+void MainView::initializeObject() {
+
+    object = ImportedObject(cat);
+
+    glGenBuffers(1, &this->object.vboId);
+    glGenVertexArrays(1, &this->object.vaoId);
+
+    glBindVertexArray(object.vaoId);
+    glBindBuffer(GL_ARRAY_BUFFER, this->object.vboId);
+
+    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex3d), object.vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    GLintptr coordinatPtrIndex = 0*sizeof(float);
+    GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
+
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
+}
+
+void MainView::initializeLight()
+{
+
+//    object = ImportedObject(cat);
+
+//    glGenBuffers(1, &this->object.vboId);
+//    glGenVertexArrays(1, &this->object.vaoId);
+
+//    glBindVertexArray(object.vaoId);
+//    glBindBuffer(GL_ARRAY_BUFFER, this->object.vboId);
+
+//    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex3d), object.vertices.data(), GL_STATIC_DRAW);
+
+//    glEnableVertexAttribArray(0);
+//    glEnableVertexAttribArray(1);
+
+//    GLintptr coordinatPtrIndex = 0*sizeof(float);
+//    GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
+
+//    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
+//    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
+}
+
 GLint MainView::getCurrentTransformationUniformLocation()
 {
     GLint location;
@@ -372,14 +417,24 @@ GLint MainView::getCurrentNormalTransformationUniformLocation()
 }
 
 GLint MainView::getCurrentMaterialUniformLocation() {
-    GLint location;
     switch (getCurrentShaderType()) {
     case MainView::PHONG:
-        location = phongShadingMaterialUniformLocation;
+        return phongShadingMaterialUniformLocation;
     case MainView::NORMAL:
-        location = normalShadingMaterialUniformLocation;
+        return normalShadingMaterialUniformLocation;
     case MainView::GOURAUD:
-        location = gouraudShadingMaterialUniformLocation;
+        return gouraudShadingMaterialUniformLocation;
+    }
+}
+
+GLint MainView::getCurrentLightPositionUniformLocation() {
+    switch(getCurrentShaderType()) {
+    case MainView::PHONG:
+        return phongShadingLightPositionUniformLocation;
+    case MainView::NORMAL:
+        return normalShadingLightPositionUniformLocation;
+    case MainView::GOURAUD:
+        return gouraudShadingLightPositionUniformLocation;
     }
 }
 
@@ -395,28 +450,6 @@ MainView::ShadingMode MainView::getCurrentShaderType()
         currentShaderProgram = &gouraudShaderProgram;
         return MainView::ShadingMode::GOURAUD;
     }
-}
-
-void MainView::initializeObject() {
-
-    object = ImportedObject(cat);
-
-    glGenBuffers(1, &this->object.vboId);
-    glGenVertexArrays(1, &this->object.vaoId);
-
-    glBindVertexArray(object.vaoId);
-    glBindBuffer(GL_ARRAY_BUFFER, this->object.vboId);
-
-    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex3d), object.vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    GLintptr coordinatPtrIndex = 0*sizeof(float);
-    GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
-
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
 }
 
 void MainView::paintCube()
@@ -459,7 +492,7 @@ void MainView::paintObject()
 {
     objectTranslationMatrix = {
             1, 0, 0, 0,
-            0, 1, 0, 0,
+            0, 1, 0, -3,
             0, 0, 1, -10,
             0, 0, 0, 1,
     };
@@ -468,6 +501,25 @@ void MainView::paintObject()
     glUniformMatrix4fv(getCurrentTransformationUniformLocation(), 1, GL_FALSE, objectTransformationMatrix.data());
     glUniformMatrix4fv(getCurrentProjectionUniformLocation(), 1, GL_FALSE, perspectiveTransformationMatrix.data());
 
+    QVector<GLfloat> material({
+        object.modelProps.material.ka,
+        object.modelProps.material.kd,
+        object.modelProps.material.ks
+    });
+    glUniform3fv(getCurrentMaterialUniformLocation(), 1, material.data());
+
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
+}
+
+void MainView::paintLight() {
+    QVector<GLfloat> lightPosition({
+        -2.0f,
+        8.0f,
+        -10.0f
+    });
+
+    // TODO rotate the light.
+
+    glUniform3fv(getCurrentLightPositionUniformLocation(), 1, lightPosition.data());
 }

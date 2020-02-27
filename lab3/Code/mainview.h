@@ -76,20 +76,30 @@ private:
     QMatrix4x4 pyramidTranslationMatrix;
     QMatrix4x4 objectTranslationMatrix;
 
-    // Uniform locations
-    GLint normalShadingTransformationUniformLocation;
-    GLint normalShadingProjectionUniformLocation;
-    GLint normalShadingNormalTransformationUniformLocation;
+    // --- Uniform locations ---
+    // Phong shading
     GLint phongShadingTransformationUniformLocation;
     GLint phongShadingProjectionUniformLocation;
     GLint phongShadingNormalTransformationUniformLocation;
+    GLint phongShadingMaterialUniformLocation;
+    GLint phongShadingLightPositionUniformLocation;
+    // Normal shading
+    GLint normalShadingTransformationUniformLocation;
+    GLint normalShadingProjectionUniformLocation;
+    GLint normalShadingNormalTransformationUniformLocation;
+    GLint normalShadingMaterialUniformLocation;
+    GLint normalShadingLightPositionUniformLocation;
+    // Gouraud shading
     GLint gouraudShadingTransformationUniformLocation;
     GLint gouraudShadingProjectionUniformLocation;
     GLint gouraudShadingNormalTransformationUniformLocation;
+    GLint gouraudShadingMaterialUniformLocation;
+    GLint gouraudShadingLightPositionUniformLocation;
 
     GLint getCurrentTransformationUniformLocation();
     GLint getCurrentProjectionUniformLocation();
     GLint getCurrentNormalTransformationUniformLocation();
+    GLint getCurrentMaterialUniformLocation();
     ShadingMode getCurrentShaderType();
 
     QOpenGLShaderProgram* currentShaderProgram;

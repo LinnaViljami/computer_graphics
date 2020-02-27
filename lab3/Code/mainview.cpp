@@ -111,20 +111,26 @@ void MainView::createShaderPrograms(ShadingMode shadingMode) {
 }
 
 void MainView::setUniformLocations() {
-    // Set normal shading uniforms
-    normalShadingTransformationUniformLocation = normalShaderProgram.uniformLocation("transformation");
-    normalShadingProjectionUniformLocation = normalShaderProgram.uniformLocation("projection");
-    normalShadingNormalTransformationUniformLocation = normalShaderProgram.uniformLocation("normalTransformation");
-
     // Set Phong shading uniforms
     phongShadingTransformationUniformLocation = phongShaderProgram.uniformLocation("transformation");
     phongShadingProjectionUniformLocation = phongShaderProgram.uniformLocation("projection");
     phongShadingNormalTransformationUniformLocation = phongShaderProgram.uniformLocation("normalTransformation");
+    phongShadingMaterialUniformLocation = phongShaderProgram.uniformLocation("material");
+    phongShadingLightPositionUniformLocation = phongShaderProgram.uniformLocation("lightPosition");
+
+    // Set normal shading uniforms
+    normalShadingTransformationUniformLocation = normalShaderProgram.uniformLocation("transformation");
+    normalShadingProjectionUniformLocation = normalShaderProgram.uniformLocation("projection");
+    normalShadingNormalTransformationUniformLocation = normalShaderProgram.uniformLocation("normalTransformation");
+    normalShadingMaterialUniformLocation = normalShaderProgram.uniformLocation("material");
+    normalShadingLightPositionUniformLocation = normalShaderProgram.uniformLocation("lightPosition");
 
     // Set Gouraud shading uniforms
     gouraudShadingTransformationUniformLocation = gouraudShaderProgram.uniformLocation("transformation");
     gouraudShadingProjectionUniformLocation = gouraudShaderProgram.uniformLocation("projection");
     gouraudShadingNormalTransformationUniformLocation = gouraudShaderProgram.uniformLocation("normalTransformation");
+    gouraudShadingMaterialUniformLocation = gouraudShaderProgram.uniformLocation("material");
+    gouraudShadingLightPositionUniformLocation = gouraudShaderProgram.uniformLocation("lightPosition");
 }
 
 void MainView::initializePerspectiveMatrix() {
@@ -345,7 +351,6 @@ GLint MainView::getCurrentProjectionUniformLocation()
 
     }
     return location;
-
 }
 
 GLint MainView::getCurrentNormalTransformationUniformLocation()
@@ -364,7 +369,18 @@ GLint MainView::getCurrentNormalTransformationUniformLocation()
 
     }
     return location;
+}
 
+GLint MainView::getCurrentMaterialUniformLocation() {
+    GLint location;
+    switch (getCurrentShaderType()) {
+    case MainView::PHONG:
+        location = phongShadingMaterialUniformLocation;
+    case MainView::NORMAL:
+        location = normalShadingMaterialUniformLocation;
+    case MainView::GOURAUD:
+        location = gouraudShadingMaterialUniformLocation;
+    }
 }
 
 MainView::ShadingMode MainView::getCurrentShaderType()
@@ -379,7 +395,6 @@ MainView::ShadingMode MainView::getCurrentShaderType()
         currentShaderProgram = &gouraudShaderProgram;
         return MainView::ShadingMode::GOURAUD;
     }
-
 }
 
 void MainView::initializeObject() {

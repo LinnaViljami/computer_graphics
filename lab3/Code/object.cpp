@@ -5,7 +5,7 @@ ImportedObject::ImportedObject() : vertices({})
 
 }
 
-ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType modelType)
+ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType modelType, Material material)
 {
     ImportedObjectProperties properties;
     switch (modelType) {
@@ -22,13 +22,14 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
     case flat_surface:
         break;
     }
+    properties.material = material;
     return properties;
 }
 
 
-ImportedObject::ImportedObject(ImportedObjectType objectType)
+ImportedObject::ImportedObject(ImportedObjectType objectType, Material material)
 {
-    ImportedObjectProperties modelProps = getModelProperties(objectType);
+    ImportedObjectProperties modelProps = getModelProperties(objectType, material);
     QVector<QVector3D> vertexLocations = modelProps.model.getVertices();
     QVector<QVector3D> vertexNormals = modelProps.model.getNormals();
 

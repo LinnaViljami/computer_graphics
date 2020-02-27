@@ -87,6 +87,12 @@ private:
     GLint gouraudShadingProjectionUniformLocation;
     GLint gouraudShadingNormalTransformationUniformLocation;
 
+    // Current shading variables
+    GLint currentTransformationUniformLocation;
+    GLint currentProjectionUniformLocation;
+    GLint currentNormalTransformationUniformLocation;
+    QOpenGLShaderProgram currentShaderProgram;
+
     // Painting methods
     void paintCube();
     void paintPyramid();

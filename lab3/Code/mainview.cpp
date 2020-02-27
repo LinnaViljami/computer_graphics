@@ -105,6 +105,9 @@ void MainView::createShaderPrograms(ShadingMode shadingMode) {
                                            ":/shaders/vertshader_gouraud.glsl");
     gouraudShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
                                            ":/shaders/fragshader_gouraud.glsl");
+    phongShaderProgram.link();
+    normalShaderProgram.link();
+    gouraudShaderProgram.link();
 }
 
 void MainView::setUniformLocations() {
@@ -149,7 +152,7 @@ void MainView::initializePerspectiveMatrix() {
  *
  */
 void MainView::paintGL() {
-    normalShaderProgram.bind();
+    currentShaderProgram.bind();
 
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -159,7 +162,7 @@ void MainView::paintGL() {
 
     paintObject();
 
-    normalShaderProgram.release();
+    currentShaderProgram.release();
 }
 
 /**
@@ -226,13 +229,22 @@ void MainView::setShadingMode(ShadingMode shading) {
     qDebug() << "Changed shading to" << shading;
     switch (shading) {
     case PHONG:
-        phongShaderProgram.link();
+        currentShaderProgram = phongShaderProgram;
+        currentTransformationUniformLocation = phongShadingTransformationUniformLocation;
+        currentProjectionUniformLocation = phongShadingProjectionUniformLocation;
+        currentNormalTransformationUniformLocation = phongShadingNormalTransformationUniformLocation;
         break;
     case NORMAL:
-        normalShaderProgram.link();
+        currentShaderProgram = normalShaderProgram;
+        currentTransformationUniformLocation = normalShadingTransformationUniformLocation;
+        currentProjectionUniformLocation = normalShadingProjectionUniformLocation;
+        currentNormalTransformationUniformLocation = normalShadingNormalTransformationUniformLocation;
         break;
     case GOURAUD:
-        gouraudShaderProgram.link();
+        currentShaderProgram = gouraudShaderProgram;
+        currentTransformationUniformLocation = gouraudShadingTransformationUniformLocation;
+        currentProjectionUniformLocation = gouraudShadingProjectionUniformLocation;
+        currentNormalTransformationUniformLocation = gouraudShadingNormalTransformationUniformLocation;
         break;
     }
 }
@@ -376,8 +388,8 @@ void MainView::paintObject()
     };
 
     QMatrix4x4 objectTransformationMatrix = objectTranslationMatrix * rotationMatrix * scalingMatrix;
-    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
-    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
+    glUniformMatrix4fv(currentTransformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
+    glUniformMatrix4fv(currentProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
 
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());

@@ -90,22 +90,3 @@ void main()
 
     vertColor = getPhongColor(orientedNormal);
 }
-
-
-// Example code from Lab2
-//
-//Color Scene::getPhongIlluminationColor(Vector N, Point hit, Material material)
-//{
-//    double Ia = 1;
-//    Color color = Ia * material.ka * material.color;
-//    for (auto light_ptr : lights){
-//        color += calculateDiffuseComponent(N, hit, *light_ptr) * material.kd * light_ptr->color * material.color;
-//        color += calculateSpecularComponent(N, hit, material.n, *light_ptr) * material.ks * light_ptr->color;
-//    }
-
-//    //    Color color = (N + 1) / 2;   // Use this color instead of the Phong color to visualize normal vectors
-
-//    return color;
-
-//}
-

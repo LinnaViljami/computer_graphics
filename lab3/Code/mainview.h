@@ -78,21 +78,6 @@ private:
     QMatrix4x4 pyramidTranslationMatrix;
     QMatrix4x4 objectTranslationMatrix;
 
-    // --- Uniform locations ---
-    // Normal shading
-//    GLint normalShadingTransformationUniformLocation;
-//    GLint normalShadingProjectionUniformLocation;
-//    GLint normalShadingNormalTransformationUniformLocation;
-//    GLint normalShadingMaterialUniformLocation;
-//    GLint normalShadingLightPositionUniformLocation;
-//    // Gouraud shading
-//    GLint gouraudShadingTransformationUniformLocation;
-//    GLint gouraudShadingProjectionUniformLocation;
-//    GLint gouraudShadingNormalTransformationUniformLocation;
-//    GLint gouraudShadingMaterialUniformLocation;
-//    GLint gouraudShadingLightPositionUniformLocation;
-
-
     // Painting methods
     void paintCube();
     void paintPyramid();

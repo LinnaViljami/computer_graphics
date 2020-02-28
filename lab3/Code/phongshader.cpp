@@ -1,28 +1,35 @@
 #include "phongshader.h"
 
-PhongShader::PhongShader() : glfunc(nullptr)
+PhongShader::PhongShader()
 {
 
 }
 
 
 
-void PhongShader::init(QOpenGLFunctions_3_3_Core *glFuncPointer)
+//void PhongShader::init(QOpenGLFunctions_3_3_Core *glFuncPointer)
+//{
+//    glfunc = glFuncPointer;
+//    createShaderPrograms();
+//    setUniformLocations();
+//}
+
+//void PhongShader::bind()
+//{
+//    shaderProgram.bind();
+//}
+
+//void PhongShader::release()
+//{
+//    shaderProgram.release();
+//}
+
+ShadingMode PhongShader::type()
 {
-    glfunc = glFuncPointer;
-    createShaderPrograms();
-    setUniformLocations();
+    return ShadingMode::PHONG;
 }
 
-void PhongShader::bind()
-{
-    shaderProgram.bind();
-}
 
-void PhongShader::release()
-{
-    shaderProgram.release();
-}
 
 void PhongShader::createShaderPrograms()
 {

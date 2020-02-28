@@ -115,7 +115,7 @@ void MainView::setUniformLocations() {
 //    normalShadingMaterialUniformLocation = normalShaderProgram.uniformLocation("material");
 //    normalShadingLightPositionUniformLocation = normalShaderProgram.uniformLocation("lightPosition");
 
-//    // Set Gouraud shading uniforms
+////    // Set Gouraud shading uniforms
 //    gouraudShadingTransformationUniformLocation = gouraudShaderProgram.uniformLocation("transformation");
 //    gouraudShadingProjectionUniformLocation = gouraudShaderProgram.uniformLocation("projection");
 //    gouraudShadingNormalTransformationUniformLocation = gouraudShaderProgram.uniformLocation("normalTransformation");

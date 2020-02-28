@@ -1,22 +1,19 @@
-#ifndef PHONGSHADER_H
-#define PHONGSHADER_H
+#ifndef GOURAUDSHADER_H
+#define GOURAUDSHADER_H
 
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
 #include <shader.h>
-class PhongShader : public Shader
+
+class GouraudShader : Shader
 {
 public:
-    PhongShader();
+    GouraudShader();
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
     GLint materialUniformLocation;
     GLint lightPositionUniformLocation;
-    ShadingMode type() override;
-private:
-    void createShaderPrograms() override;
-    void setUniformLocations() override;
 };
 
-#endif // PHONGSHADER_H
+#endif // GOURAUDSHADER_H

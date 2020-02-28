@@ -85,6 +85,81 @@ void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
 }
 
 
+
+
+
+
+void MainView::initializeObject() {
+
+    object = ImportedObject(cat);
+
+    glGenBuffers(1, &this->object.vboId);
+    glGenVertexArrays(1, &this->object.vaoId);
+
+    glBindVertexArray(object.vaoId);
+    glBindBuffer(GL_ARRAY_BUFFER, this->object.vboId);
+
+    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex3d), object.vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    GLintptr coordinatPtrIndex = 0*sizeof(float);
+    GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
+
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
+}
+
+
+void MainView::setDataToUniform()
+{
+    switch (currentShader->type()) {
+    case Shader::PHONG:
+        phongShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix(),
+                                   object.getMaterialVector(),getLightPosition());
+        break;
+    case Shader::NORMAL:
+        normalShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix());
+        break;
+    case Shader::GOURAUD:
+        gouraudShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix(),
+                                   object.getMaterialVector(),getLightPosition());
+        break;
+    }
+}
+
+QVector3D MainView::getLightPosition()
+{
+    return {
+        -2.0f,
+        8.0f,
+        -10.0f
+    };
+
+}
+
+
+void MainView::paintObject()
+{
+
+    object.translationMatrix = {
+            1, 0, 0, 0,
+            0, 1, 0, -3,
+            0, 0, 1, -10,
+            0, 0, 0, 1,
+    };
+    setDataToUniform();
+    glBindVertexArray(object.vaoId);
+    glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
+}
+
 void MainView::initializePerspectiveMatrix() {
     //projection transformation
     float n = 0.2f;
@@ -209,77 +284,4 @@ void MainView::setShadingMode(Shader::ShadingMode shading) {
  */
 void MainView::onMessageLogged( QOpenGLDebugMessage Message ) {
     qDebug() << " → Log:" << Message;
-}
-
-
-
-void MainView::initializeObject() {
-
-    object = ImportedObject(cat);
-
-    glGenBuffers(1, &this->object.vboId);
-    glGenVertexArrays(1, &this->object.vaoId);
-
-    glBindVertexArray(object.vaoId);
-    glBindBuffer(GL_ARRAY_BUFFER, this->object.vboId);
-
-    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex3d), object.vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    GLintptr coordinatPtrIndex = 0*sizeof(float);
-    GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
-
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
-}
-
-
-void MainView::setDataToUniform()
-{
-    switch (currentShader->type()) {
-    case Shader::PHONG:
-        phongShader.setUniformData(object.getModelTransformationMatrix(),
-                                   perspectiveTransformationMatrix,
-                                   object.rotationMatrix.normalMatrix(),
-                                   object.getMaterialVector(),getLightPosition());
-        break;
-    case Shader::NORMAL:
-        normalShader.setUniformData(object.getModelTransformationMatrix(),
-                                   perspectiveTransformationMatrix,
-                                   object.rotationMatrix.normalMatrix());
-        break;
-    case Shader::GOURAUD:
-        gouraudShader.setUniformData(object.getModelTransformationMatrix(),
-                                   perspectiveTransformationMatrix,
-                                   object.rotationMatrix.normalMatrix(),
-                                   object.getMaterialVector(),getLightPosition());
-        break;
-    }
-}
-
-QVector3D MainView::getLightPosition()
-{
-    return {
-        -2.0f,
-        8.0f,
-        -10.0f
-    };
-
-}
-
-
-void MainView::paintObject()
-{
-
-    object.translationMatrix = {
-            1, 0, 0, 0,
-            0, 1, 0, -3,
-            0, 0, 1, -10,
-            0, 0, 0, 1,
-    };
-    setDataToUniform();
-    glBindVertexArray(object.vaoId);
-    glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
 }

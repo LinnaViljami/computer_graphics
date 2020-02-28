@@ -93,34 +93,13 @@ void MainView::initializeGL() {
 // is passed as parameter.
 void MainView::createShaderPrograms(ShadingMode shadingMode) {
     phongShader.init((QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions());
-    normalShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                           ":/shaders/vertshader_normal.glsl");
-    normalShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                           ":/shaders/fragshader_normal.glsl");
-    gouraudShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                           ":/shaders/vertshader_gouraud.glsl");
-    gouraudShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                           ":/shaders/fragshader_gouraud.glsl");
-    normalShaderProgram.link();
-    gouraudShaderProgram.link();
+
+
 }
 
 void MainView::setUniformLocations() {
 
 
-//    // Set normal shading uniforms
-//    normalShadingTransformationUniformLocation = normalShaderProgram.uniformLocation("transformation");
-//    normalShadingProjectionUniformLocation = normalShaderProgram.uniformLocation("projection");
-//    normalShadingNormalTransformationUniformLocation = normalShaderProgram.uniformLocation("normalTransformation");
-//    normalShadingMaterialUniformLocation = normalShaderProgram.uniformLocation("material");
-//    normalShadingLightPositionUniformLocation = normalShaderProgram.uniformLocation("lightPosition");
-
-////    // Set Gouraud shading uniforms
-//    gouraudShadingTransformationUniformLocation = gouraudShaderProgram.uniformLocation("transformation");
-//    gouraudShadingProjectionUniformLocation = gouraudShaderProgram.uniformLocation("projection");
-//    gouraudShadingNormalTransformationUniformLocation = gouraudShaderProgram.uniformLocation("normalTransformation");
-//    gouraudShadingMaterialUniformLocation = gouraudShaderProgram.uniformLocation("material");
-//    gouraudShadingLightPositionUniformLocation = gouraudShaderProgram.uniformLocation("lightPosition");
 }
 
 void MainView::initializePerspectiveMatrix() {

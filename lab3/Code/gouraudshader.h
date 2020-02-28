@@ -14,6 +14,14 @@ public:
     GLint normalTransformationUniformLocation;
     GLint materialUniformLocation;
     GLint lightPositionUniformLocation;
+
+    // Shader interface
+public:
+    ShadingMode type();
+
+private:
+    void createShaderPrograms();
+    void setUniformLocations();
 };
 
 #endif // GOURAUDSHADER_H

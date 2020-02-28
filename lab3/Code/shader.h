@@ -20,6 +20,7 @@ public:
     void release();
 protected:
     QOpenGLFunctions_3_3_Core* glfunc;
+    QOpenGLFunctions_3_3_Core* getGlfuncPtr();
     QOpenGLShaderProgram shaderProgram;
 private:
     virtual void createShaderPrograms() = 0;

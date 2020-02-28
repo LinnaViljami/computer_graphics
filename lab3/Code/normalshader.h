@@ -5,7 +5,7 @@
 #include <QOpenGLShaderProgram>
 #include <shader.h>
 
-class NormalShader : Shader
+class NormalShader : public Shader
 {
 public:
     NormalShader();
@@ -22,6 +22,8 @@ public:
 private:
     void createShaderPrograms();
     void setUniformLocations();
+
+    // Shader interface
 };
 
 #endif // NORMALSHADER_H

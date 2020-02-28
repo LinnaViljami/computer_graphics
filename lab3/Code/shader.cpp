@@ -22,6 +22,11 @@ void Shader::release()
     shaderProgram.release();
 }
 
+QOpenGLFunctions_3_3_Core *Shader::getGlfuncPtr()
+{
+    return glfunc;
+}
+
 Shader::~Shader()
 {
 

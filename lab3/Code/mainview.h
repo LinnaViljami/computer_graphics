@@ -15,6 +15,8 @@
 #include <QVector3D>
 #include <memory>
 #include <phongshader.h>
+#include <normalshader.h>
+#include <gouraudshader.h>
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
@@ -50,7 +52,6 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
-    void setUniformLocations();
     void initializePerspectiveMatrix();
     void initializeObject();
     void initializeCube();
@@ -66,9 +67,11 @@ private:
     ImportedObject object;
 
     // Shader programs
-    QOpenGLShaderProgram normalShaderProgram;
-    QOpenGLShaderProgram gouraudShaderProgram;
+    Shader* currentShader;
+    NormalShader normalShader;
+    GouraudShader gouraudShader;
     PhongShader phongShader;
+    void setDataToUniform();
 
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;

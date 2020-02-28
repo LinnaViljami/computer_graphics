@@ -5,7 +5,7 @@
 #include <QOpenGLShaderProgram>
 #include <shader.h>
 
-class GouraudShader : Shader
+class GouraudShader : public Shader
 {
 public:
     GouraudShader();
@@ -22,6 +22,8 @@ public:
 private:
     void createShaderPrograms();
     void setUniformLocations();
+
+    // Shader interface
 };
 
 #endif // GOURAUDSHADER_H

@@ -81,7 +81,6 @@ void MainView::initializeGL() {
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
     createShaderPrograms(PHONG);
-    setUniformLocations();
 
     initializePerspectiveMatrix();
 
@@ -92,15 +91,23 @@ void MainView::initializeGL() {
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
 // is passed as parameter.
 void MainView::createShaderPrograms(ShadingMode shadingMode) {
-    phongShader.init((QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions());
-
-
+    QOpenGLFunctions_3_3_Core * glFuncPointer = (QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions();
+    phongShader.init(glFuncPointer);
+    normalShader.init(glFuncPointer);
+    gouraudShader.init(glFuncPointer);
+    switch (shadingMode) {
+    case MainView::PHONG:
+        currentShader = &phongShader;
+        break;
+    case MainView::NORMAL:
+        currentShader = &normalShader;
+        break;
+    case MainView::GOURAUD:
+        currentShader = &gouraudShader;
+        break;
+    }
 }
 
-void MainView::setUniformLocations() {
-
-
-}
 
 void MainView::initializePerspectiveMatrix() {
     //projection transformation
@@ -127,17 +134,16 @@ void MainView::initializePerspectiveMatrix() {
  *
  */
 void MainView::paintGL() {
-    phongShader.bind();
+    currentShader->bind();
 
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    glUniformMatrix3fv(phongShader.normalTransformationUniformLocation, 1, GL_FALSE, rotationMatrix.normalMatrix().data());
 
     paintObject();
 
-    phongShader.release();
+    currentShader->release();
 }
 
 /**
@@ -321,6 +327,19 @@ void MainView::initializeLight()
     glUniform3fv(phongShader.lightPositionUniformLocation, lightPosition.size(), lightPosition.data());
 }
 
+void MainView::setDataToUniform()
+{
+    switch (currentShader->type()) {
+    case PHONG:
+
+        break;
+    case NORMAL:
+        break;
+    case GOURAUD:
+        break;
+    }
+}
+
 
 
 void MainView::paintCube()
@@ -361,6 +380,8 @@ void MainView::paintPyramid()
 
 void MainView::paintObject()
 {
+
+    //glUniformMatrix3fv(phongShader.normalTransformationUniformLocation, 1, GL_FALSE, rotationMatrix.normalMatrix().data());
     objectTranslationMatrix = {
             1, 0, 0, 0,
             0, 1, 0, -3,
@@ -369,16 +390,25 @@ void MainView::paintObject()
     };
 
     QMatrix4x4 objectTransformationMatrix = objectTranslationMatrix * rotationMatrix * scalingMatrix;
-    glUniformMatrix4fv(phongShader.transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
-    glUniformMatrix4fv(phongShader.projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
-    initializeLight();
-    QVector<GLfloat> material({
+    //glUniformMatrix4fv(phongShader.transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
+    //glUniformMatrix4fv(phongShader.projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
+//    initializeLight();
+    QVector3D lightPosition({
+        -2.0f,
+        8.0f,
+        -10.0f
+    });
+
+    // TODO rotate the light.
+
+    //glUniform3fv(phongShader.lightPositionUniformLocation, lightPosition.size(), lightPosition.data());
+    QVector3D material({
         object.modelProps.material.ka,
         object.modelProps.material.kd,
         object.modelProps.material.ks
     });
-    glUniform3fv(phongShader.materialUniformLocation, 1, material.data());
-
+    //glUniform3fv(phongShader.materialUniformLocation, 1, material.data());
+    phongShader.setUniformData(rotationMatrix.normalMatrix(), objectTransformationMatrix,material,perspectiveTransformationMatrix,lightPosition);
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
 }

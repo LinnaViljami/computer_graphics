@@ -88,6 +88,7 @@ void MainView::initializeGL() {
     initializePerspectiveMatrix();
 
     initializeObject();
+    initializeLight();
 }
 
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
@@ -164,7 +165,7 @@ void MainView::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    glUniformMatrix3fv(normalShadingNormalTransformationUniformLocation, 1, GL_FALSE, rotationMatrix.normalMatrix().data());
+    glUniformMatrix3fv(getCurrentNormalTransformationUniformLocation(), 1, GL_FALSE, rotationMatrix.normalMatrix().data());
 
     paintObject();
 
@@ -341,25 +342,15 @@ void MainView::initializeObject() {
 
 void MainView::initializeLight()
 {
+    QVector<GLfloat> lightPosition({
+        -2.0f,
+        8.0f,
+        -10.0f
+    });
 
-//    object = ImportedObject(cat);
+    // TODO rotate the light.
 
-//    glGenBuffers(1, &this->object.vboId);
-//    glGenVertexArrays(1, &this->object.vaoId);
-
-//    glBindVertexArray(object.vaoId);
-//    glBindBuffer(GL_ARRAY_BUFFER, this->object.vboId);
-
-//    glBufferData(GL_ARRAY_BUFFER, object.vertices.size()*sizeof(vertex3d), object.vertices.data(), GL_STATIC_DRAW);
-
-//    glEnableVertexAttribArray(0);
-//    glEnableVertexAttribArray(1);
-
-//    GLintptr coordinatPtrIndex = 0*sizeof(float);
-//    GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
-
-//    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
-//    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
+    glUniform3fv(getCurrentLightPositionUniformLocation(), lightPosition.size(), lightPosition.data());
 }
 
 GLint MainView::getCurrentTransformationUniformLocation()
@@ -510,16 +501,4 @@ void MainView::paintObject()
 
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
-}
-
-void MainView::paintLight() {
-    QVector<GLfloat> lightPosition({
-        -2.0f,
-        8.0f,
-        -10.0f
-    });
-
-    // TODO rotate the light.
-
-    glUniform3fv(getCurrentLightPositionUniformLocation(), 1, lightPosition.data());
 }

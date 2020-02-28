@@ -52,8 +52,9 @@ vec3 calculateDiffuseComponent(vec3 orientedNormal, vec3 lightVector, vec3 mater
     }
     
     vec3 diffuseColor = diffuseComponent * kd * lightColor * materialColor;
-
-    return diffuseColor;
+//    return diffuseColor;
+    vec3 temporaryEmptyResult = vec3(0.0f, 0.0f, 0.0f);
+    return temporaryEmptyResult;
 }
 
 vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
@@ -69,15 +70,17 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
     double specularComponent = pow(specularComponent, n);
     vec3 specularColor = specularComponent * ks * lightColor;
 
-    return specularColor;
+//    return specularColor;
+    vec3 temporaryEmptyResult = vec3(0.0f, 0.0f, 0.0f);
+    return temporaryEmptyResult;
 }
 
 vec3 getPhongColor(vec3 orientedNormal) {
     vec3 lightVector = calculateNormalizedVector(vertCoordinates_in, lightPosition);
 
     vec3 color = calculateAmbientComponent(materialColor);
-    color += calculateDiffuseComponent(orientedNormal, lightVector, materialColor);
-    color += calculateSpecularComponent(orientedNormal, lightVector);
+//    color += calculateDiffuseComponent(orientedNormal, lightVector, materialColor);
+//    color += calculateSpecularComponent(orientedNormal, lightVector);
     return color;
 }
 

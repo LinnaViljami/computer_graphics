@@ -110,7 +110,6 @@ private:
     void paintCube();
     void paintPyramid();
     void paintObject();
-    void paintLight();
 
     void createShaderPrograms(ShadingMode shadingMode);
 };

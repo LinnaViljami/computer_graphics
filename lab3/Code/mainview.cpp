@@ -11,10 +11,10 @@
  *
  * @param parent
  */
-MainView::MainView(QWidget *parent) : QOpenGLWidget(parent) {
-    qDebug() << "MainView constructor";
-
+MainView::MainView(QWidget *parent) : QOpenGLWidget(parent), phongShader(){
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
+    //(QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions()
+
     rotationMatrix = {
         1 , 0, 0, 0,
         0, 1, 0, 0,
@@ -63,7 +63,6 @@ void MainView::initializeGL() {
         debugLogger.startLogging(QOpenGLDebugLogger::SynchronousLogging);
     }
 
-    //QOpenGLFunctions_3_3_Core* pointer_to_functions = (QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions();
 
     QString glVersion;
     glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
@@ -94,10 +93,7 @@ void MainView::initializeGL() {
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
 // is passed as parameter.
 void MainView::createShaderPrograms(ShadingMode shadingMode) {
-    phongShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                           ":/shaders/vertshader_phong.glsl");
-    phongShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                           ":/shaders/fragshader_phong.glsl");
+    phongShader.init((QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions());
     normalShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
                                            ":/shaders/vertshader_normal.glsl");
     normalShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
@@ -106,18 +102,12 @@ void MainView::createShaderPrograms(ShadingMode shadingMode) {
                                            ":/shaders/vertshader_gouraud.glsl");
     gouraudShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
                                            ":/shaders/fragshader_gouraud.glsl");
-    phongShaderProgram.link();
     normalShaderProgram.link();
     gouraudShaderProgram.link();
 }
 
 void MainView::setUniformLocations() {
-    // Set Phong shading uniforms
-    phongShadingTransformationUniformLocation = phongShaderProgram.uniformLocation("transformation");
-    phongShadingProjectionUniformLocation = phongShaderProgram.uniformLocation("projection");
-    phongShadingNormalTransformationUniformLocation = phongShaderProgram.uniformLocation("normalTransformation");
-    phongShadingMaterialUniformLocation = phongShaderProgram.uniformLocation("material");
-    phongShadingLightPositionUniformLocation = phongShaderProgram.uniformLocation("lightPosition");
+
 
     // Set normal shading uniforms
     normalShadingTransformationUniformLocation = normalShaderProgram.uniformLocation("transformation");

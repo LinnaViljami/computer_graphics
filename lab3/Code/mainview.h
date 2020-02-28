@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QVector3D>
 #include <memory>
+#include <phongshader.h>
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
@@ -68,6 +69,7 @@ private:
     QOpenGLShaderProgram normalShaderProgram;
     QOpenGLShaderProgram phongShaderProgram;
     QOpenGLShaderProgram gouraudShaderProgram;
+    PhongShader phongShader;
 
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;

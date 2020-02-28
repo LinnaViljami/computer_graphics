@@ -12,6 +12,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     mainview.cpp \
+    normalshader.cpp \
+    phongshader.cpp \
     pyramid.cpp \
     user_input.cpp \
     model.cpp \
@@ -22,6 +24,8 @@ HEADERS += \
     mainwindow.h \
     mainview.h \
     model.h \
+    normalshader.h \
+    phongshader.h \
     pyramid.h \
     object.h \
     vertex3d.h

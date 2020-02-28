@@ -8,13 +8,14 @@ class PhongShader
 {
 public:
     PhongShader();
-    PhongShader(QOpenGLFunctions_3_3_Core* glFuncPointer);
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
     GLint materialUniformLocation;
     GLint lightPositionUniformLocation;
     void init(QOpenGLFunctions_3_3_Core* glFuncPointer);
+    void bind();
+    void release();
 private:
     QOpenGLFunctions_3_3_Core* glfunc;
     QOpenGLShaderProgram shaderProgram;

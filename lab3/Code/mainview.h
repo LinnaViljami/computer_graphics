@@ -67,7 +67,6 @@ private:
 
     // Shader programs
     QOpenGLShaderProgram normalShaderProgram;
-    QOpenGLShaderProgram phongShaderProgram;
     QOpenGLShaderProgram gouraudShaderProgram;
     PhongShader phongShader;
 
@@ -80,33 +79,19 @@ private:
     QMatrix4x4 objectTranslationMatrix;
 
     // --- Uniform locations ---
-    // Phong shading
-    GLint phongShadingTransformationUniformLocation;
-    GLint phongShadingProjectionUniformLocation;
-    GLint phongShadingNormalTransformationUniformLocation;
-    GLint phongShadingMaterialUniformLocation;
-    GLint phongShadingLightPositionUniformLocation;
     // Normal shading
-    GLint normalShadingTransformationUniformLocation;
-    GLint normalShadingProjectionUniformLocation;
-    GLint normalShadingNormalTransformationUniformLocation;
-    GLint normalShadingMaterialUniformLocation;
-    GLint normalShadingLightPositionUniformLocation;
-    // Gouraud shading
-    GLint gouraudShadingTransformationUniformLocation;
-    GLint gouraudShadingProjectionUniformLocation;
-    GLint gouraudShadingNormalTransformationUniformLocation;
-    GLint gouraudShadingMaterialUniformLocation;
-    GLint gouraudShadingLightPositionUniformLocation;
+//    GLint normalShadingTransformationUniformLocation;
+//    GLint normalShadingProjectionUniformLocation;
+//    GLint normalShadingNormalTransformationUniformLocation;
+//    GLint normalShadingMaterialUniformLocation;
+//    GLint normalShadingLightPositionUniformLocation;
+//    // Gouraud shading
+//    GLint gouraudShadingTransformationUniformLocation;
+//    GLint gouraudShadingProjectionUniformLocation;
+//    GLint gouraudShadingNormalTransformationUniformLocation;
+//    GLint gouraudShadingMaterialUniformLocation;
+//    GLint gouraudShadingLightPositionUniformLocation;
 
-    GLint getCurrentTransformationUniformLocation();
-    GLint getCurrentProjectionUniformLocation();
-    GLint getCurrentNormalTransformationUniformLocation();
-    GLint getCurrentMaterialUniformLocation();
-    GLint getCurrentLightPositionUniformLocation();
-    ShadingMode getCurrentShaderType();
-
-    QOpenGLShaderProgram* currentShaderProgram;
 
     // Painting methods
     void paintCube();

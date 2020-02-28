@@ -81,7 +81,6 @@ void MainView::initializeGL() {
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
     createShaderPrograms(PHONG);
-    currentShaderProgram = &phongShaderProgram;
     setUniformLocations();
 
     initializePerspectiveMatrix();
@@ -109,19 +108,19 @@ void MainView::createShaderPrograms(ShadingMode shadingMode) {
 void MainView::setUniformLocations() {
 
 
-    // Set normal shading uniforms
-    normalShadingTransformationUniformLocation = normalShaderProgram.uniformLocation("transformation");
-    normalShadingProjectionUniformLocation = normalShaderProgram.uniformLocation("projection");
-    normalShadingNormalTransformationUniformLocation = normalShaderProgram.uniformLocation("normalTransformation");
-    normalShadingMaterialUniformLocation = normalShaderProgram.uniformLocation("material");
-    normalShadingLightPositionUniformLocation = normalShaderProgram.uniformLocation("lightPosition");
+//    // Set normal shading uniforms
+//    normalShadingTransformationUniformLocation = normalShaderProgram.uniformLocation("transformation");
+//    normalShadingProjectionUniformLocation = normalShaderProgram.uniformLocation("projection");
+//    normalShadingNormalTransformationUniformLocation = normalShaderProgram.uniformLocation("normalTransformation");
+//    normalShadingMaterialUniformLocation = normalShaderProgram.uniformLocation("material");
+//    normalShadingLightPositionUniformLocation = normalShaderProgram.uniformLocation("lightPosition");
 
-    // Set Gouraud shading uniforms
-    gouraudShadingTransformationUniformLocation = gouraudShaderProgram.uniformLocation("transformation");
-    gouraudShadingProjectionUniformLocation = gouraudShaderProgram.uniformLocation("projection");
-    gouraudShadingNormalTransformationUniformLocation = gouraudShaderProgram.uniformLocation("normalTransformation");
-    gouraudShadingMaterialUniformLocation = gouraudShaderProgram.uniformLocation("material");
-    gouraudShadingLightPositionUniformLocation = gouraudShaderProgram.uniformLocation("lightPosition");
+//    // Set Gouraud shading uniforms
+//    gouraudShadingTransformationUniformLocation = gouraudShaderProgram.uniformLocation("transformation");
+//    gouraudShadingProjectionUniformLocation = gouraudShaderProgram.uniformLocation("projection");
+//    gouraudShadingNormalTransformationUniformLocation = gouraudShaderProgram.uniformLocation("normalTransformation");
+//    gouraudShadingMaterialUniformLocation = gouraudShaderProgram.uniformLocation("material");
+//    gouraudShadingLightPositionUniformLocation = gouraudShaderProgram.uniformLocation("lightPosition");
 }
 
 void MainView::initializePerspectiveMatrix() {
@@ -149,17 +148,17 @@ void MainView::initializePerspectiveMatrix() {
  *
  */
 void MainView::paintGL() {
-    currentShaderProgram->bind();
+    phongShader.bind();
 
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    glUniformMatrix3fv(getCurrentNormalTransformationUniformLocation(), 1, GL_FALSE, rotationMatrix.normalMatrix().data());
+    glUniformMatrix3fv(phongShader.normalTransformationUniformLocation, 1, GL_FALSE, rotationMatrix.normalMatrix().data());
 
     paintObject();
 
-    currentShaderProgram->release();
+    phongShader.release();
 }
 
 /**
@@ -223,18 +222,18 @@ void MainView::setScale(int scale) {
 }
 
 void MainView::setShadingMode(ShadingMode shading) {
-    qDebug() << "Changed shading to" << shading;
-    switch (shading) {
-    case PHONG:
-        currentShaderProgram = &phongShaderProgram;
-        break;
-    case NORMAL:
-        currentShaderProgram = &normalShaderProgram;
-        break;
-    case GOURAUD:
-        currentShaderProgram = &gouraudShaderProgram;
-        break;
-    }
+//    qDebug() << "Changed shading to" << shading;
+//    switch (shading) {
+//    case PHONG:
+//        currentShaderProgram = &phongShaderProgram;
+//        break;
+//    case NORMAL:
+//        currentShaderProgram = &normalShaderProgram;
+//        break;
+//    case GOURAUD:
+//        currentShaderProgram = &gouraudShaderProgram;
+//        break;
+//    }
 }
 
 
@@ -340,98 +339,10 @@ void MainView::initializeLight()
 
     // TODO rotate the light.
 
-    glUniform3fv(getCurrentLightPositionUniformLocation(), lightPosition.size(), lightPosition.data());
+    glUniform3fv(phongShader.lightPositionUniformLocation, lightPosition.size(), lightPosition.data());
 }
 
-GLint MainView::getCurrentTransformationUniformLocation()
-{
-    GLint location;
-    switch (getCurrentShaderType()) {
-    case MainView::PHONG:
-        location = phongShadingTransformationUniformLocation;
-        break;
-    case MainView::NORMAL:
-        location = normalShadingTransformationUniformLocation;
-        break;
-    case MainView::GOURAUD:
-        location = gouraudShadingTransformationUniformLocation;
-        break;
 
-    }
-    return location;
-}
-
-GLint MainView::getCurrentProjectionUniformLocation()
-{
-    GLint location;
-    switch (getCurrentShaderType()) {
-    case MainView::PHONG:
-        location = phongShadingProjectionUniformLocation;
-        break;
-    case MainView::NORMAL:
-        location = normalShadingProjectionUniformLocation;
-        break;
-    case MainView::GOURAUD:
-        location = gouraudShadingProjectionUniformLocation;
-        break;
-
-    }
-    return location;
-}
-
-GLint MainView::getCurrentNormalTransformationUniformLocation()
-{
-    GLint location;
-    switch (getCurrentShaderType()) {
-    case MainView::PHONG:
-        location = phongShadingNormalTransformationUniformLocation;
-        break;
-    case MainView::NORMAL:
-        location = normalShadingNormalTransformationUniformLocation;
-        break;
-    case MainView::GOURAUD:
-        location = gouraudShadingNormalTransformationUniformLocation;
-        break;
-
-    }
-    return location;
-}
-
-GLint MainView::getCurrentMaterialUniformLocation() {
-    switch (getCurrentShaderType()) {
-    case MainView::PHONG:
-        return phongShadingMaterialUniformLocation;
-    case MainView::NORMAL:
-        return normalShadingMaterialUniformLocation;
-    case MainView::GOURAUD:
-        return gouraudShadingMaterialUniformLocation;
-    }
-}
-
-GLint MainView::getCurrentLightPositionUniformLocation() {
-    switch(getCurrentShaderType()) {
-    case MainView::PHONG:
-        return phongShadingLightPositionUniformLocation;
-    case MainView::NORMAL:
-        return normalShadingLightPositionUniformLocation;
-    case MainView::GOURAUD:
-        return gouraudShadingLightPositionUniformLocation;
-    }
-}
-
-MainView::ShadingMode MainView::getCurrentShaderType()
-{
-    if (currentShaderProgram == &normalShaderProgram){
-        return MainView::ShadingMode::NORMAL;
-    }
-    else if (currentShaderProgram == &phongShaderProgram){
-        return MainView::ShadingMode::PHONG;
-    }
-    else{
-        currentShaderProgram = &gouraudShaderProgram;
-        return MainView::ShadingMode::GOURAUD;
-    }
-}
 
 void MainView::paintCube()
 {
@@ -443,9 +354,9 @@ void MainView::paintCube()
     };
 
     QMatrix4x4 cubeTransformationMatrix = cubeTranslationMatrix * rotationMatrix * scalingMatrix;
-    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, cubeTransformationMatrix.data());
+//    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, cubeTransformationMatrix.data());
 
-    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
+//    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
 
     glBindVertexArray(this->cube.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -461,9 +372,9 @@ void MainView::paintPyramid()
     };
 
     QMatrix4x4 pyramidTransformationMatrix = pyramidTranslationMatrix * rotationMatrix * scalingMatrix;
-    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, pyramidTransformationMatrix.data());
+//    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, pyramidTransformationMatrix.data());
 
-    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
+//    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
 
     glBindVertexArray(this->pyramid.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, 18);
@@ -479,15 +390,15 @@ void MainView::paintObject()
     };
 
     QMatrix4x4 objectTransformationMatrix = objectTranslationMatrix * rotationMatrix * scalingMatrix;
-    glUniformMatrix4fv(getCurrentTransformationUniformLocation(), 1, GL_FALSE, objectTransformationMatrix.data());
-    glUniformMatrix4fv(getCurrentProjectionUniformLocation(), 1, GL_FALSE, perspectiveTransformationMatrix.data());
-
+    glUniformMatrix4fv(phongShader.transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
+    glUniformMatrix4fv(phongShader.projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
+    initializeLight();
     QVector<GLfloat> material({
         object.modelProps.material.ka,
         object.modelProps.material.kd,
         object.modelProps.material.ks
     });
-    glUniform3fv(getCurrentMaterialUniformLocation(), 1, material.data());
+    glUniform3fv(phongShader.materialUniformLocation, 1, material.data());
 
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());

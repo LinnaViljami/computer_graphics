@@ -5,18 +5,23 @@ PhongShader::PhongShader() : glfunc(nullptr)
 
 }
 
-PhongShader::PhongShader(QOpenGLFunctions_3_3_Core *glFuncPointer) : glfunc(glFuncPointer)
-{
 
-
-
-}
 
 void PhongShader::init(QOpenGLFunctions_3_3_Core *glFuncPointer)
 {
     glfunc = glFuncPointer;
     createShaderPrograms();
     setUniformLocations();
+}
+
+void PhongShader::bind()
+{
+    shaderProgram.bind();
+}
+
+void PhongShader::release()
+{
+    shaderProgram.release();
 }
 
 void PhongShader::createShaderPrograms()

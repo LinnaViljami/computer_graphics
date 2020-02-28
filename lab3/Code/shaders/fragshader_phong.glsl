@@ -8,21 +8,25 @@
 in vec3 vertNormal;
 
 // ka, kd, ks
-uniform vec3 material;
+//uniform vec3 material;
+vec3 material = vec3(0.1f, 0.7f, 0.15f);
 
 // x, y, z
-uniform mat3 lightPosition;
+//uniform vec3 lightPosition;
+vec3 lightPosition = vec3( 2.0f, // TODO remove this and use uniform
+                           6.0f,
+                           8.0f);
 
 // r, g, b
 // TODO make uniform out of this to change colors?
-vec3 lightColor = (1, 1, 1);
-vec3 materialColor = (1, 0, 0);
+vec3 lightColor = vec3(1, 1, 1);
+vec3 materialColor = vec3(0.25f, 0.25f, 0.25f);
 
 // x, y, z
-vec3 viewAngle = (0, 0, -1); // or (0, 0, 0)?
+vec3 viewAngle = vec3(0, 0, -1);
 
 // Power used for specular component. TODO should this value be fetched from somewhere else?
-int n = 5;
+float n = 2.0;
 
 // Specify the output of the fragment shader
 // Usually a vec4 describing a color (Red, Green, Blue, Alpha/Transparency)
@@ -39,10 +43,11 @@ vec3 calculateAmbientComponent(vec3 materialColor) {
     return Ia * ka * materialColor;
 }
 
-vec3 calculateDiffuseComponent(vec3 orientedNormal, vec3 lightVector, vec3 materialColor) {
+vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector, vec3 materialColor) {
     float kd = material[1];
 
-    double diffuseComponent = dot(orientedNormal, lightVector);
+    float diffuseComponent = dot(orientedNormal, lightVector);
+    diffuseComponent = normalize(diffuseComponent);
     if (diffuseComponent < 0) {
         diffuseComponent = 0;
     }
@@ -57,31 +62,35 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
 
     vec3 R = 2 * (dot(orientedNormal, lightVector) * orientedNormal - lightVector);
 
-    double specularComponent = dot(R, viewAngle);
+    float specularComponent = dot(R, viewAngle);
     if (specularComponent < 0) {
         specularComponent = 0;
     }
 
-    double specularComponent = pow(specularComponent, n);
+    specularComponent = pow(specularComponent, n);
     vec3 specularColor = specularComponent * ks * lightColor;
 
     return specularColor;
 }
 
 vec3 getPhongColor(vec3 orientedNormal) {
-    // glFragCoord is the coordinate of the current pixel.
-    vec3 lightVector = calculateNormalizedVector(gl_FragCoord, lightPosition);
+    vec3 currentPosition = vec3(
+                gl_FragCoord.x,
+                gl_FragCoord.y,
+                gl_FragCoord.z);
+    vec3 lightVector = calculateNormalizedVector(currentPosition, lightPosition);
 
     vec3 color = calculateAmbientComponent(materialColor);
-    color += calculateDiffuseComponent(orientedNormal, lightVector, materialColor);
+    color += calculateDiffuseColor(orientedNormal, lightVector, materialColor);
     color += calculateSpecularComponent(orientedNormal, lightVector);
+
     return color;
 }
 
 void main()
 {
-    vec3 normalizedVertNormal = normalize(vertNormal);
-    vec3 colorMapping = vec3(0.5,0.5,0.5);
-    vec3 mappedColors = colorMapping*normalizedVertNormal + colorMapping;
-    fColor = vec4(mappedColors, 1.0);
+    vec3 color = getPhongColor(vertNormal);
+//    vec3 colorMapping = vec3(0.5,0.5,0.5);
+//    vec3 mappedColors = colorMapping*color + colorMapping;
+    fColor = vec4(color, 1.0);
 }

@@ -1,6 +1,6 @@
 #include "object.h"
 
-ImportedObject::ImportedObject() : vertices({})
+ImportedObject::ImportedObject() : vertices({}), translationMatrix(), rotationMatrix(), scalingMatrix()
 {
 
 }
@@ -49,3 +49,18 @@ ImportedObject::ImportedObject(ImportedObjectType objectType, Material material)
 
     vertices = vertices_init;
 }
+
+QMatrix4x4 ImportedObject::getModelTransformationMatrix()
+{
+    return translationMatrix * rotationMatrix * scalingMatrix;
+}
+
+QVector3D ImportedObject::getMaterialVector()
+{
+    return {
+            modelProps.material.ka,
+            modelProps.material.kd,
+            modelProps.material.ks
+        };
+}
+

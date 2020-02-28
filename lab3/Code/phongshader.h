@@ -14,11 +14,11 @@ public:
     GLint materialUniformLocation;
     GLint lightPositionUniformLocation;
     ShadingMode type() override;
-    void setUniformData(QMatrix3x3 normalTransformationMatrix
-                        , QMatrix4x4 transformationMatrix
-                        , QVector3D material
-                        , QMatrix4x4 perspectiveTransformationMatrix
-                        , QVector3D lightPosition);
+    void setUniformData(QMatrix4x4 transformationMatrix,
+                        QMatrix4x4 perspectiveTransformationMatrix,
+                        QMatrix3x3 normalTransformationMatrix,
+                        QVector3D material,
+                        QVector3D lightPosition);
 private:
     void createShaderPrograms() override;
     void setUniformLocations() override;

@@ -1,13 +1,12 @@
 #include "shader.h"
 
-Shader::Shader() : glfunc(nullptr)
+Shader::Shader()
 {
 
 }
 
-void Shader::init(QOpenGLFunctions_3_3_Core *glFuncPointer)
+void Shader::init()
 {
-    glfunc = glFuncPointer;
     createShaderPrograms();
     setUniformLocations();
 }
@@ -22,10 +21,7 @@ void Shader::release()
     shaderProgram.release();
 }
 
-QOpenGLFunctions_3_3_Core *Shader::getGlfuncPtr()
-{
-    return glfunc;
-}
+
 
 Shader::~Shader()
 {

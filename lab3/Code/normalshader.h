@@ -12,12 +12,12 @@ public:
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
-    GLint materialUniformLocation;
-    GLint lightPositionUniformLocation;
+
 
     // Shader interface
 public:
     ShadingMode type();
+    void setUniformData(QMatrix4x4 transformationMatrix, QMatrix4x4 projectionMatrix, QMatrix3x3 normalTransformationMatrix);
 
 private:
     void createShaderPrograms();

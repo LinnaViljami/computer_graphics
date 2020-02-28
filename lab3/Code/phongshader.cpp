@@ -24,28 +24,22 @@ PhongShader::PhongShader()
 //    shaderProgram.release();
 //}
 
-ShadingMode PhongShader::type()
+Shader::ShadingMode PhongShader::type()
 {
     return ShadingMode::PHONG;
 }
 
-void PhongShader::setUniformData(QMatrix3x3 normalTransformationMatrix
-                                 , QMatrix4x4 transformationMatrix
-                                 , QVector3D material
-                                 , QMatrix4x4 perspectiveTransformationMatrix
-                                 , QVector3D lightPosition)
+void PhongShader::setUniformData(QMatrix4x4 transformationMatrix,
+                                 QMatrix4x4 perspectiveTransformationMatrix,
+                                 QMatrix3x3 normalTransformationMatrix,
+                                 QVector3D material,
+                                 QVector3D lightPosition)
 {
-//    QOpenGLFunctions_3_3_Core * eglfunc = getGlfuncPtr();
     shaderProgram.setUniformValue(normalTransformationUniformLocation,normalTransformationMatrix);
     shaderProgram.setUniformValue(transformationUniformLocation, transformationMatrix);
     shaderProgram.setUniformValue(projectionUniformLocation,  perspectiveTransformationMatrix);
     shaderProgram.setUniformValue(lightPositionUniformLocation, lightPosition);
     shaderProgram.setUniformValue(materialUniformLocation, material);
-//    shaderProgram.setUniformValue(normalTransformationUniformLocation, 1, GL_FALSE, normalTransformationMatrix.data());
-//    shaderProgram.setUniformValue(transformationUniformLocation, 1, GL_FALSE, transformationMatrix.data());
-//    shaderProgram.setUniformValue(projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
-//    shaderProgram.setUniformValue(lightPositionUniformLocation, lightPosition.size(), lightPosition.data());
-//    shaderProgram.setUniformValue(materialUniformLocation, 1, material.data());
 }
 
 

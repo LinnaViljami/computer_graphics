@@ -18,7 +18,11 @@ public:
     // Shader interface
 public:
     ShadingMode type();
-
+    void setUniformData(QMatrix4x4 transformationMatrix,
+                        QMatrix4x4 perspectiveTransformationMatrix,
+                        QMatrix3x3 normalTransformationMatrix,
+                        QVector3D material,
+                        QVector3D lightPosition);
 private:
     void createShaderPrograms();
     void setUniformLocations();

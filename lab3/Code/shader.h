@@ -5,22 +5,21 @@
 #include <QOpenGLShaderProgram>
 
 
-enum ShadingMode : GLuint {
-    PHONG = 0, NORMAL, GOURAUD
-};
 
 class Shader
 {
 public:
+
+    enum ShadingMode : GLuint {
+        PHONG = 0, NORMAL, GOURAUD
+    };
     Shader();
     virtual ShadingMode type() = 0;
     virtual ~Shader() = 0;
-    void init(QOpenGLFunctions_3_3_Core* glFuncPointer);
+    void init();
     void bind();
     void release();
 protected:
-    QOpenGLFunctions_3_3_Core* glfunc;
-    QOpenGLFunctions_3_3_Core* getGlfuncPtr();
     QOpenGLShaderProgram shaderProgram;
 private:
     virtual void createShaderPrograms() = 0;

@@ -4,9 +4,10 @@
 #include "vertex3d.h"
 #include <vector>
 #include <QString>
+#include <QObject>
 #include <GL/gl.h>
 #include "model.h"
-
+#include <QMatrix4x4>
 
 struct Material {
     float ka = 0.5f;
@@ -32,6 +33,13 @@ public:
     GLuint vboId;
     GLuint vaoId;
     ImportedObjectProperties modelProps;
+    QMatrix4x4 translationMatrix;
+    QMatrix4x4 rotationMatrix;
+    QMatrix4x4 scalingMatrix;
+    QMatrix4x4 getModelTransformationMatrix();
+    QVector3D getMaterialVector();
+
+
 private:
     ImportedObjectProperties getModelProperties(ImportedObjectType modelType, Material material);
 

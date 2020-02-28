@@ -11,17 +11,9 @@
  *
  * @param parent
  */
-MainView::MainView(QWidget *parent) : QOpenGLWidget(parent), phongShader(){
+MainView::MainView(QWidget *parent) : QOpenGLWidget(parent){
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
-    //(QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions()
 
-    rotationMatrix = {
-        1 , 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1,
-    };
-    scalingMatrix = rotationMatrix;
 }
 
 /**
@@ -34,10 +26,6 @@ MainView::MainView(QWidget *parent) : QOpenGLWidget(parent), phongShader(){
  */
 MainView::~MainView() {
     qDebug() << "MainView destructor";
-    glDeleteBuffers(1, &this->cube.vboId);
-    glDeleteVertexArrays(1, &this->cube.vaoId);
-    glDeleteBuffers(1, &this->pyramid.vboId);
-    glDeleteVertexArrays(1, &this->pyramid.vaoId);
     glDeleteBuffers(1, &object.vboId);
     glDeleteVertexArrays(1, &object.vaoId);
     makeCurrent();
@@ -80,32 +68,20 @@ void MainView::initializeGL() {
     // Set the color to be used by glClear. This is, effectively, the background color.
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
 
-    createShaderPrograms(PHONG);
+    createShaderPrograms(Shader::PHONG);
 
     initializePerspectiveMatrix();
 
     initializeObject();
-    initializeLight();
 }
 
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
 // is passed as parameter.
-void MainView::createShaderPrograms(ShadingMode shadingMode) {
-    QOpenGLFunctions_3_3_Core * glFuncPointer = (QOpenGLFunctions_3_3_Core*)this->context()->versionFunctions();
-    phongShader.init(glFuncPointer);
-    normalShader.init(glFuncPointer);
-    gouraudShader.init(glFuncPointer);
-    switch (shadingMode) {
-    case MainView::PHONG:
-        currentShader = &phongShader;
-        break;
-    case MainView::NORMAL:
-        currentShader = &normalShader;
-        break;
-    case MainView::GOURAUD:
-        currentShader = &gouraudShader;
-        break;
-    }
+void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
+    phongShader.init();
+    normalShader.init();
+    gouraudShader.init();
+    setShadingMode(shadingMode);
 }
 
 
@@ -189,14 +165,14 @@ void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
         0, 0, 0, 1,
     };
 
-    rotationMatrix = xRotationMatrix * yRotationMatrix * zRotationMatrix;
+    object.rotationMatrix = xRotationMatrix * yRotationMatrix * zRotationMatrix;
 
     update();
     qDebug() << "Rotation changed to (" << rotateX << "," << rotateY << "," << rotateZ << ")";
 }
 
 void MainView::setScale(int scale) {
-    scalingMatrix = {
+    object.scalingMatrix = {
             static_cast<float>(scale)/100 , 0, 0, 0,
             0, static_cast<float>(scale)/100, 0, 0,
             0, 0, static_cast<float>(scale)/100, 0,
@@ -206,19 +182,19 @@ void MainView::setScale(int scale) {
     qDebug() << "Scale changed to " << scale;
 }
 
-void MainView::setShadingMode(ShadingMode shading) {
-//    qDebug() << "Changed shading to" << shading;
-//    switch (shading) {
-//    case PHONG:
-//        currentShaderProgram = &phongShaderProgram;
-//        break;
-//    case NORMAL:
-//        currentShaderProgram = &normalShaderProgram;
-//        break;
-//    case GOURAUD:
-//        currentShaderProgram = &gouraudShaderProgram;
-//        break;
-//    }
+void MainView::setShadingMode(Shader::ShadingMode shading) {
+    qDebug() << "Changed shading to" << shading;
+    switch (shading) {
+    case Shader::PHONG:
+        currentShader = &phongShader;
+        break;
+    case Shader::NORMAL:
+        currentShader = &normalShader;
+        break;
+    case Shader::GOURAUD:
+        currentShader = &gouraudShader;
+        break;
+    }
 }
 
 
@@ -235,62 +211,7 @@ void MainView::onMessageLogged( QOpenGLDebugMessage Message ) {
     qDebug() << " → Log:" << Message;
 }
 
-void MainView::initializeCube()
-{
-    this->cube = Cube();
 
-    // Generate VBO and VAO
-    glGenBuffers(1, &this->cube.vboId);
-    glGenVertexArrays(1, &this->cube.vaoId);
-
-    std::vector<vertex3d>::iterator bufferDataPointer = this->cube.getTriangles()->begin();
-    void * bufferVoidPointer = &* bufferDataPointer;
-    glBindVertexArray(this->cube.vaoId);
-    glBindBuffer(GL_ARRAY_BUFFER, this->cube.vboId);
-    glBufferData(GL_ARRAY_BUFFER,36*sizeof(vertex3d), bufferVoidPointer, GL_STATIC_DRAW);
-
-
-    // Tell OpenGL what attributes to expect; how the data is laid out
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    GLintptr coordinatePtrIndex = 0*sizeof(float);
-    GLintptr normalPrtIndex = offsetof(vertex3d, normalX);
-
-    glVertexAttribPointer(
-                0,                              // Index of the attribute defined by glEnableVertexAttribArray
-                3,                              // Number of elements per vertex
-                GL_FLOAT,                       // Type of the elements
-                GL_FALSE,
-                sizeof(vertex3d),              // Offset between different vertices
-                (GLvoid*)(coordinatePtrIndex) // Offset from the start of this vertex
-    );
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(normalPrtIndex));
-}
-
-void MainView::initializePyramid()
-{
-    this->pyramid = Pyramid();
-    glGenBuffers(1, &this->pyramid.vboId);
-    glGenVertexArrays(1, &this->pyramid.vaoId);
-
-
-    std::vector<vertex3d>::iterator bufferDataPointer = this->pyramid.getTriangles()->begin();
-    void * bufferVoidPointer = &* bufferDataPointer;
-    glBindVertexArray(this->pyramid.vaoId);
-    glBindBuffer(GL_ARRAY_BUFFER, this->pyramid.vboId);
-    glBufferData(GL_ARRAY_BUFFER,18*sizeof(vertex3d), bufferVoidPointer, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    GLintptr coordinatePtrIndex = 0*sizeof(float);
-    GLintptr normalPrtIndex = offsetof(vertex3d, normalX);
-
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatePtrIndex));
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(normalPrtIndex));
-
-}
 
 void MainView::initializeObject() {
 
@@ -314,101 +235,51 @@ void MainView::initializeObject() {
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
 }
 
-void MainView::initializeLight()
-{
-    QVector<GLfloat> lightPosition({
-        -2.0f,
-        8.0f,
-        -10.0f
-    });
-
-    // TODO rotate the light.
-
-    glUniform3fv(phongShader.lightPositionUniformLocation, lightPosition.size(), lightPosition.data());
-}
 
 void MainView::setDataToUniform()
 {
     switch (currentShader->type()) {
-    case PHONG:
-
+    case Shader::PHONG:
+        phongShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix(),
+                                   object.getMaterialVector(),getLightPosition());
         break;
-    case NORMAL:
+    case Shader::NORMAL:
+        normalShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix());
         break;
-    case GOURAUD:
+    case Shader::GOURAUD:
+        gouraudShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix(),
+                                   object.getMaterialVector(),getLightPosition());
         break;
     }
 }
 
-
-
-void MainView::paintCube()
+QVector3D MainView::getLightPosition()
 {
-    cubeTranslationMatrix = {
-            1, 0, 0, 2,
-            0, 1, 0, 0,
-            0, 0, 1, -6,
-            0, 0, 0, 1,
+    return {
+        -2.0f,
+        8.0f,
+        -10.0f
     };
 
-    QMatrix4x4 cubeTransformationMatrix = cubeTranslationMatrix * rotationMatrix * scalingMatrix;
-//    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, cubeTransformationMatrix.data());
-
-//    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
-
-    glBindVertexArray(this->cube.vaoId);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void MainView::paintPyramid()
-{
-    pyramidTranslationMatrix = {
-            1, 0, 0, -2,
-            0, 1, 0, 0,
-            0, 0, 1, -6,
-            0, 0, 0, 1,
-    };
-
-    QMatrix4x4 pyramidTransformationMatrix = pyramidTranslationMatrix * rotationMatrix * scalingMatrix;
-//    glUniformMatrix4fv(normalShadingTransformationUniformLocation, 1, GL_FALSE, pyramidTransformationMatrix.data());
-
-//    glUniformMatrix4fv(normalShadingProjectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
-
-    glBindVertexArray(this->pyramid.vaoId);
-    glDrawArrays(GL_TRIANGLES, 0, 18);
-}
 
 void MainView::paintObject()
 {
 
-    //glUniformMatrix3fv(phongShader.normalTransformationUniformLocation, 1, GL_FALSE, rotationMatrix.normalMatrix().data());
-    objectTranslationMatrix = {
+    object.translationMatrix = {
             1, 0, 0, 0,
             0, 1, 0, -3,
             0, 0, 1, -10,
             0, 0, 0, 1,
     };
-
-    QMatrix4x4 objectTransformationMatrix = objectTranslationMatrix * rotationMatrix * scalingMatrix;
-    //glUniformMatrix4fv(phongShader.transformationUniformLocation, 1, GL_FALSE, objectTransformationMatrix.data());
-    //glUniformMatrix4fv(phongShader.projectionUniformLocation, 1, GL_FALSE, perspectiveTransformationMatrix.data());
-//    initializeLight();
-    QVector3D lightPosition({
-        -2.0f,
-        8.0f,
-        -10.0f
-    });
-
-    // TODO rotate the light.
-
-    //glUniform3fv(phongShader.lightPositionUniformLocation, lightPosition.size(), lightPosition.data());
-    QVector3D material({
-        object.modelProps.material.ka,
-        object.modelProps.material.kd,
-        object.modelProps.material.ks
-    });
-    //glUniform3fv(phongShader.materialUniformLocation, 1, material.data());
-    phongShader.setUniformData(rotationMatrix.normalMatrix(), objectTransformationMatrix,material,perspectiveTransformationMatrix,lightPosition);
+    setDataToUniform();
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
 }

@@ -22,9 +22,6 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 
 public:
-    enum ShadingMode : GLuint {
-        PHONG = 0, NORMAL, GOURAUD
-    };
 
     MainView(QWidget *parent = 0);
     ~MainView();
@@ -32,7 +29,7 @@ public:
     // Functions for widget input events
     void setRotation(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
-    void setShadingMode(ShadingMode shading);
+    void setShadingMode(Shader::ShadingMode shading);
 
 protected:
     void initializeGL();
@@ -54,16 +51,11 @@ private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
     void initializePerspectiveMatrix();
     void initializeObject();
-    void initializeCube();
-    void initializePyramid();
-    void initializeLight();
 
 
 private:
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
-    Cube cube;
-    Pyramid pyramid;
     ImportedObject object;
 
     // Shader programs
@@ -73,20 +65,15 @@ private:
     PhongShader phongShader;
     void setDataToUniform();
 
+    QVector3D getLightPosition();
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
-    QMatrix4x4 rotationMatrix;
-    QMatrix4x4 scalingMatrix;
-    QMatrix4x4 cubeTranslationMatrix;
-    QMatrix4x4 pyramidTranslationMatrix;
-    QMatrix4x4 objectTranslationMatrix;
+
 
     // Painting methods
-    void paintCube();
-    void paintPyramid();
     void paintObject();
 
-    void createShaderPrograms(ShadingMode shadingMode);
+    void createShaderPrograms(Shader::ShadingMode shadingMode);
 };
 
 #endif // MAINVIEW_H

@@ -38,6 +38,7 @@ public:
     QMatrix4x4 scalingMatrix;
     QMatrix4x4 getModelTransformationMatrix();
     QVector3D getMaterialVector();
+    QVector3D getMaterialColorVector();
 
 
 private:

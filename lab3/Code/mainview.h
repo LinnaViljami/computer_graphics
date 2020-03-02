@@ -30,6 +30,7 @@ public:
     void setRotation(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
+    void updatePhongExponentValue(float value);
 
 protected:
     void initializeGL();
@@ -63,9 +64,12 @@ private:
     NormalShader normalShader;
     GouraudShader gouraudShader;
     PhongShader phongShader;
+    float phongExponent = 1;
     void setDataToUniform();
 
     QVector3D getLightPosition();
+    QVector3D getLightColor();
+    float getPhongExponent();
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
 

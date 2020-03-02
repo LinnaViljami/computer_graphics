@@ -27,8 +27,10 @@ private slots:
     void on_ScaleSlider_sliderMoved(int value);
 
     void on_PhongButton_toggled(bool checked);
+    void on_PhongSpinBox_updated(int value);
     void on_NormalButton_toggled(bool checked);
     void on_GouraudButton_toggled(bool checked);
+    void on_phongSpinBox_valueChanged(int arg1);
 };
 
 #endif // MAINWINDOW_H

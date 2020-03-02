@@ -72,3 +72,9 @@ void MainWindow::on_GouraudButton_toggled(bool checked) {
         ui->mainView->update();
     }
 }
+
+void MainWindow::on_phongSpinBox_valueChanged(int arg1)
+{
+    ui->mainView->updatePhongExponentValue((float) arg1);
+    ui->mainView->update();
+}

@@ -119,7 +119,11 @@ void MainView::setDataToUniform()
         phongShader.setUniformData(object.getModelTransformationMatrix(),
                                    perspectiveTransformationMatrix,
                                    object.rotationMatrix.normalMatrix(),
-                                   object.getMaterialVector(),getLightPosition());
+                                   object.getMaterialVector(),
+                                   object.getMaterialColorVector(),
+                                   getLightPosition(),
+                                   getLightColor(),
+                                   getPhongExponent());
         break;
     case Shader::NORMAL:
         normalShader.setUniformData(object.getModelTransformationMatrix(),
@@ -128,9 +132,13 @@ void MainView::setDataToUniform()
         break;
     case Shader::GOURAUD:
         gouraudShader.setUniformData(object.getModelTransformationMatrix(),
-                                   perspectiveTransformationMatrix,
-                                   object.rotationMatrix.normalMatrix(),
-                                   object.getMaterialVector(),getLightPosition());
+                                     perspectiveTransformationMatrix,
+                                     object.rotationMatrix.normalMatrix(),
+                                     object.getMaterialVector(),
+                                     object.getMaterialColorVector(),
+                                     getLightPosition(),
+                                     getLightColor(),
+                                     getPhongExponent());
         break;
     }
 }
@@ -138,13 +146,25 @@ void MainView::setDataToUniform()
 QVector3D MainView::getLightPosition()
 {
     return {
-        -2.0f,
+        2.0f,
         8.0f,
-        -10.0f
+        10.0f
     };
-
 }
 
+QVector3D MainView::getLightColor()
+{
+    return {
+        1.0f,
+        1.0f,
+        1.0f
+    };
+}
+
+float MainView::getPhongExponent()
+{
+    return phongExponent;
+}
 
 void MainView::paintObject()
 {
@@ -270,6 +290,12 @@ void MainView::setShadingMode(Shader::ShadingMode shading) {
         currentShader = &gouraudShader;
         break;
     }
+}
+
+void MainView::updatePhongExponentValue(float value)
+{
+    qDebug() << "Updating Phong exponent to " << value;
+    phongExponent = value;
 }
 
 

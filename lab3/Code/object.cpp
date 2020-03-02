@@ -64,3 +64,10 @@ QVector3D ImportedObject::getMaterialVector()
         };
 }
 
+// This method returns the color of the object. Currently, it returns the same color
+// for all object types. This may be
+QVector3D ImportedObject::getMaterialColorVector()
+{
+    return {0.25f, 0.25f, 0.25f};
+}
+

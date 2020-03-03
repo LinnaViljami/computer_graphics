@@ -30,6 +30,7 @@ public:
     void setRotation(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
+    void updatePhongExponentValue(float value);
 
     QVector<quint8> imageToBytes(QImage image);
 protected:
@@ -65,9 +66,12 @@ private:
     GouraudShader gouraudShader;
     PhongShader phongShader;
     QVector<quint8> imageData;
+    float phongExponent = 1;
     void setDataToUniform();
 
     QVector3D getLightPosition();
+    QVector3D getLightColor();
+    float getPhongExponent();
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
 

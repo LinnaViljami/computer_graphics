@@ -13,7 +13,10 @@ public:
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
     GLint materialUniformLocation;
+    GLint materialColorUniformLocation;
     GLint lightPositionUniformLocation;
+    GLint lightColorUniformLocation;
+    GLint phongExponentUniformLocation;
 
     // Shader interface
 public:
@@ -22,7 +25,10 @@ public:
                         QMatrix4x4 perspectiveTransformationMatrix,
                         QMatrix3x3 normalTransformationMatrix,
                         QVector3D material,
-                        QVector3D lightPosition);
+                        QVector3D materialColor,
+                        QVector3D lightPosition,
+                        QVector3D lightColor,
+                        float phongExponent);
 private:
     void createShaderPrograms();
     void setUniformLocations();

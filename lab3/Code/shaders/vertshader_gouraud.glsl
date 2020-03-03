@@ -7,31 +7,22 @@
 layout (location = 0) in vec3 vertCoordinates_in;
 layout (location = 1) in vec3 vertNormal_in;
 
-// Specify the Uniforms of the vertex shader
+// Specify the Uniforms of the vertex shader.
+// WARNING make sure to update the setters of uniform locations in the shader_x.cpp files
+// when changing any of these field names;
 uniform mat4 transformation;
 uniform mat4 projection;
 uniform mat3 normalTransformation;
-
-// ka, kd, ks
-//uniform vec3 material;
-vec3 material = vec3(0.1f, 0.7f, 0.15f); // TODO remove this and use uniform
-
-// x, y, z
-//uniform vec3 lightPosition;
-vec3 lightPosition = vec3( 2.0f, // TODO remove this and use uniform
-                           6.0f,
-                           8.0f);
-
-// r, g, b
-// TODO make uniform out of this to change colors?
-vec3 lightColor = vec3(1, 1, 1);
-vec3 materialColor = vec3(0.25f, 0.25f, 0.25f);
+uniform vec3 material;              // ka, kd, ks
+uniform vec3 materialColor;         // r, g, b
+uniform vec3 lightPosition;         // x, y, z
+uniform vec3 lightColor;            // r, g, b
 
 // x, y, z
 vec3 viewAngle = vec3(0, 0, -1);
 
-// Power used for specular component. TODO should this value be fetched from somewhere else?
-float n = 2.0;
+// Power used for specular component.
+uniform float phongExponent;
 
 // Specify the output of the vertex stage
 out vec3 vertColor;
@@ -71,7 +62,7 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
         specularComponent = 0;
     }
 
-    specularComponent = pow(specularComponent, n);
+    specularComponent = pow(specularComponent, phongExponent);
     vec3 specularColor = specularComponent * ks * lightColor;
 
     return specularColor;

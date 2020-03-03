@@ -31,6 +31,7 @@ public:
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
 
+    QVector<quint8> imageToBytes(QImage image);
 protected:
     void initializeGL();
     void resizeGL(int newWidth, int newHeight);
@@ -63,12 +64,15 @@ private:
     NormalShader normalShader;
     GouraudShader gouraudShader;
     PhongShader phongShader;
+    QVector<quint8> imageData;
     void setDataToUniform();
 
     QVector3D getLightPosition();
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
 
+    GLuint textureLocation;
+    void loadTexture(QString file, GLuint texturePtr);
 
     // Painting methods
     void paintObject();

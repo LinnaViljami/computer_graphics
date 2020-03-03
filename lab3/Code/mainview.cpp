@@ -109,6 +109,11 @@ void MainView::initializeObject() {
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
+
+
+    // generate textures
+    glGenTextures(1, &textureLocation);
+
 }
 
 
@@ -142,6 +147,21 @@ QVector3D MainView::getLightPosition()
         8.0f,
         -10.0f
     };
+
+}
+
+void MainView::loadTexture(QString file, GLuint texturePtr)
+{
+        glBindTexture(GL_TEXTURE_2D, textureLocation);
+//        glTexParameteri(GL TEXTURE 2D, <Parameter Name>, <Parameter Value>);
+
+        // set some parameters, not really understand what these values should be
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
 
 }
 

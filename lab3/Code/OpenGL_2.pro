@@ -19,7 +19,8 @@ SOURCES += \
     shader.cpp \
     user_input.cpp \
     model.cpp \
-    object.cpp
+    object.cpp \
+    utility.cpp
 
 HEADERS += \
     cube.h \

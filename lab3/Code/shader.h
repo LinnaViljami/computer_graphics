@@ -19,6 +19,7 @@ public:
     void init();
     void bind();
     void release();
+    virtual GLint* getTextureBufferLocation();
 protected:
     QOpenGLShaderProgram shaderProgram;
 private:

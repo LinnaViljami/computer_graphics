@@ -106,10 +106,11 @@ void MainView::initializeObject() {
 
     GLintptr coordinatPtrIndex = 0*sizeof(float);
     GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
+    GLintptr texturePtrIndex = offsetof(vertex3d, textureX);
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
-
+    glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(QVector2D), (GLvoid*)(texturePtrIndex));
 
     // generate textures
     glGenTextures(1, &textureLocation);
@@ -168,7 +169,7 @@ QVector3D MainView::getLightColor()
 
 void MainView::loadTexture(QString file, GLuint texturePtr)
 {
-        glBindTexture(GL_TEXTURE_2D, textureLocation);
+        glBindTexture(GL_TEXTURE_2D, texturePtr);
 //        glTexParameteri(GL TEXTURE 2D, <Parameter Name>, <Parameter Value>);
 
         // set some parameters, not really understand what these values should be
@@ -176,6 +177,10 @@ void MainView::loadTexture(QString file, GLuint texturePtr)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        textureData = imageToBytes(QImage(file));
+        glTexImage2D(texturePtr,0,GL_RGBA8, 512,1024,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
+        glGenerateMipmap(GL_TEXTURE_2D);
+
 
 
 
@@ -195,6 +200,13 @@ void MainView::paintObject()
             0, 0, 1, -10,
             0, 0, 0, 1,
     };
+    GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
+    if(textureUniformLocation != nullptr){
+        loadTexture(":/textures/cat_diff.png", static_cast<GLuint>(*textureUniformLocation));
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,static_cast<GLuint>(*textureUniformLocation));
+
+    }
     setDataToUniform();
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());

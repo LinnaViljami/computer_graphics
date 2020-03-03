@@ -16,6 +16,7 @@ public:
     GLint lightPositionUniformLocation;
     GLint lightColorUniformLocation;
     GLint phongExponentUniformLocation;
+    GLint textureUniformLocation;
 
     ShadingMode type() override;
     void setUniformData(QMatrix4x4 transformationMatrix,
@@ -26,6 +27,7 @@ public:
                         QVector3D lightPosition,
                         QVector3D lightColor,
                         float phongExponent);
+    GLint * getTextureBufferLocation() override;
 private:
     void createShaderPrograms() override;
     void setUniformLocations() override;

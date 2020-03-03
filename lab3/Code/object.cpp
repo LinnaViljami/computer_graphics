@@ -1,6 +1,6 @@
 #include "object.h"
 
-ImportedObject::ImportedObject() : vertices({}), translationMatrix(), rotationMatrix(), scalingMatrix()
+ImportedObject::ImportedObject() : vertices({}), translationMatrix(), rotationMatrix(), textureCoordinates(), scalingMatrix()
 {
 
 }
@@ -32,11 +32,13 @@ ImportedObject::ImportedObject(ImportedObjectType objectType, Material material)
     modelProps = getModelProperties(objectType, material);
     QVector<QVector3D> vertexLocations = modelProps.model.getVertices();
     QVector<QVector3D> vertexNormals = modelProps.model.getNormals();
+    textureCoordinates = modelProps.model.getTextureCoords();
 
     std::vector<vertex3d> vertices_init = {};
     for (int i = 0; i < vertexLocations.size(); i++) {
         QVector3D location = vertexLocations.at(i);
         QVector3D normal = vertexNormals.at(i);
+        QVector2D textureCoordinate = textureCoordinates.at(i);
         vertices_init.push_back({
             location.x() * modelProps.scalingFactor,
             location.y() * modelProps.scalingFactor,
@@ -44,6 +46,8 @@ ImportedObject::ImportedObject(ImportedObjectType objectType, Material material)
             normal.x(),
             normal.y(),
             normal.z(),
+            textureCoordinate.x(),
+            textureCoordinate.y()
        });
     }
 

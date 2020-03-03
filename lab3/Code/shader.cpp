@@ -21,6 +21,11 @@ void Shader::release()
     shaderProgram.release();
 }
 
+GLint* Shader::getTextureBufferLocation()
+{
+    return nullptr;
+}
+
 
 
 Shader::~Shader()

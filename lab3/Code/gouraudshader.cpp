@@ -30,6 +30,11 @@ void GouraudShader::setUniformData(QMatrix4x4 transformationMatrix,
     shaderProgram.setUniformValue(phongExponentUniformLocation, phongExponent);
 }
 
+GLint *GouraudShader::getTextureBufferLocation()
+{
+    return &textureUniformLocation;
+}
+
 void GouraudShader::createShaderPrograms()
 {
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
@@ -49,4 +54,5 @@ void GouraudShader::setUniformLocations()
     lightPositionUniformLocation = shaderProgram.uniformLocation("lightPosition");
     lightColorUniformLocation = shaderProgram.uniformLocation("lightColor");
     phongExponentUniformLocation = shaderProgram.uniformLocation("phongExponent");
+    textureUniformLocation = shaderProgram.uniformLocation("texture");
 }

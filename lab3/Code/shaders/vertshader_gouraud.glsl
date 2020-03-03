@@ -6,7 +6,7 @@
 // Specify the input locations of attributes
 layout (location = 0) in vec3 vertCoordinates_in;
 layout (location = 1) in vec3 vertNormal_in;
-
+layout (location = 2) in vec2 textureCoords_in;
 // Specify the Uniforms of the vertex shader.
 // WARNING make sure to update the setters of uniform locations in the shader_x.cpp files
 // when changing any of these field names;
@@ -26,6 +26,7 @@ uniform float phongExponent;
 
 // Specify the output of the vertex stage
 out vec3 vertColor;
+out vec2 textureCoords_out;
 
 vec3 calculateNormalizedVector(vec3 from, vec3 to) {
     vec3 result = to - from;
@@ -82,7 +83,7 @@ void main()
 {
     // gl_Position is the output (a vec4) of the vertex shader
     gl_Position = projection * transformation * vec4(vertCoordinates_in, 1.0);
-
+    textureCoords_out = textureCoords_in;
     vec3 orientedNormal = normalTransformation * vertNormal_in;
 
     vertColor = getPhongColor(orientedNormal);

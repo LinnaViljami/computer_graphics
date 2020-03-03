@@ -151,9 +151,9 @@ void MainView::setDataToUniform()
 QVector3D MainView::getLightPosition()
 {
     return {
-        2.0f,
-        8.0f,
-        10.0f
+        -4.0f,
+        6.0f,
+        8.0f
     };
 }
 

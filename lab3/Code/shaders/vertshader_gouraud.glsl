@@ -35,19 +35,18 @@ vec3 calculateNormalizedVector(vec3 from, vec3 to) {
 vec3 calculateAmbientComponent(vec3 materialColor) {
     float ka = material[0];
     float Ia = 0.1;
-    return Ia * ka * materialColor;
+    return Ia * ka * lightColor;
 }
 
 vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector, vec3 materialColor) {
     float kd = material[1];
 
     float diffuseComponent = dot(orientedNormal, lightVector);
-    diffuseComponent = normalize(diffuseComponent);
     if (diffuseComponent < 0) {
         diffuseComponent = 0;
     }
     
-    vec3 diffuseColor = diffuseComponent * kd * lightColor * materialColor;
+    vec3 diffuseColor = diffuseComponent * kd * lightColor;
 
     return diffuseColor;
 }
@@ -71,10 +70,11 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
 vec3 getPhongColor(vec3 orientedNormal) {
     vec3 lightVector = calculateNormalizedVector(vertCoordinates_in, lightPosition);
 
-    vec3 color = calculateAmbientComponent(materialColor);
-    color += calculateDiffuseColor(orientedNormal, lightVector, materialColor);;
-    color += calculateSpecularComponent(orientedNormal, lightVector);
+    vec3 ambient = calculateAmbientComponent(materialColor);
+    vec3 diffuse = calculateDiffuseColor(orientedNormal, lightVector, materialColor);;
+    vec3 specular = calculateSpecularComponent(orientedNormal, lightVector);
 
+    vec3 color = (ambient+diffuse+specular) * materialColor;
     return color;
 }
 
@@ -82,8 +82,7 @@ void main()
 {
     // gl_Position is the output (a vec4) of the vertex shader
     gl_Position = projection * transformation * vec4(vertCoordinates_in, 1.0);
-
     vec3 orientedNormal = normalTransformation * vertNormal_in;
 
-    vertColor = getPhongColor(orientedNormal);
+    vertColor = getPhongColor(normalize(orientedNormal));
 }

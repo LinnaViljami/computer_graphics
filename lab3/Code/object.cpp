@@ -68,6 +68,6 @@ QVector3D ImportedObject::getMaterialVector()
 // for all object types. This may be
 QVector3D ImportedObject::getMaterialColorVector()
 {
-    return {0.25f, 0.25f, 0.25f};
+    return {0.4f, 0.4f, 0.4f};
 }
 

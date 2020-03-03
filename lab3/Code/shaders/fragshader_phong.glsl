@@ -30,23 +30,21 @@ vec3 calculateNormalizedVector(vec3 from, vec3 to) {
     return normalize(result);
 }
 
-vec3 calculateAmbientComponent(vec3 materialColor) {
+vec3 calculateAmbientComponent() {
     float ka = material[0];
     float Ia = 1.0;
-    return Ia * ka * materialColor;
+    return Ia * ka * materialColor * lightColor;
 }
 
-vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector, vec3 materialColor) {
+vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector) {
     float kd = material[1];
 
     float diffuseComponent = dot(orientedNormal, lightVector);
-    diffuseComponent = normalize(diffuseComponent);
     if (diffuseComponent < 0) {
         diffuseComponent = 0;
     }
 
-    vec3 diffuseColor = diffuseComponent * kd * lightColor * materialColor;
-
+    vec3 diffuseColor = diffuseComponent * kd * materialColor * lightColor;
     return diffuseColor;
 }
 
@@ -61,7 +59,7 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
     }
 
     specularComponent = pow(specularComponent, phongExponent);
-    vec3 specularColor = specularComponent * ks * lightColor;
+    vec3 specularColor = specularComponent * ks * materialColor * lightColor;
 
     return specularColor;
 }
@@ -73,8 +71,8 @@ vec3 getPhongColor(vec3 orientedNormal) {
                 gl_FragCoord.z);
     vec3 lightVector = calculateNormalizedVector(currentPosition, lightPosition);
 
-    vec3 color = calculateAmbientComponent(materialColor);
-    color += calculateDiffuseColor(orientedNormal, lightVector, materialColor);
+    vec3 color = calculateAmbientComponent();
+    color += calculateDiffuseColor(orientedNormal, lightVector);
     color += calculateSpecularComponent(orientedNormal, lightVector);
 
     return color;
@@ -82,8 +80,6 @@ vec3 getPhongColor(vec3 orientedNormal) {
 
 void main()
 {
-    vec3 color = getPhongColor(vertNormal);
-//    vec3 colorMapping = vec3(0.5,0.5,0.5);
-//    vec3 mappedColors = colorMapping*color + colorMapping;
+    vec3 color = getPhongColor(normalize(vertNormal));
     fColor = vec4(color, 1.0);
 }

@@ -65,7 +65,7 @@ private:
     NormalShader normalShader;
     GouraudShader gouraudShader;
     PhongShader phongShader;
-    QVector<quint8> imageData;
+    QVector<quint8> textureData;
     float phongExponent = 1;
     void setDataToUniform();
 

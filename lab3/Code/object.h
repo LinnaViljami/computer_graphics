@@ -30,6 +30,7 @@ public:
     ImportedObject();
     ImportedObject(ImportedObjectType objectType, Material material = Material());
     std::vector<vertex3d> vertices;
+    QVector<QVector2D> textureCoordinates;
     GLuint vboId;
     GLuint vaoId;
     ImportedObjectProperties modelProps;

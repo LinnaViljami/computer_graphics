@@ -61,7 +61,7 @@ void MainView::initializeGL() {
 
     // Enable backface culling
     glEnable(GL_CULL_FACE);
-
+    glEnable(GL_TEXTURE_2D);
     // Default is GL_LESS
     glDepthFunc(GL_LEQUAL);
 
@@ -103,6 +103,7 @@ void MainView::initializeObject() {
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     GLintptr coordinatPtrIndex = 0*sizeof(float);
     GLintptr colorPtrIndex = offsetof(vertex3d, normalX);
@@ -152,9 +153,9 @@ void MainView::setDataToUniform()
 QVector3D MainView::getLightPosition()
 {
     return {
-        2.0f,
-        8.0f,
-        10.0f
+        -4.0f,
+        6.0f,
+        8.0f
     };
 }
 
@@ -169,16 +170,18 @@ QVector3D MainView::getLightColor()
 
 void MainView::loadTexture(QString file, GLuint texturePtr)
 {
-        glBindTexture(GL_TEXTURE_2D, texturePtr);
+
 //        glTexParameteri(GL TEXTURE 2D, <Parameter Name>, <Parameter Value>);
 
         // set some parameters, not really understand what these values should be
+
+        glBindTexture(GL_TEXTURE_2D, texturePtr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         textureData = imageToBytes(QImage(file));
-        glTexImage2D(texturePtr,0,GL_RGBA8, 512,1024,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, 512,1024,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
 
@@ -202,9 +205,10 @@ void MainView::paintObject()
     };
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
     if(textureUniformLocation != nullptr){
-        loadTexture(":/textures/cat_diff.png", static_cast<GLuint>(*textureUniformLocation));
+        loadTexture(":/textures/cat_diff.png", textureLocation);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,static_cast<GLuint>(*textureUniformLocation));
+        glBindTexture(GL_TEXTURE_2D,textureLocation);
+        glUniform1i(*textureUniformLocation, 0);
 
     }
     setDataToUniform();

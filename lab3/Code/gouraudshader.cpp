@@ -54,5 +54,5 @@ void GouraudShader::setUniformLocations()
     lightPositionUniformLocation = shaderProgram.uniformLocation("lightPosition");
     lightColorUniformLocation = shaderProgram.uniformLocation("lightColor");
     phongExponentUniformLocation = shaderProgram.uniformLocation("phongExponent");
-    textureUniformLocation = shaderProgram.uniformLocation("texture");
+    textureUniformLocation = shaderProgram.uniformLocation("textureUniform");
 }

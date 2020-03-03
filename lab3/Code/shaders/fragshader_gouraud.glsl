@@ -14,12 +14,14 @@ in vec2 textureCoords;
 // Usually a vec4 describing a color (Red, Green, Blue, Alpha/Transparency)
 out vec4 fColor;
 
-uniform sampler2D texture;
+uniform sampler2D textureUniform;
 
 void main()
 {
-    vec4 textureColor = texture(texture, textureCoords);
+    vec4 textureColor = texture(textureUniform, textureCoords);
 //    vec3 colorMapping = vec3(0.5,0.5,0.5);
 //    vec3 mappedColors = colorMapping*vertColor + colorMapping;
+
     fColor = vec4(vertColor, 1.0);
+//    fColor = textureColor;
 }

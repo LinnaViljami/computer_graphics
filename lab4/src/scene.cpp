@@ -29,6 +29,17 @@ pair<ObjectPtr, Hit> Scene::castRay(Ray const &ray) const
     return pair<ObjectPtr, Hit>(obj, min_hit);
 }
 
+bool Scene::isShadow(Point hit, Vector L) {
+    Ray shadowRay(hit, L);
+    pair<ObjectPtr, Hit> shadowHit = castRay(shadowRay);
+    ObjectPtr obj = shadowHit.first;
+    // Hit min_hit = shadowHit.second;
+
+    if (!obj) return false;
+
+    return true;
+}
+
 Color Scene::trace(Ray const &ray, unsigned depth)
 {
     pair<ObjectPtr, Hit> mainhit = castRay(ray);
@@ -63,6 +74,10 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     for (auto const &light : lights)
     {
         Vector L = (light->position - hit).normalized();
+
+        if (isShadow(hit, L)) {
+            continue;
+        }
 
         // Add diffuse.
         double diffuse = std::max(shadingN.dot(L), 0.0);

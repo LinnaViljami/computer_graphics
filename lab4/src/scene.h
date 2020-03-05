@@ -51,7 +51,7 @@ class Scene
         unsigned getNumLights();
 
     private:
-        bool isShadow(Point hit, Vector L);
+        bool isShadow(Point hit, Vector L, Vector shadingN);
 };
 
 #endif

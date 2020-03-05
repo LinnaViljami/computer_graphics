@@ -29,11 +29,13 @@ pair<ObjectPtr, Hit> Scene::castRay(Ray const &ray) const
     return pair<ObjectPtr, Hit>(obj, min_hit);
 }
 
-bool Scene::isShadow(Point hit, Vector L) {
-    Ray shadowRay(hit, L);
+bool Scene::isShadow(Point hit, Vector L, Vector shadingN) {
+    // Use a small offset to prevent shadow acne.
+    Point modifiedHit = hit + epsilon * shadingN;
+
+    Ray shadowRay(modifiedHit, L);
     pair<ObjectPtr, Hit> shadowHit = castRay(shadowRay);
     ObjectPtr obj = shadowHit.first;
-    // Hit min_hit = shadowHit.second;
 
     if (!obj) return false;
 
@@ -75,7 +77,7 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     {
         Vector L = (light->position - hit).normalized();
 
-        if (isShadow(hit, L)) {
+        if (isShadow(hit, L, shadingN)) {
             continue;
         }
 

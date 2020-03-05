@@ -31,9 +31,9 @@ pair<ObjectPtr, Hit> Scene::castRay(Ray const &ray) const
 
 bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) {
     // Use a small offset to prevent shadow acne.
-    Point modifiedHit = hit + epsilon * shadingN;
+    Point modifiedHitPosition = hit + epsilon * shadingN;
 
-    Ray shadowRay(modifiedHit, L);
+    Ray shadowRay(modifiedHitPosition, L);
     pair<ObjectPtr, Hit> shadowHit = castRay(shadowRay);
     ObjectPtr obj = shadowHit.first;
     
@@ -55,6 +55,16 @@ bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) 
     }
 
     return true;
+}
+
+Color Scene::getReflectionColor(Point hitPosition, Vector I, Vector N, unsigned currentDepth) {
+    // Calculate reflection direction
+    Vector R = I - 2 * N.dot(I) * N;  
+
+    Point modifiedHitPosition = hitPosition + epsilon * N;
+    Ray reflectionRay(modifiedHitPosition, R);
+
+    return trace(reflectionRay, currentDepth - 1);
 }
 
 Color Scene::trace(Ray const &ray, unsigned depth)
@@ -118,6 +128,10 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     else if (depth > 0 and material.ks > 0.0)
     {
         // The object is not transparent, but opaque.
+        
+        Vector I = ray.D;   // Incoming direction
+        Color reflectionColor = getReflectionColor(hit, I, shadingN, depth);
+        color += material.ks * reflectionColor;
     }
 
     return color;

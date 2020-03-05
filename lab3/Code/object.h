@@ -10,9 +10,9 @@
 #include <QMatrix4x4>
 
 struct Material {
-    float ka = 0.5f;
+    float ka = 0.8f;
     float kd = 0.7f;
-    float ks = 0.1f;
+    float ks = 0.3f;
 };
 
 enum ImportedObjectType {cat, sphere, cube, flat_surface};

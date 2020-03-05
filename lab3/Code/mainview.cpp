@@ -61,7 +61,7 @@ void MainView::initializeGL() {
 
     // Enable backface culling
     glEnable(GL_CULL_FACE);
-    glEnable(GL_TEXTURE_2D);
+//    glEnable(GL_TEXTURE_2D);
     // Default is GL_LESS
     glDepthFunc(GL_LEQUAL);
 
@@ -111,7 +111,7 @@ void MainView::initializeObject() {
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
-    glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(QVector2D), (GLvoid*)(texturePtrIndex));
+    glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(vertex3d), (GLvoid*)(texturePtrIndex));
 
     // generate textures
     glGenTextures(1, &textureLocation);

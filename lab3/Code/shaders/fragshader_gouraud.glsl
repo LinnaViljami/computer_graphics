@@ -22,6 +22,6 @@ void main()
 //    vec3 colorMapping = vec3(0.5,0.5,0.5);
 //    vec3 mappedColors = colorMapping*vertColor + colorMapping;
 
-    fColor = vec4(vertColor, 1.0);
-//    fColor = textureColor;
+//    fColor = vec4(vertColor, 1.0);
+    fColor = textureColor;
 }

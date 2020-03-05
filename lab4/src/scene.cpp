@@ -29,15 +29,30 @@ pair<ObjectPtr, Hit> Scene::castRay(Ray const &ray) const
     return pair<ObjectPtr, Hit>(obj, min_hit);
 }
 
-bool Scene::isShadow(Point hit, Vector L, Vector shadingN) {
+bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) {
     // Use a small offset to prevent shadow acne.
     Point modifiedHit = hit + epsilon * shadingN;
 
     Ray shadowRay(modifiedHit, L);
     pair<ObjectPtr, Hit> shadowHit = castRay(shadowRay);
     ObjectPtr obj = shadowHit.first;
+    
+    Hit min_hit = shadowHit.second;
+    Point shadowHitPoint = shadowRay.at(min_hit.t);
 
-    if (!obj) return false;
+    if (!obj) {
+        // No object was hit by the shadow ray.
+        return false;
+    }
+
+    const double distanceToLight = (hit - lightPosition).length();
+    const double distanceToShadowRayHit = (hit - shadowHitPoint).length();
+
+    if (distanceToShadowRayHit > distanceToLight) {
+        // The shadow ray hit an object, but after reaching the light. The 
+        // light is in between the object and the hit. This is not a shadow.
+        return false;
+    }
 
     return true;
 }
@@ -77,7 +92,9 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     {
         Vector L = (light->position - hit).normalized();
 
-        if (isShadow(hit, L, shadingN)) {
+
+        if (renderShadows && isShadow(hit, L, light->position, shadingN)) {
+            // Don't add lighting if the hit is in the shadow of this light.
             continue;
         }
 

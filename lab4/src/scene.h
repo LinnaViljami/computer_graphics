@@ -51,6 +51,7 @@ class Scene
         unsigned getNumLights();
 
     private:
+        Point offsetPoint(Point hit, Vector normal);
         bool isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN);
         Color getReflectionColor(Point hitPosition, Vector I, Vector N, unsigned currentDepth);
 };

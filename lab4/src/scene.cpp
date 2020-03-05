@@ -29,11 +29,18 @@ pair<ObjectPtr, Hit> Scene::castRay(Ray const &ray) const
     return pair<ObjectPtr, Hit>(obj, min_hit);
 }
 
+// Returns a point with a small ofset relative to the input in the
+// direction of the normal. This can be used to prevent shadow acne
+// and similar issues.
+Point Scene::offsetPoint(Point hit, Vector normal) {
+    return hit + epsilon * normal;
+}
+
 bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) {
     // Use a small offset to prevent shadow acne.
-    Point modifiedHitPosition = hit + epsilon * shadingN;
+    hit = offsetPoint(hit, shadingN);
 
-    Ray shadowRay(modifiedHitPosition, L);
+    Ray shadowRay(hit, L);
     pair<ObjectPtr, Hit> shadowHit = castRay(shadowRay);
     ObjectPtr obj = shadowHit.first;
     
@@ -61,8 +68,8 @@ Color Scene::getReflectionColor(Point hitPosition, Vector I, Vector N, unsigned 
     // Calculate reflection direction
     Vector R = I - 2 * N.dot(I) * N;  
 
-    Point modifiedHitPosition = hitPosition + epsilon * N;
-    Ray reflectionRay(modifiedHitPosition, R);
+    hitPosition = offsetPoint(hitPosition, N);
+    Ray reflectionRay(hitPosition, R);
 
     return trace(reflectionRay, currentDepth - 1);
 }
@@ -124,13 +131,15 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     {
         // The object is transparent, and thus refracts and reflects light.
         // Use Schlick's approximation to determine the ratio between the two.
+        
+        // nt = material.nt
+        // P = hit
+        // D = ray.D
     }
     else if (depth > 0 and material.ks > 0.0)
     {
         // The object is not transparent, but opaque.
-        
-        Vector I = ray.D;   // Incoming direction
-        Color reflectionColor = getReflectionColor(hit, I, shadingN, depth);
+        Color reflectionColor = getReflectionColor(hit, ray.D, shadingN, depth);
         color += material.ks * reflectionColor;
     }
 

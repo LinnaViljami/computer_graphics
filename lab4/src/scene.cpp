@@ -64,23 +64,37 @@ bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) 
     return true;
 }
 
-Color Scene::getReflectionColor(Point hitPosition, Vector I, Vector N, unsigned currentDepth) {
+Color Scene::traceReflection(Point hitPosition, Vector I, Vector N, bool fromInside, unsigned currentDepth) {
     // Calculate reflection direction
     Vector R = I - 2 * N.dot(I) * N;  
 
-    hitPosition = offsetPoint(hitPosition, N);
+    if (fromInside) {
+        hitPosition = offsetPoint(hitPosition, -N);
+    } else {
+        hitPosition = offsetPoint(hitPosition, N);
+    }
     Ray reflectionRay(hitPosition, R);
 
     return trace(reflectionRay, currentDepth - 1);
 }
 
-Color Scene::refract(Point hitPosition, Vector D, Vector N, double ni, double nt, unsigned currentDepth) {
+Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, bool fromInside, unsigned currentDepth) {
     // These variable names are named after the components in the lecture slides.
     double redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
+
+    if (redComponent < 0) {
+        return Color(0, 0, 0);
+    }
+
     Vector rightHandSide = N * sqrt(redComponent);
     Vector leftHandSide = (ni * (D - (D.dot(N)) * N)) / nt;
     Vector T = leftHandSide - rightHandSide;
 
+    if (fromInside) {
+        hitPosition = offsetPoint(hitPosition, N);
+    } else {
+        hitPosition = offsetPoint(hitPosition, -N);
+    }
     Ray refractionRay(hitPosition, T);
     return trace(refractionRay, currentDepth - 1);
 }
@@ -144,13 +158,16 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         // Use Schlick's approximation to determine the ratio between the two.
         
         double ni, nt;
+        bool fromInside;
         if (ray.D.dot(shadingN) < 0) {
             // The angle between the ray and the normal is larger than 90
             // degrees, so this ray goes from the outside into the material.
+            fromInside = false;
             ni = 1.0;
             nt = material.nt;
         } else {
             // The ray comes from within a material and goes out.
+            fromInside = true;
             ni = material.nt;
             nt = 1.0;
         }
@@ -165,14 +182,13 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
 
-
-        refract(hit, ray.D, shadingN, ni, material.nt, depth);
+        color += kr * traceReflection(P, D, N, fromInside, depth);
+        color += kt * traceRefraction(P, D, N, ni, material.nt, fromInside, depth);
     }
     else if (depth > 0 and material.ks > 0.0)
     {
         // The object is not transparent, but opaque.
-        Color reflectionColor = getReflectionColor(hit, ray.D, shadingN, depth);
-        color += material.ks * reflectionColor;
+        color += material.ks * traceReflection(hit, ray.D, shadingN, false, depth);
     }
 
     return color;

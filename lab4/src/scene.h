@@ -53,8 +53,8 @@ class Scene
     private:
         Point offsetPoint(Point hit, Vector normal);
         bool isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN);
-        Color getReflectionColor(Point hitPosition, Vector I, Vector N, unsigned currentDepth);
-        Color refract(Point hitPosition, Vector D, Vector N, double ni, double nt, unsigned currentDepth);
+        Color traceReflection(Point hitPosition, Vector I, Vector N, bool fromInside, unsigned currentDepth);
+        Color traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, bool fromInside, unsigned currentDepth);
 };
 
 #endif

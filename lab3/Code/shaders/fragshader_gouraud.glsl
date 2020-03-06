@@ -6,7 +6,6 @@
 // Specify the inputs to the fragment shader
 // These must have the same type and name!
 in vec3 vertColor;
-in vec2 textureCoords;
 // Specify the Uniforms of the fragment shaders
 // uniform vec3 lightPosition; // for example
 
@@ -14,7 +13,6 @@ in vec2 textureCoords;
 // Usually a vec4 describing a color (Red, Green, Blue, Alpha/Transparency)
 out vec4 fColor;
 
-uniform sampler2D textureUniform;
 
 void main()
 {

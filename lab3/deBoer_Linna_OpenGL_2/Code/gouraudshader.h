@@ -1,13 +1,14 @@
-#ifndef PHONGSHADER_H
-#define PHONGSHADER_H
+#ifndef GOURAUDSHADER_H
+#define GOURAUDSHADER_H
 
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
 #include <shader.h>
-class PhongShader : public Shader
+
+class GouraudShader : public Shader
 {
 public:
-    PhongShader();
+    GouraudShader();
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
@@ -17,9 +18,9 @@ public:
     GLint lightColorUniformLocation;
     GLint phongExponentUniformLocation;
     GLint textureUniformLocation;
-    GLint useTexturesUniformLocation;
-
-    ShadingMode type() override;
+    // Shader interface
+public:
+    ShadingMode type();
     void setUniformData(QMatrix4x4 transformationMatrix,
                         QMatrix4x4 perspectiveTransformationMatrix,
                         QMatrix3x3 normalTransformationMatrix,
@@ -27,13 +28,13 @@ public:
                         QVector3D materialColor,
                         QVector3D lightPosition,
                         QVector3D lightColor,
-                        float phongExponent,
-                        bool useTextures);
+                        float phongExponent);
     GLint * getTextureBufferLocation() override;
 private:
-    void createShaderPrograms() override;
-    void setUniformLocations() override;
+    void createShaderPrograms();
+    void setUniformLocations();
 
+    // Shader interface
 };
 
-#endif // PHONGSHADER_H
+#endif // GOURAUDSHADER_H

@@ -18,15 +18,6 @@
 #include <normalshader.h>
 #include <gouraudshader.h>
 
-enum TextureType {
-    NoTexture, Diff, Norm, Spec, Rug};
-
-struct TextureProperties {
-  QString fileName = ":/textures/cat_diff.png";
-  int width = 512;
-  int height = 1024;
-};
-
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 
@@ -85,18 +76,12 @@ private:
     QMatrix4x4 perspectiveTransformationMatrix;
 
     GLuint textureLocation;
-    TextureType currentTextureType;
-    bool useTextures;
-    void loadTexture(TextureProperties properties, GLuint texturePtr);
+    void loadTexture(QString file, GLuint texturePtr);
 
     // Painting methods
     void paintObject();
 
     void createShaderPrograms(Shader::ShadingMode shadingMode);
-
-
-
-    TextureProperties getTextureProperties(TextureType texture );
 };
 
 #endif // MAINVIEW_H

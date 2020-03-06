@@ -1,25 +1,43 @@
-#include "gouraudshader.h"
+#include "phongshader.h"
 
-GouraudShader::GouraudShader()
+PhongShader::PhongShader()
 {
 
 }
 
-Shader::ShadingMode GouraudShader::type()
-{
-    return ShadingMode::GOURAUD;
 
+
+//void PhongShader::init(QOpenGLFunctions_3_3_Core *glFuncPointer)
+//{
+//    glfunc = glFuncPointer;
+//    createShaderPrograms();
+//    setUniformLocations();
+//}
+
+//void PhongShader::bind()
+//{
+//    shaderProgram.bind();
+//}
+
+//void PhongShader::release()
+//{
+//    shaderProgram.release();
+//}
+
+Shader::ShadingMode PhongShader::type()
+{
+    return ShadingMode::PHONG;
 }
 
-void GouraudShader::setUniformData(QMatrix4x4 transformationMatrix,
-                                   QMatrix4x4 perspectiveTransformationMatrix,
-                                   QMatrix3x3 normalTransformationMatrix,
-                                   QVector3D material,
-                                   QVector3D materialColor,
-                                   QVector3D lightPosition,
-                                   QVector3D lightColor,
-                                   float phongExponent,
-                                   bool useTextures)
+void PhongShader::setUniformData(QMatrix4x4 transformationMatrix,
+                                 QMatrix4x4 perspectiveTransformationMatrix,
+                                 QMatrix3x3 normalTransformationMatrix,
+                                 QVector3D material,
+                                 QVector3D materialColor,
+                                 QVector3D lightPosition,
+                                 QVector3D lightColor,
+                                 float phongExponent
+                                 )
 {
     shaderProgram.setUniformValue(normalTransformationUniformLocation,normalTransformationMatrix);
     shaderProgram.setUniformValue(transformationUniformLocation, transformationMatrix);
@@ -29,24 +47,25 @@ void GouraudShader::setUniformData(QMatrix4x4 transformationMatrix,
     shaderProgram.setUniformValue(materialColorUniformLocation, materialColor);
     shaderProgram.setUniformValue(lightColorUniformLocation, lightColor);
     shaderProgram.setUniformValue(phongExponentUniformLocation, phongExponent);
-    shaderProgram.setUniformValue(useTexturesUniformLocation, useTextures);
 }
 
-GLint *GouraudShader::getTextureBufferLocation()
+GLint *PhongShader::getTextureBufferLocation()
 {
     return &textureUniformLocation;
 }
 
-void GouraudShader::createShaderPrograms()
+
+void PhongShader::createShaderPrograms()
 {
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                           ":/shaders/vertshader_gouraud.glsl");
+                                           ":/shaders/vertshader_phong.glsl");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                           ":/shaders/fragshader_gouraud.glsl");
+                                           ":/shaders/fragshader_phong.glsl");
+
     shaderProgram.link();
 }
 
-void GouraudShader::setUniformLocations()
+void PhongShader::setUniformLocations()
 {
     transformationUniformLocation = shaderProgram.uniformLocation("transformation");
     projectionUniformLocation = shaderProgram.uniformLocation("projection");
@@ -57,5 +76,6 @@ void GouraudShader::setUniformLocations()
     lightColorUniformLocation = shaderProgram.uniformLocation("lightColor");
     phongExponentUniformLocation = shaderProgram.uniformLocation("phongExponent");
     textureUniformLocation = shaderProgram.uniformLocation("textureUniform");
-    useTexturesUniformLocation = shaderProgram.uniformLocation("useTextures");
+
 }
+

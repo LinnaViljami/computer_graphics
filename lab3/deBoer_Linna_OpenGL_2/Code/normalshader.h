@@ -12,7 +12,6 @@ public:
     GLint transformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
-    GLint useTexturesUniformLocation;
 
 
     // Shader interface

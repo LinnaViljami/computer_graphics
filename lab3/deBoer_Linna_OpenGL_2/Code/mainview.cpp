@@ -61,7 +61,7 @@ void MainView::initializeGL() {
 
     // Enable backface culling
     glEnable(GL_CULL_FACE);
-//    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
     // Default is GL_LESS
     glDepthFunc(GL_LEQUAL);
 
@@ -82,31 +82,6 @@ void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
     normalShader.init();
     gouraudShader.init();
     setShadingMode(shadingMode);
-}
-
-TextureProperties MainView::getTextureProperties(TextureType texture)
-{
-    QString fileName;
-    int width = 512;
-    int height = 1024;
-    switch (texture) {
-    case NoTexture:
-        break;
-    case Diff:
-        fileName = ":/textures/cat_diff.png";
-        break;
-    case Norm:
-        fileName = ":/textures/cat_norm.png";
-        break;
-    case Spec:
-        fileName = ":/textures/cat_spec.png";
-        break;
-    case Rug:
-        fileName = ":/textures/rug_logo.png";
-        width = 1024;
-        break;
-    }
-    return TextureProperties{fileName, width, height};
 }
 
 
@@ -136,7 +111,7 @@ void MainView::initializeObject() {
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(coordinatPtrIndex));
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
-    glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(vertex3d), (GLvoid*)(texturePtrIndex));
+    glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(QVector2D), (GLvoid*)(texturePtrIndex));
 
     // generate textures
     glGenTextures(1, &textureLocation);
@@ -155,8 +130,7 @@ void MainView::setDataToUniform()
                                    object.getMaterialColorVector(),
                                    getLightPosition(),
                                    getLightColor(),
-                                   getPhongExponent(),
-                                   useTextures);
+                                   getPhongExponent());
         break;
     case Shader::NORMAL:
         normalShader.setUniformData(object.getModelTransformationMatrix(),
@@ -171,8 +145,7 @@ void MainView::setDataToUniform()
                                      object.getMaterialColorVector(),
                                      getLightPosition(),
                                      getLightColor(),
-                                     getPhongExponent(),
-                                     useTextures);
+                                     getPhongExponent());
         break;
     }
 }
@@ -195,16 +168,20 @@ QVector3D MainView::getLightColor()
     };
 }
 
-void MainView::loadTexture(TextureProperties properties, GLuint texturePtr)
+void MainView::loadTexture(QString file, GLuint texturePtr)
 {
+
+//        glTexParameteri(GL TEXTURE 2D, <Parameter Name>, <Parameter Value>);
+
+        // set some parameters, not really understand what these values should be
 
         glBindTexture(GL_TEXTURE_2D, texturePtr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        textureData = imageToBytes(QImage(properties.fileName));
-        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, properties.width,properties.height,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
+        textureData = imageToBytes(QImage(file));
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, 512,1024,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
 
@@ -219,7 +196,6 @@ float MainView::getPhongExponent()
 
 void MainView::paintObject()
 {
-    useTextures = true;
 
     object.translationMatrix = {
             1, 0, 0, 0,
@@ -228,9 +204,8 @@ void MainView::paintObject()
             0, 0, 0, 1,
     };
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
-    currentTextureType = TextureType::Diff;
-    if(textureUniformLocation != nullptr && currentTextureType != TextureType::NoTexture){
-        loadTexture(getTextureProperties(currentTextureType), textureLocation);
+    if(textureUniformLocation != nullptr){
+        loadTexture(":/textures/cat_diff.png", textureLocation);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,textureLocation);
         glUniform1i(*textureUniformLocation, 0);

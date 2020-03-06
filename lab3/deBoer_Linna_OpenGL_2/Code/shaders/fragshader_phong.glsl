@@ -7,11 +7,6 @@
 // These must have the same type and name!
 in vec3 vertNormal;
 
-//texture loading
-in vec2 textureCoords;
-uniform sampler2D textureUniform;
-uniform bool useTextures;
-
 // Specify the Uniforms of the fragment shader.
 // WARNING make sure to update the setters of uniform locations in the shader_x.cpp files
 // when changing any of these field names;
@@ -35,13 +30,13 @@ vec3 calculateNormalizedVector(vec3 from, vec3 to) {
     return normalize(result);
 }
 
-vec3 calculateAmbientComponent(vec3 textureColor) {
+vec3 calculateAmbientComponent() {
     float ka = material[0];
     float Ia = 1.0;
-    return Ia * ka * textureColor * lightColor;
+    return Ia * ka * materialColor * lightColor;
 }
 
-vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector, vec3 textureColor) {
+vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector) {
     float kd = material[1];
 
     float diffuseComponent = dot(orientedNormal, lightVector);
@@ -49,11 +44,11 @@ vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector, vec3 textureCo
         diffuseComponent = 0;
     }
 
-    vec3 diffuseColor = diffuseComponent * kd * textureColor * lightColor;
+    vec3 diffuseColor = diffuseComponent * kd * materialColor * lightColor;
     return diffuseColor;
 }
 
-vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector, vec3 textureColor) {
+vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
     float ks = material[2];
 
     vec3 R = 2 * (dot(orientedNormal, lightVector) * orientedNormal - lightVector);
@@ -64,35 +59,27 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector, vec3 text
     }
 
     specularComponent = pow(specularComponent, phongExponent);
-    vec3 specularColor = specularComponent * ks * textureColor * lightColor;
+    vec3 specularColor = specularComponent * ks * materialColor * lightColor;
 
     return specularColor;
 }
 
-vec3 getPhongColor(vec3 orientedNormal, vec3 textureColor) {
+vec3 getPhongColor(vec3 orientedNormal) {
     vec3 currentPosition = vec3(
                 gl_FragCoord.x,
                 gl_FragCoord.y,
                 gl_FragCoord.z);
     vec3 lightVector = calculateNormalizedVector(currentPosition, lightPosition);
 
-    vec3 color = calculateAmbientComponent(textureColor);
-    color += calculateDiffuseColor(orientedNormal, lightVector, textureColor);
-    color += calculateSpecularComponent(orientedNormal, lightVector, textureColor);
+    vec3 color = calculateAmbientComponent();
+    color += calculateDiffuseColor(orientedNormal, lightVector);
+    color += calculateSpecularComponent(orientedNormal, lightVector);
 
     return color;
 }
 
 void main()
 {
-    if(useTextures){
-        vec4 textureColor = texture(textureUniform, textureCoords);
-        vec3 color = getPhongColor(normalize(vertNormal), textureColor.xyz);
-        fColor = vec4(color, 1.0);
-    }
-    else{
-        vec3 color = getPhongColor(normalize(vertNormal), materialColor);
-        fColor = vec4(color, 1.0);
-    }
-
+    vec3 color = getPhongColor(normalize(vertNormal));
+    fColor = vec4(color, 1.0);
 }

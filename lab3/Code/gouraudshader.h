@@ -18,6 +18,7 @@ public:
     GLint lightColorUniformLocation;
     GLint phongExponentUniformLocation;
     GLint textureUniformLocation;
+    GLint useTexturesUniformLocation;
     // Shader interface
 public:
     ShadingMode type();
@@ -28,7 +29,8 @@ public:
                         QVector3D materialColor,
                         QVector3D lightPosition,
                         QVector3D lightColor,
-                        float phongExponent);
+                        float phongExponent,
+                        bool useTextures);
     GLint * getTextureBufferLocation() override;
 private:
     void createShaderPrograms();

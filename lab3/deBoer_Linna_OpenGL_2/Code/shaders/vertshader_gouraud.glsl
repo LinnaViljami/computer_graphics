@@ -14,6 +14,7 @@ uniform mat4 transformation;
 uniform mat4 projection;
 uniform mat3 normalTransformation;
 uniform vec3 material;              // ka, kd, ks
+uniform vec3 materialColor;         // r, g, b
 uniform vec3 lightPosition;         // x, y, z
 uniform vec3 lightColor;            // r, g, b
 
@@ -24,7 +25,7 @@ vec3 viewAngle = vec3(0, 0, -1);
 uniform float phongExponent;
 
 // Specify the output of the vertex stage
-out vec3 illuminationComponent;
+out vec3 vertColor;
 out vec2 textureCoords;
 
 vec3 calculateNormalizedVector(vec3 from, vec3 to) {
@@ -32,13 +33,13 @@ vec3 calculateNormalizedVector(vec3 from, vec3 to) {
     return normalize(result);
 }
 
-vec3 calculateAmbientComponent() {
+vec3 calculateAmbientComponent(vec3 materialColor) {
     float ka = material[0];
     float Ia = 0.1;
     return Ia * ka * lightColor;
 }
 
-vec3 calculateDiffuseComponent(vec3 orientedNormal, vec3 lightVector) {
+vec3 calculateDiffuseColor(vec3 orientedNormal, vec3 lightVector, vec3 materialColor) {
     float kd = material[1];
 
     float diffuseComponent = dot(orientedNormal, lightVector);
@@ -67,14 +68,14 @@ vec3 calculateSpecularComponent(vec3 orientedNormal, vec3 lightVector) {
     return specularColor;
 }
 
-vec3 getPhongIllumination(vec3 orientedNormal) {
+vec3 getPhongColor(vec3 orientedNormal) {
     vec3 lightVector = calculateNormalizedVector(vertCoordinates_in, lightPosition);
 
-    vec3 ambient = calculateAmbientComponent();
-    vec3 diffuse = calculateDiffuseComponent(orientedNormal, lightVector);;
+    vec3 ambient = calculateAmbientComponent(materialColor);
+    vec3 diffuse = calculateDiffuseColor(orientedNormal, lightVector, materialColor);;
     vec3 specular = calculateSpecularComponent(orientedNormal, lightVector);
 
-    vec3 color = (ambient+diffuse+specular);
+    vec3 color = (ambient+diffuse+specular) * materialColor;
     return color;
 }
 
@@ -85,5 +86,5 @@ void main()
     textureCoords = textureCoords_in;
     vec3 orientedNormal = normalTransformation * vertNormal_in;
 
-    illuminationComponent = getPhongIllumination(normalize(orientedNormal));
+    vertColor = getPhongColor(normalize(orientedNormal));
 }

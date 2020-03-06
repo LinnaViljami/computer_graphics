@@ -10,7 +10,7 @@
 #include <QMatrix4x4>
 
 struct Material {
-    float ka = 0.3f;
+    float ka = 0.5f;
     float kd = 0.7f;
     float ks = 0.1f;
 };

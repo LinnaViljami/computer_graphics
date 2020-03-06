@@ -84,6 +84,29 @@ void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
     setShadingMode(shadingMode);
 }
 
+TextureProperties MainView::getTextureProperties(TextureType texture)
+{
+    QString fileName;
+    int width = 512;
+    int height = 1024;
+    switch (texture) {
+    case diff:
+        fileName = ":/textures/cat_diff.png";
+        break;
+    case norm:
+        fileName = ":/textures/cat_norm.png";
+        break;
+    case spec:
+        fileName = ":/textures/cat_spec.png";
+        break;
+    case rug:
+        fileName = ":/textures/rug_logo.png";
+        width = 1024;
+        break;
+    }
+    return TextureProperties{fileName, width, height};
+}
+
 
 
 
@@ -168,20 +191,16 @@ QVector3D MainView::getLightColor()
     };
 }
 
-void MainView::loadTexture(QString file, GLuint texturePtr)
+void MainView::loadTexture(TextureProperties properties, GLuint texturePtr)
 {
-
-//        glTexParameteri(GL TEXTURE 2D, <Parameter Name>, <Parameter Value>);
-
-        // set some parameters, not really understand what these values should be
 
         glBindTexture(GL_TEXTURE_2D, texturePtr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        textureData = imageToBytes(QImage(file));
-        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, 512,1024,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
+        textureData = imageToBytes(QImage(properties.fileName));
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, properties.width,properties.height,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
         glGenerateMipmap(GL_TEXTURE_2D);
 
 
@@ -205,7 +224,7 @@ void MainView::paintObject()
     };
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
     if(textureUniformLocation != nullptr){
-        loadTexture(":/textures/cat_diff.png", textureLocation);
+        loadTexture(getTextureProperties(TextureType::rug), textureLocation);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,textureLocation);
         glUniform1i(*textureUniformLocation, 0);

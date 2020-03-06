@@ -188,23 +188,23 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         } else {
             cosThetaI = (-D).normalized().dot(N.normalized());
         }
-        
-        // printf("cosThetaI: %f\n", cosThetaI);
 
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
         // printf("kr: %f, kt: %f\n", kr, kt);
 
-        double redComponent;
+        double niOvernt = ni/nt;
+        double cosi;
         if (fromInside) {
-            redComponent = 1 - (ni*ni * (1 - pow(D.dot(-N), 2))) / (nt*nt);
+            cosi = D.dot(N);
         } else {
-            redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
+            cosi = D.dot(-N);   
         }
-
+        double redComponent = 1 - niOvernt * niOvernt * (1 - cosi * cosi);
+        
         if (redComponent < 0) {
             color += traceReflection(P, D, N, fromInside, depth);
-            printf("redcomponent < 0, reflecting...\n");
+            // printf("--- redcomponent < 0L total internal reflection --- \n");
         } else {
             color += kr * traceReflection(P, D, N, fromInside, depth);
             color += kt * traceRefraction(P, D, N, ni, material.nt, redComponent, fromInside, depth);

@@ -78,23 +78,20 @@ Color Scene::traceReflection(Point hitPosition, Vector I, Vector N, bool fromIns
     return trace(reflectionRay, currentDepth - 1);
 }
 
-Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, bool fromInside, unsigned currentDepth) {
-    // These variable names are named after the components in the lecture slides.
-    double redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
-
-    if (redComponent < 0) {
-        return Color(0, 0, 0);
+Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, double redComponent, bool fromInside, unsigned currentDepth) {
+    if (fromInside) {
+        hitPosition = offsetPoint(hitPosition, N);
+        N = -N;
+    } else {
+        hitPosition = offsetPoint(hitPosition, -N);
     }
-
+    
+    // These variable names are named after the components in the lecture slides.
     Vector rightHandSide = N * sqrt(redComponent);
     Vector leftHandSide = (ni * (D - (D.dot(N)) * N)) / nt;
     Vector T = leftHandSide - rightHandSide;
 
-    if (fromInside) {
-        hitPosition = offsetPoint(hitPosition, N);
-    } else {
-        hitPosition = offsetPoint(hitPosition, -N);
-    }
+    
     Ray refractionRay(hitPosition, T);
     return trace(refractionRay, currentDepth - 1);
 }
@@ -176,7 +173,6 @@ Color Scene::trace(Ray const &ray, unsigned depth)
 
         Point P = hit;
         Vector D = ray.D;
-        // Vector N = shadingN;
 
         double cosThetaI;
         if (fromInside) {
@@ -189,10 +185,16 @@ Color Scene::trace(Ray const &ray, unsigned depth)
 
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
-
         printf("kr: %f, kt: %f\n", kr, kt);
-        color += kr * traceReflection(P, D, N, fromInside, depth);
-        color += kt * traceRefraction(P, D, N, ni, material.nt, fromInside, depth);
+
+        double redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
+
+        if (redComponent < 0) {
+            color += traceReflection(P, D, N, fromInside, depth);
+        } else {
+            color += kr * traceReflection(P, D, N, fromInside, depth);
+            color += kt * traceRefraction(P, D, N, ni, material.nt, redComponent, fromInside, depth);
+        }
     }
     else if (depth > 0 and material.ks > 0.0)
     {

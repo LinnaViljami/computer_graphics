@@ -65,20 +65,21 @@ bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) 
 }
 
 Color Scene::traceReflection(Point hitPosition, Vector I, Vector N, bool fromInside, unsigned currentDepth) {
-    // Calculate reflection direction
-    Vector R = I - 2 * N.dot(I) * N;  
-
     if (fromInside) {
         hitPosition = offsetPoint(hitPosition, -N);
+        N = -N;
     } else {
         hitPosition = offsetPoint(hitPosition, N);
     }
-    Ray reflectionRay(hitPosition, R);
 
+    // Calculate reflection direction
+    Vector R = I - 2 * N.dot(I) * N;  
+
+    Ray reflectionRay(hitPosition, R);
     return trace(reflectionRay, currentDepth - 1);
 }
 
-Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, double redComponent, bool fromInside, unsigned currentDepth) {
+Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, double redComponent, bool fromInside, unsigned currentDepth) {    
     if (fromInside) {
         hitPosition = offsetPoint(hitPosition, N);
         N = -N;
@@ -93,7 +94,10 @@ Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, d
 
     
     Ray refractionRay(hitPosition, T);
-    return trace(refractionRay, currentDepth - 1);
+
+
+
+    return trace(refractionRay, currentDepth);
 }
 
 Color Scene::trace(Ray const &ray, unsigned depth)
@@ -149,6 +153,10 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         color += specular * material.ks * light->color;
     }
 
+    if (depth <= 0 and material.isTransparent) {
+        // ??
+    }
+
     if (depth > 0 and material.isTransparent)
     {
         // The object is transparent, and thus refracts and reflects light.
@@ -181,16 +189,22 @@ Color Scene::trace(Ray const &ray, unsigned depth)
             cosThetaI = (-D).normalized().dot(N.normalized());
         }
         
-        printf("cosThetaI: %f\n", cosThetaI);
+        // printf("cosThetaI: %f\n", cosThetaI);
 
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
-        printf("kr: %f, kt: %f\n", kr, kt);
+        // printf("kr: %f, kt: %f\n", kr, kt);
 
-        double redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
+        double redComponent;
+        if (fromInside) {
+            redComponent = 1 - (ni*ni * (1 - pow(D.dot(-N), 2))) / (nt*nt);
+        } else {
+            redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
+        }
 
         if (redComponent < 0) {
             color += traceReflection(P, D, N, fromInside, depth);
+            printf("redcomponent < 0, reflecting...\n");
         } else {
             color += kr * traceReflection(P, D, N, fromInside, depth);
             color += kt * traceRefraction(P, D, N, ni, material.nt, redComponent, fromInside, depth);

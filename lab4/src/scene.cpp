@@ -132,9 +132,21 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         // The object is transparent, and thus refracts and reflects light.
         // Use Schlick's approximation to determine the ratio between the two.
         
+        double ni;
+        double nt;
+        double kr0 = pow((ni-nt)/(ni+nt),2);
+
+        Point P = hit;
+        Vector D = ray.D;
+        Vector N = shadingN;
+        double cosThetaI = D.normalized().dot(N.normalized());
+
+        double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
+        double kt = 1 - kr;
         // nt = material.nt
         // P = hit
         // D = ray.D
+
     }
     else if (depth > 0 and material.ks > 0.0)
     {

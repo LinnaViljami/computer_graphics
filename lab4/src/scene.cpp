@@ -159,7 +159,7 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         
         double ni, nt;
         bool fromInside;
-        if (ray.D.dot(shadingN) < 0) {
+        if (ray.D.dot(N) < 0) {
             // The angle between the ray and the normal is larger than 90
             // degrees, so this ray goes from the outside into the material.
             fromInside = false;
@@ -176,19 +176,28 @@ Color Scene::trace(Ray const &ray, unsigned depth)
 
         Point P = hit;
         Vector D = ray.D;
-        Vector N = shadingN;
-        double cosThetaI = D.normalized().dot(N.normalized());
+        // Vector N = shadingN;
+
+        double cosThetaI;
+        if (fromInside) {
+            cosThetaI = D.normalized().dot(N.normalized());
+        } else {
+            cosThetaI = (-D).normalized().dot(N.normalized());
+        }
+        
+        printf("cosThetaI: %f\n", cosThetaI);
 
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
 
+        printf("kr: %f, kt: %f\n", kr, kt);
         color += kr * traceReflection(P, D, N, fromInside, depth);
         color += kt * traceRefraction(P, D, N, ni, material.nt, fromInside, depth);
     }
     else if (depth > 0 and material.ks > 0.0)
     {
         // The object is not transparent, but opaque.
-        color += material.ks * traceReflection(hit, ray.D, shadingN, false, depth);
+        color += material.ks * traceReflection(hit, ray.D, N, false, depth);
     }
 
     return color;

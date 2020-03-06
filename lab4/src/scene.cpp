@@ -74,6 +74,17 @@ Color Scene::getReflectionColor(Point hitPosition, Vector I, Vector N, unsigned 
     return trace(reflectionRay, currentDepth - 1);
 }
 
+Color Scene::refract(Point hitPosition, Vector D, Vector N, double ni, double nt, unsigned currentDepth) {
+    // These variable names are named after the components in the lecture slides.
+    double redComponent = 1 - (ni*ni * (1 - pow(D.dot(N), 2))) / (nt*nt);
+    Vector rightHandSide = N * sqrt(redComponent);
+    Vector leftHandSide = (ni * (D - (D.dot(N)) * N)) / nt;
+    Vector T = leftHandSide - rightHandSide;
+
+    Ray refractionRay(hitPosition, T);
+    return trace(refractionRay, currentDepth - 1);
+}
+
 Color Scene::trace(Ray const &ray, unsigned depth)
 {
     pair<ObjectPtr, Hit> mainhit = castRay(ray);
@@ -132,8 +143,18 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         // The object is transparent, and thus refracts and reflects light.
         // Use Schlick's approximation to determine the ratio between the two.
         
-        double ni;
-        double nt;
+        double ni, nt;
+        if (ray.D.dot(shadingN) < 0) {
+            // The angle between the ray and the normal is larger than 90
+            // degrees, so this ray goes from the outside into the material.
+            ni = 1.0;
+            nt = material.nt;
+        } else {
+            // The ray comes from within a material and goes out.
+            ni = material.nt;
+            nt = 1.0;
+        }
+
         double kr0 = pow((ni-nt)/(ni+nt),2);
 
         Point P = hit;
@@ -143,10 +164,9 @@ Color Scene::trace(Ray const &ray, unsigned depth)
 
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
-        // nt = material.nt
-        // P = hit
-        // D = ray.D
 
+
+        refract(hit, ray.D, shadingN, ni, material.nt, depth);
     }
     else if (depth > 0 and material.ks > 0.0)
     {

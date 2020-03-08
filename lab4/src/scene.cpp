@@ -97,7 +97,7 @@ Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, d
 
 
 
-    return trace(refractionRay, currentDepth);
+    return trace(refractionRay, currentDepth - 1);
 }
 
 Color Scene::trace(Ray const &ray, unsigned depth)
@@ -109,6 +109,7 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     // No hit? Return background color.
     if (!obj)
         return Color(0.0, 0.0, 0.0);
+
 
     Material const &material = obj->material;
     Point hit = ray.at(min_hit.t);
@@ -153,20 +154,19 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         color += specular * material.ks * light->color;
     }
 
-    if (depth <= 0 and material.isTransparent) {
-        // ??
-    }
 
-    if (depth > 0 and material.isTransparent)
+    if (depth > 0 && material.isTransparent)
     {
+        N.normalize();
+        Vector D = ray.D.normalized();
         // The object is transparent, and thus refracts and reflects light.
         // Use Schlick's approximation to determine the ratio between the two.
         
         double ni, nt;
         bool fromInside;
-        if (ray.D.dot(N) < 0) {
-            // The angle between the ray and the normal is larger than 90
-            // degrees, so this ray goes from the outside into the material.
+        //if angle between ray and normal is under 90 degree
+        if ((-1*D).dot(N) > 0) {
+            // ray comes from outside of the sphere
             fromInside = false;
             ni = 1.0;
             nt = material.nt;
@@ -180,34 +180,39 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         double kr0 = pow((ni-nt)/(ni+nt),2);
 
         Point P = hit;
-        Vector D = ray.D;
-
         double cosThetaI;
         if (fromInside) {
-            cosThetaI = D.normalized().dot(N.normalized());
+            cosThetaI = (-D).dot(-N);
         } else {
-            cosThetaI = (-D).normalized().dot(N.normalized());
+            cosThetaI = (-D).normalized().dot(N);
         }
 
         double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
         double kt = 1 - kr;
         // printf("kr: %f, kt: %f\n", kr, kt);
 
-        double niOvernt = ni/nt;
-        double cosi;
-        if (fromInside) {
-            cosi = D.dot(N);
-        } else {
-            cosi = D.dot(-N);   
+
+        // POSSIBLE MISTAKE N AND D DIRECTIONS
+        Vector normalTowardsRay;
+        if(fromInside){
+            normalTowardsRay = (-N);
         }
-        double redComponent = 1 - niOvernt * niOvernt * (1 - cosi * cosi);
+        else{
+            normalTowardsRay = N;
+        }
+        double redComponent =
+                1
+                    - (
+                        ((ni*ni) * (1- (pow((D.dot(normalTowardsRay)),2.0))))
+                        /(nt*nt)
+                    );
         
         if (redComponent < 0) {
+            printf("--- redcomponent < 0L total internal reflection --- \n");
             color += traceReflection(P, D, N, fromInside, depth);
-            // printf("--- redcomponent < 0L total internal reflection --- \n");
         } else {
             color += kr * traceReflection(P, D, N, fromInside, depth);
-            color += kt * traceRefraction(P, D, N, ni, material.nt, redComponent, fromInside, depth);
+            color += kt * traceRefraction(P, D, N, ni, nt, redComponent, fromInside, depth);
         }
     }
     else if (depth > 0 and material.ks > 0.0)

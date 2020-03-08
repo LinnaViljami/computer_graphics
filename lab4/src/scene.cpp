@@ -100,26 +100,11 @@ Color Scene::traceRefraction(Point hitPosition, Vector D, Vector N, double ni, d
     return trace(refractionRay, currentDepth - 1);
 }
 
-Color Scene::trace(Ray const &ray, unsigned depth)
+Color Scene::getPhongIlluminationColor(Material material, Point hitLocation, Vector surfaceNormal, Vector rayDirection)
 {
-    pair<ObjectPtr, Hit> mainhit = castRay(ray);
-    ObjectPtr obj = mainhit.first;
-    Hit min_hit = mainhit.second;
+    Vector N = surfaceNormal.normalized();
+    Vector V = -rayDirection.normalized();
 
-    // No hit? Return background color.
-    if (!obj)
-        return Color(0.0, 0.0, 0.0);
-
-
-    Material const &material = obj->material;
-    Point hit = ray.at(min_hit.t);
-    Vector V = -ray.D;
-
-    // Pre-condition: For closed objects, N points outwards.
-    Vector N = min_hit.N;
-
-    // The shading normal always points in the direction of the view,
-    // as required by the Phong illumination model.
     Vector shadingN;
     if (N.dot(V) >= 0.0)
         shadingN = N;
@@ -134,10 +119,10 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     // Add diffuse and specular components.
     for (auto const &light : lights)
     {
-        Vector L = (light->position - hit).normalized();
+        Vector L = (light->position - hitLocation).normalized();
 
 
-        if (renderShadows && isShadow(hit, L, light->position, shadingN)) {
+        if (renderShadows && isShadow(hitLocation, L, light->position, shadingN)) {
             // Don't add lighting if the hit is in the shadow of this light.
             continue;
         }
@@ -153,19 +138,81 @@ Color Scene::trace(Ray const &ray, unsigned depth)
 
         color += specular * material.ks * light->color;
     }
+    return color;
+}
+
+double Scene::getReflectionIntensityFactorApproximation(double ni, double nt, bool fromInside, Vector N, Vector D)
+{
+    N.normalize();
+    D.normalize();
+    double kr0 = pow((ni-nt)/(ni+nt),2);
 
 
+    double cosThetaI;
+    if (fromInside) {
+        cosThetaI = (-D).dot(-N);
+    } else {
+        cosThetaI = (-D).dot(N);
+    }
+
+    return kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
+
+}
+
+double Scene::getRedComponent(double ni, double nt, bool fromInside,  Vector N, Vector D)
+{
+    Vector normalTowardsRay;
+    if(fromInside){
+        normalTowardsRay = (-N);
+    }
+    else{
+        normalTowardsRay = N;
+    }
+
+    return 1 - (((ni*ni) * (1-(pow((D.dot(normalTowardsRay)),2.0))))     /     (nt*nt));
+
+
+}
+
+Color Scene::trace(Ray const &ray, unsigned depth)
+{
+    //background color
+    Color color = Color(0.0,0.0,0.0);
+
+    // extract hit information
+    pair<ObjectPtr, Hit> hitDetectionResult = castRay(ray);
+    ObjectPtr objectToHit = hitDetectionResult.first;
+    Hit hit = hitDetectionResult.second;
+
+    // If no  hit just return background color.
+    if (!objectToHit)
+        return color;
+
+
+    Material const &material = objectToHit->material;
+    Point hitLocation = ray.at(hit.t);
+
+
+    // Pre-condition: For closed objects, N points outwards.
+    Vector N = hit.N.normalized();
+    Vector D = ray.D.normalized();
+
+    // Add phong illumination color
+    color += getPhongIlluminationColor(material,hitLocation,N,D);
+
+    // track possible reflections and reftractions for transparent object
     if (depth > 0 && material.isTransparent)
     {
-        N.normalize();
-        Vector D = ray.D.normalized();
         // The object is transparent, and thus refracts and reflects light.
         // Use Schlick's approximation to determine the ratio between the two.
         
         double ni, nt;
         bool fromInside;
-        //if angle between ray and normal is under 90 degree
-        if ((-1*D).dot(N) > 0) {
+
+        // lambda function definition
+        auto isAngleOver90Degree = [](Vector vec1, Vector vec2){ return ((vec1).dot(vec2) > 0);};
+
+        if (isAngleOver90Degree(-D, N)) {
             // ray comes from outside of the sphere
             fromInside = false;
             ni = 1.0;
@@ -177,50 +224,28 @@ Color Scene::trace(Ray const &ray, unsigned depth)
             nt = 1.0;
         }
 
-        double kr0 = pow((ni-nt)/(ni+nt),2);
 
-        Point P = hit;
-        double cosThetaI;
-        if (fromInside) {
-            cosThetaI = (-D).dot(-N);
-        } else {
-            cosThetaI = (-D).normalized().dot(N);
-        }
-
-        double kr = kr0 + (1-kr0)*pow((1-cosThetaI),5.0);
+        // calculate reflection vs refraction intensity factors
+        double kr = getReflectionIntensityFactorApproximation(ni, nt, fromInside,N,D);
         double kt = 1 - kr;
-        // printf("kr: %f, kt: %f\n", kr, kt);
 
 
-        // POSSIBLE MISTAKE N AND D DIRECTIONS
-        Vector normalTowardsRay;
-        if(fromInside){
-            normalTowardsRay = (-N);
-        }
-        else{
-            normalTowardsRay = N;
-        }
-        double redComponent =
-                1
-                    - (
-                        ((ni*ni) * (1- (pow((D.dot(normalTowardsRay)),2.0))))
-                        /(nt*nt)
-                    );
-        
+        double redComponent = getRedComponent(ni, nt, fromInside, N, D);
+        Point P = hitLocation;
+
+        // if redComponent is negative total internal reflection happens
         if (redComponent < 0) {
-            printf("--- redcomponent < 0L total internal reflection --- \n");
             color += traceReflection(P, D, N, fromInside, depth);
         } else {
             color += kr * traceReflection(P, D, N, fromInside, depth);
             color += kt * traceRefraction(P, D, N, ni, nt, redComponent, fromInside, depth);
         }
     }
+    // if non transparent but reflective object
     else if (depth > 0 and material.ks > 0.0)
     {
-        // The object is not transparent, but opaque.
-        color += material.ks * traceReflection(hit, ray.D, N, false, depth);
+        color += material.ks * traceReflection(hitLocation, ray.D, N, false, depth);
     }
-
     return color;
 }
 

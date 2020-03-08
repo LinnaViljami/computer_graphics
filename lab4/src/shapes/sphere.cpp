@@ -40,9 +40,16 @@ Hit Sphere::intersect(Ray const &ray)
 
 Vector Sphere::toUV(Point const &hit)
 {
-    // placeholders
-    double u = 0.0;
-    double v = 0.0;
+    Point sphereCoordinates = (position - hit).normalized();
+
+    double x = sphereCoordinates.x;
+    double y = sphereCoordinates.y;
+    double z = sphereCoordinates.z;
+
+    // uv coordinates
+    double u = 0.5 + (atan2(y,x)/(2*M_PI));
+    double v = 1.0 - (acos(z/r)/M_PI);
+
 
     // Use a Vector to return 2 doubles. The third value is never read.
     return Vector{u, v, 0.0};

@@ -18,7 +18,7 @@
             "radius": 80,
             "material":
             {
-                "texture": "../textures/earthmap1k.png",
+                "texture": "../textures/bluegrid.png",
                 "ka": 0.2,
                 "kd": 0.8,
                 "ks": 0.0,

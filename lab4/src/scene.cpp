@@ -191,8 +191,12 @@ Color Scene::trace(Ray const &ray, unsigned depth)
         return color;
 
 
-    Material const &material = objectToHit->material;
+    Material material = objectToHit->material;
     Point hitLocation = ray.at(hit.t);
+    if(material.hasTexture){
+        Point uvCoords = objectToHit->toUV(hitLocation);
+        material.color = material.texture.colorAt(static_cast<float>(uvCoords.x), 1.0f - static_cast<float>(uvCoords.y));
+    }
 
 
     // Pre-condition: For closed objects, N points outwards.

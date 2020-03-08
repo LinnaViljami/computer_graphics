@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numeric>
+#include <iostream>
 
 using namespace std;
 
@@ -257,11 +259,16 @@ void Scene::render(Image &img)
     for (unsigned y = 0; y < h; ++y)
         for (unsigned x = 0; x < w; ++x)
         {
-            Point pixel(x + 0.5, h - 1 - y + 0.5, 0);
-            Ray ray(eye, (pixel - eye).normalized());
-            Color col = trace(ray, recursionDepth);
-            col.clamp();
-            img(x, y) = col;
+            Point pixelCorner(x, h - 1 - y, 0);
+            std::vector<Point> subPixels = getSuperSamplingPixels(pixelCorner);
+            std::vector<Color> subPixelColors = getPixelColors(subPixels);
+//            Color averageColor = Color(0.0, 0.0, 0.0);
+//            for (auto color : subPixelColors){
+//                averageColor += color;
+//                averageColor = averageColor/2;
+//            }
+            Color averageColor = std::accumulate(subPixelColors.begin(), subPixelColors.end(),Color(0.0,0.0,0.0))/subPixelColors.size();
+            img(x, y) = averageColor;
         }
 }
 
@@ -301,6 +308,79 @@ unsigned Scene::getNumObject()
 unsigned Scene::getNumLights()
 {
     return lights.size();
+}
+
+std::vector<Point> Scene::getSuperSamplingPixels(Point pixelCorner)
+{
+    if(supersamplingFactor <= 1){
+        return {Point(pixelCorner.x + 0.5, pixelCorner.y + 0.5, pixelCorner.z)};
+    }
+    else{
+        std::vector<Point> subPixels = {};
+        double subPixelSize = 1.0/static_cast<double>(supersamplingFactor);
+        for (unsigned i=0; i<supersamplingFactor; i++){
+//            std::cout << "i=" << i << " ,korkein " << supersamplingFactor << std::endl;
+            double deltaX = subPixelSize/2.0 + subPixelSize*i;
+            for (unsigned j=0; j<supersamplingFactor; j++){
+//                std::cout << "j=" << j << " ,korkein " << supersamplingFactor << std::endl;
+                double deltaY = subPixelSize/2.0 + subPixelSize*j;
+                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y + deltaY, pixelCorner.z));
+            }
+        }
+        return subPixels;
+    }
+//    else if(supersamplingFactor % 2 == 0){
+//        for (unsigned i=1; i<=(supersamplingFactor/2); i++){
+//            double deltaX = static_cast<double>(i)/static_cast<double>(supersamplingFactor+1);
+//            for (unsigned j=1; j<=(supersamplingFactor/2); j++){
+//                double deltaY = static_cast<double>(j)/static_cast<double>(supersamplingFactor+1);
+//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y + deltaY, pixelCorner.z));
+//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y - deltaY, pixelCorner.z));
+//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y + deltaY, pixelCorner.z));
+//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y - deltaY, pixelCorner.z));
+//            }
+//        }
+//    }
+//    else{
+//        // add pixels in vertical centerline of subpixel grid
+//        subPixels.push_back(pixelCorner);
+//        for (unsigned j=1; j<=((supersamplingFactor-1)/2); j++){
+//            double deltaY = static_cast<double>(j)/static_cast<double>(supersamplingFactor+1);
+//            subPixels.push_back(Point(pixelCorner.x, pixelCorner.y + deltaY, pixelCorner.z));
+//            subPixels.push_back(Point(pixelCorner.x, pixelCorner.y - deltaY, pixelCorner.z));
+//        }
+
+//        // add pixels outside of the vertical centerline row by row
+//        for (unsigned i=1; i<=((supersamplingFactor-1)/2); i++){
+//            double deltaX = static_cast<double>(i)/static_cast<double>(supersamplingFactor+1);
+//            for (unsigned j=1; j<=((supersamplingFactor-1)/2); j++){
+//                // add row pixels outride of the horizontal centreline
+//                double deltaY = static_cast<double>(j)/static_cast<double>(supersamplingFactor+1);
+//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y + deltaY, pixelCorner.z));
+//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y - deltaY, pixelCorner.z));
+//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y + deltaY, pixelCorner.z));
+//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y - deltaY, pixelCorner.z));
+//            }
+//            // add pixels in  this row horizontal centerline
+//            subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y, pixelCorner.z));
+//            subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y, pixelCorner.z));
+
+//        }
+//    }
+
+//    return subPixels;
+}
+
+std::vector<Color> Scene::getPixelColors(std::vector<Point> pixels)
+{
+    std::vector<Color> colors = {};
+    for (auto pixel : pixels){
+        Ray ray(eye, (pixel - eye).normalized());
+        Color col = trace(ray, recursionDepth);
+        col.clamp();
+        colors.push_back(col);
+    }
+    return colors;
 }
 
 void Scene::setRenderShadows(bool shadows)

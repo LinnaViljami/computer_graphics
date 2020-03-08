@@ -39,7 +39,6 @@ class Scene
         // render the scene to the given image
         void render(Image &img);
 
-
         void addObject(ObjectPtr obj);
         void addLight(Light const &light);
         void setEye(Triple const &position);
@@ -51,6 +50,8 @@ class Scene
         unsigned getNumLights();
 
     private:
+        std::vector<Point> getSuperSamplingPixels(Point pixelCorner);
+        std::vector<Color> getPixelColors(std::vector<Point> pixels);
         Point offsetPoint(Point hit, Vector normal);
         bool isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN);
         Color traceReflection(Point hitPosition, Vector I, Vector N, bool fromInside, unsigned currentDepth);

@@ -54,7 +54,7 @@ class Scene
         std::vector<Color> getPixelColors(std::vector<Point> pixels);
         Point offsetPoint(Point hit, Vector normal);
         bool isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN);
-        Color traceReflection(Point hitPosition, Vector I, Vector N, bool fromInside, unsigned currentDepth);
+        Color traceReflection(Point hitPosition, Vector D, Vector N, bool fromInside, unsigned currentDepth);
         Color traceRefraction(Point hitPosition, Vector D, Vector N, double ni, double nt, double redComponent, bool fromInside, unsigned currentDepth);
         Color getPhongIlluminationColor(Material material, Point hitLocation, Vector surfaceNormal, Vector rayDirection);
         double getReflectionIntensityFactorApproximation(double ni, double nt, bool fromInside, Vector N, Vector D);

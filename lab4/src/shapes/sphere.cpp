@@ -40,7 +40,7 @@ Hit Sphere::intersect(Ray const &ray)
 
 Vector Sphere::toUV(Point const &hit)
 {
-    Point sphereCoordinates = (position - hit).normalized();
+    Point sphereCoordinates = (hit - position);
 
     double x = sphereCoordinates.x;
     double y = sphereCoordinates.y;

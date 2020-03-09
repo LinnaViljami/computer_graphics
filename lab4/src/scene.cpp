@@ -66,7 +66,7 @@ bool Scene::isShadow(Point hit, Vector L, Point lightPosition, Vector shadingN) 
     return true;
 }
 
-Color Scene::traceReflection(Point hitPosition, Vector I, Vector N, bool fromInside, unsigned currentDepth) {
+Color Scene::traceReflection(Point hitPosition, Vector D, Vector N, bool fromInside, unsigned currentDepth) {
     if (fromInside) {
         hitPosition = offsetPoint(hitPosition, -N);
         N = -N;
@@ -75,7 +75,7 @@ Color Scene::traceReflection(Point hitPosition, Vector I, Vector N, bool fromIns
     }
 
     // Calculate reflection direction
-    Vector R = I - 2 * N.dot(I) * N;  
+    Vector R = D - 2 * N.dot(D) * N;
 
     Ray reflectionRay(hitPosition, R);
     return trace(reflectionRay, currentDepth - 1);
@@ -195,6 +195,7 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     Point hitLocation = ray.at(hit.t);
     if(material.hasTexture){
         Point uvCoords = objectToHit->toUV(hitLocation);
+//        std::cout << "texture coords: " << uvCoords <<  std::endl;
         material.color = material.texture.colorAt(static_cast<float>(uvCoords.x), 1.0f - static_cast<float>(uvCoords.y));
     }
 
@@ -241,6 +242,7 @@ Color Scene::trace(Ray const &ray, unsigned depth)
 
         // if redComponent is negative total internal reflection happens
         if (redComponent < 0) {
+//            std::cout << "Total reflection" << std::endl;
             color += traceReflection(P, D, N, fromInside, depth);
         } else {
             color += kr * traceReflection(P, D, N, fromInside, depth);
@@ -250,7 +252,7 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     // if non transparent but reflective object
     else if (depth > 0 and material.ks > 0.0)
     {
-        color += material.ks * traceReflection(hitLocation, ray.D, N, false, depth);
+        color += material.ks * traceReflection(hitLocation, D, N, false, depth);
     }
     return color;
 }
@@ -259,18 +261,13 @@ void Scene::render(Image &img)
 {
     unsigned w = img.width();
     unsigned h = img.height();
-
+    #pragma omp parallel for
     for (unsigned y = 0; y < h; ++y)
         for (unsigned x = 0; x < w; ++x)
         {
             Point pixelCorner(x, h - 1 - y, 0);
             std::vector<Point> subPixels = getSuperSamplingPixels(pixelCorner);
             std::vector<Color> subPixelColors = getPixelColors(subPixels);
-//            Color averageColor = Color(0.0, 0.0, 0.0);
-//            for (auto color : subPixelColors){
-//                averageColor += color;
-//                averageColor = averageColor/2;
-//            }
             Color averageColor = std::accumulate(subPixelColors.begin(), subPixelColors.end(),Color(0.0,0.0,0.0))/subPixelColors.size();
             img(x, y) = averageColor;
         }
@@ -333,46 +330,7 @@ std::vector<Point> Scene::getSuperSamplingPixels(Point pixelCorner)
         }
         return subPixels;
     }
-//    else if(supersamplingFactor % 2 == 0){
-//        for (unsigned i=1; i<=(supersamplingFactor/2); i++){
-//            double deltaX = static_cast<double>(i)/static_cast<double>(supersamplingFactor+1);
-//            for (unsigned j=1; j<=(supersamplingFactor/2); j++){
-//                double deltaY = static_cast<double>(j)/static_cast<double>(supersamplingFactor+1);
-//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y + deltaY, pixelCorner.z));
-//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y - deltaY, pixelCorner.z));
-//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y + deltaY, pixelCorner.z));
-//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y - deltaY, pixelCorner.z));
-//            }
-//        }
-//    }
-//    else{
-//        // add pixels in vertical centerline of subpixel grid
-//        subPixels.push_back(pixelCorner);
-//        for (unsigned j=1; j<=((supersamplingFactor-1)/2); j++){
-//            double deltaY = static_cast<double>(j)/static_cast<double>(supersamplingFactor+1);
-//            subPixels.push_back(Point(pixelCorner.x, pixelCorner.y + deltaY, pixelCorner.z));
-//            subPixels.push_back(Point(pixelCorner.x, pixelCorner.y - deltaY, pixelCorner.z));
-//        }
 
-//        // add pixels outside of the vertical centerline row by row
-//        for (unsigned i=1; i<=((supersamplingFactor-1)/2); i++){
-//            double deltaX = static_cast<double>(i)/static_cast<double>(supersamplingFactor+1);
-//            for (unsigned j=1; j<=((supersamplingFactor-1)/2); j++){
-//                // add row pixels outride of the horizontal centreline
-//                double deltaY = static_cast<double>(j)/static_cast<double>(supersamplingFactor+1);
-//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y + deltaY, pixelCorner.z));
-//                subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y - deltaY, pixelCorner.z));
-//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y + deltaY, pixelCorner.z));
-//                subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y - deltaY, pixelCorner.z));
-//            }
-//            // add pixels in  this row horizontal centerline
-//            subPixels.push_back(Point(pixelCorner.x - deltaX, pixelCorner.y, pixelCorner.z));
-//            subPixels.push_back(Point(pixelCorner.x + deltaX, pixelCorner.y, pixelCorner.z));
-
-//        }
-//    }
-
-//    return subPixels;
 }
 
 std::vector<Color> Scene::getPixelColors(std::vector<Point> pixels)
@@ -380,6 +338,7 @@ std::vector<Color> Scene::getPixelColors(std::vector<Point> pixels)
     std::vector<Color> colors = {};
     for (auto pixel : pixels){
         Ray ray(eye, (pixel - eye).normalized());
+//        std::cout << "shoot new ray." << std::endl;
         Color col = trace(ray, recursionDepth);
         col.clamp();
         colors.push_back(col);

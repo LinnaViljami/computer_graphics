@@ -204,6 +204,11 @@ Color Scene::trace(Ray const &ray, unsigned depth)
     Vector N = hit.N.normalized();
     Vector D = ray.D.normalized();
 
+    if (N.dot(-D) < 0) {
+        // Flip the normal if it is pointing away from the camera.
+        N = -N;
+    }
+
     // Add phong illumination color
     color += getPhongIlluminationColor(material,hitLocation,N,D);
 
@@ -268,7 +273,7 @@ void Scene::render(Image &img)
             Point pixelCorner(x, h - 1 - y, 0);
             std::vector<Point> subPixels = getSuperSamplingPixels(pixelCorner);
             std::vector<Color> subPixelColors = getPixelColors(subPixels);
-            Color averageColor = std::accumulate(subPixelColors.begin(), subPixelColors.end(),Color(0.0,0.0,0.0))/subPixelColors.size();
+            Color averageColor = std::accumulate(subPixelColors.begin(), subPixelColors.end(),Color(0.0,0.0,0.0)) / (supersamplingFactor * supersamplingFactor);
             img(x, y) = averageColor;
         }
 }
@@ -317,7 +322,8 @@ std::vector<Point> Scene::getSuperSamplingPixels(Point pixelCorner)
         return {Point(pixelCorner.x + 0.5, pixelCorner.y + 0.5, pixelCorner.z)};
     }
     else{
-        std::vector<Point> subPixels = {};
+        std::vector<Point> subPixels;
+        subPixels.reserve(supersamplingFactor * supersamplingFactor);
         double subPixelSize = 1.0/static_cast<double>(supersamplingFactor);
         for (unsigned i=0; i<supersamplingFactor; i++){
 //            std::cout << "i=" << i << " ,korkein " << supersamplingFactor << std::endl;
@@ -335,7 +341,9 @@ std::vector<Point> Scene::getSuperSamplingPixels(Point pixelCorner)
 
 std::vector<Color> Scene::getPixelColors(std::vector<Point> pixels)
 {
-    std::vector<Color> colors = {};
+    std::vector<Color> colors;
+    colors.reserve(pixels.size());
+
     for (auto pixel : pixels){
         Ray ray(eye, (pixel - eye).normalized());
 //        std::cout << "shoot new ray." << std::endl;

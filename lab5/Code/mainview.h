@@ -109,6 +109,8 @@ private:
 
     // The current shader to use.
     ShadingMode currentShader = PHONG;
+
+    float rotationAngle;
 };
 
 #endif // MAINVIEW_H

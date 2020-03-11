@@ -67,6 +67,9 @@ void MainView::initializeGL() {
     // Initialize transformations.
     updateProjectionTransform();
     updateModelTransforms();
+
+    rotationAngle = 0.0f;
+    timer.start(1000.0 / 60.0);
 }
 
 void MainView::createShaderProgram() {
@@ -167,6 +170,12 @@ void MainView::paintGL() {
         updatePhongUniforms();
         break;
     }
+
+    rotationAngle += 0.5f;
+    if (rotationAngle >= 360) rotationAngle -= 360;
+    qDebug() << "angle: " << rotationAngle;
+
+    setRotation(0, rotationAngle, 0);
 
     // Set the texture and draw the mesh.
     glActiveTexture(GL_TEXTURE0);

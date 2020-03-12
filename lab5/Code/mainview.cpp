@@ -173,7 +173,6 @@ void MainView::paintGL() {
 
     rotationAngle += 0.5f;
     if (rotationAngle >= 360) rotationAngle -= 360;
-    qDebug() << "angle: " << rotationAngle;
 
     setRotation(0, rotationAngle, 0);
 

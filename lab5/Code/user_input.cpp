@@ -5,7 +5,18 @@
 // Triggered by pressing a key
 void MainView::keyPressEvent(QKeyEvent *ev) {
     switch(ev->key()) {
-    case 'A': qDebug() << "A pressed"; break;
+    case 'W':
+        qDebug() << "Move forward";
+        break;
+    case 'S':
+        qDebug() << "Move backwards";
+        break;
+    case 'A':
+        qDebug() << "Move left";
+        break;
+    case 'D':
+        qDebug() << "Move right";
+        break;
     default:
         // ev->key() is an integer. For alpha numeric characters keys it equivalent with the char value ('A' == 65, '1' == 49)
         // Alternatively, you could use Qt Key enums, see http://doc.qt.io/qt-5/qt.html#Key-enum
@@ -20,7 +31,18 @@ void MainView::keyPressEvent(QKeyEvent *ev) {
 // Triggered by releasing a key
 void MainView::keyReleaseEvent(QKeyEvent *ev) {
     switch(ev->key()) {
-    case 'A': qDebug() << "A released"; break;
+    case 'W':
+        qDebug() << "Move forward";
+        break;
+    case 'S':
+        qDebug() << "Move backwards";
+        break;
+    case 'A':
+        qDebug() << "Move left";
+        break;
+    case 'D':
+        qDebug() << "Move right";
+        break;
     default:
         qDebug() << ev->key() << "released";
         break;

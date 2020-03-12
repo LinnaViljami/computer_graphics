@@ -91,7 +91,7 @@ void MainView::createShaderProgram() {
 }
 
 void MainView::loadMesh() {
-    Model model(":/models/cat.obj");
+    Model model(":/models/goat.obj");
     QVector<float> meshData = model.getVNTInterleaved();
 
     meshSize = model.getVertices().size();

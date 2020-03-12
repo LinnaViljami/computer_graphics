@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>models/cube.obj</file>
+	<file>models/goat.obj</file>
+	<file>models/bunny.obj</file>
         <file>models/flat_surface.obj</file>
         <file>textures/cat_diff.png</file>
         <file>textures/cat_norm.png</file>

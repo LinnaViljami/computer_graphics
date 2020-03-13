@@ -17,12 +17,15 @@
 #include <phongshader.h>
 #include <normalshader.h>
 #include <gouraudshader.h>
+#include "TextureType.h"
 
-enum TextureType {
-    NoTexture, Diff, Norm, Spec, Rug};
 
 enum SceneObject {
-    Goat};
+    // add new object types between first and last
+    FirstSceneObject,
+    Goat,
+
+    LastSceneObject};
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
@@ -56,7 +59,8 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
-    void initializeObject(SceneObject objectId, ImportedObjectType type);
+    void initializeObjects();
+    void initializeObject(SceneObject objectId, ImportedObjectType type, TextureType objectTexture);
 
 
 private:
@@ -76,10 +80,11 @@ private:
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
 
-    GLuint textureLocation;
-    TextureType currentTextureType;
-    bool useTextures;
-    void loadTexture(QString fileName , GLuint texturePtr);
+
+    std::map<TextureType, GLuint> textureNames;
+    GLuint getTextureName(TextureType textureType);
+    void loadTextures();
+    void loadTexture(TextureType textureType, GLuint& texturePtr);
 
     // Painting methods
     void paintObject(SceneObject objectId);

@@ -67,9 +67,8 @@ void MainView::initializeGL() {
     // Set the color to be used by glClear. This is, effectively, the background color.
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
     createShaderPrograms(Shader::PHONG);
-    initializeObject(SceneObject::Goat, ImportedObjectType::cat);
-    currentTextureType = TextureType::Diff;
-    loadTexture(getTextureFileName(currentTextureType), textureLocation);
+    initializeObjects();
+    loadTextures();
 }
 
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
@@ -82,12 +81,13 @@ void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
 
 QString MainView::getTextureFileName(TextureType texture)
 {
-    QString fileName;
+    QString fileName = "no filename";
     int width = 512;
     int height = 1024;
     switch (texture) {
     case NoTexture:
-        fileName = "no texture";
+        break;
+    case LastTexture:
         break;
     case Diff:
         fileName = ":/textures/cat_diff.png";
@@ -107,10 +107,10 @@ QString MainView::getTextureFileName(TextureType texture)
 }
 
 
-void MainView::initializeObject(SceneObject objectId, ImportedObjectType type) {
+void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, TextureType objectTexture) {
 
 
-    objects[objectId] = ImportedObject(type);
+    objects[objectId] = ImportedObject(type, objectTexture);
     ImportedObject* object = &objects.at(objectId);
     glGenBuffers(1, &object->vboId);
     glGenVertexArrays(1, &object->vaoId);
@@ -132,9 +132,6 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type) {
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
     glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(vertex3d), (GLvoid*)(texturePtrIndex));
 
-    // generate textures
-    glGenTextures(1, &textureLocation);
-
 }
 
 
@@ -149,7 +146,7 @@ void MainView::setDataToUniform(SceneObject objectId)
                                    object.getMaterialVector(),
                                    getLightPosition(),
                                    getLightColor(),
-                                   useTextures);
+                                   true);
         break;
     case Shader::NORMAL:
         normalShader.setUniformData(object.getModelTransformationMatrix(),
@@ -180,22 +177,41 @@ QVector3D MainView::getLightColor()
     };
 }
 
-void MainView::loadTexture(QString fileName, GLuint texturePtr)
+GLuint MainView::getTextureName(TextureType textureType)
+{
+    return textureNames.at(textureType);
+}
+
+void MainView::loadTextures() {
+    for (int textureTypeInt = TextureType::NoTexture; textureTypeInt != TextureType::LastTexture; textureTypeInt++){
+        TextureType textureType = TextureType(textureTypeInt);
+        textureNames[textureType] = GLuint();
+        GLuint& textureName = textureNames.at(textureType);
+        loadTexture(textureType, textureName);
+    }
+}
+
+void MainView::loadTexture(TextureType textureType, GLuint& textureName)
 {
 
-        glBindTexture(GL_TEXTURE_2D, texturePtr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        if(textureType != TextureType::NoTexture){
+            QString filename = getTextureFileName(textureType);
 
-        // Push image data to texture.
-        QImage image(fileName);
-        QVector<quint8> imageData = imageToBytes(image);
+            glGenTextures(1, &textureName);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(),
-                     0, GL_RGBA, GL_UNSIGNED_BYTE, imageData.data());
+            glBindTexture(GL_TEXTURE_2D, textureName);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+            // Push image data to texture.
+            QImage image(filename);
+            QVector<quint8> imageData = imageToBytes(image);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(),
+                         0, GL_RGBA, GL_UNSIGNED_BYTE, imageData.data());
+}
 
 
 
@@ -206,14 +222,12 @@ void MainView::paintObject(SceneObject objectId)
 {
     ImportedObject& object = objects.at(objectId);
     qDebug("Paint object called");
-    useTextures = true;
     object.setTranslation(0, -3, -10);
 
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
-    currentTextureType = TextureType::Diff;
-    if(textureUniformLocation != nullptr && currentTextureType != TextureType::NoTexture){
+    if(textureUniformLocation != nullptr && object.textureType != TextureType::NoTexture){
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,textureLocation);
+        glBindTexture(GL_TEXTURE_2D,textureNames.at(object.textureType));
         glUniform1i(*textureUniformLocation, 0);
 
     }
@@ -297,4 +311,22 @@ void MainView::setShadingMode(Shader::ShadingMode shading) {
  */
 void MainView::onMessageLogged( QOpenGLDebugMessage Message ) {
     qDebug() << " → Log:" << Message;
+}
+
+void MainView::initializeObjects()
+{
+    for (int sceneObjectInt = SceneObject::FirstSceneObject; sceneObjectInt != SceneObject::LastSceneObject; sceneObjectInt++){
+        SceneObject objectId = (SceneObject)sceneObjectInt;
+        switch (objectId) {
+        case FirstSceneObject:
+            break;
+
+        case Goat:
+            initializeObject(objectId, ImportedObjectType::cat, TextureType::Diff);
+            break;
+
+        case LastSceneObject:
+            break;
+        }
+    }
 }

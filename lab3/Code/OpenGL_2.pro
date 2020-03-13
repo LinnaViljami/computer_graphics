@@ -23,6 +23,7 @@ SOURCES += \
     utility.cpp
 
 HEADERS += \
+    TextureType.h \
     cube.h \
     gouraudshader.h \
     mainwindow.h \

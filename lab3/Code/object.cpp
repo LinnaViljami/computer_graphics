@@ -28,8 +28,9 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
 }
 
 
-ImportedObject::ImportedObject(ImportedObjectType objectType, Material material)
+ImportedObject::ImportedObject(ImportedObjectType objectType, TextureType texture, Material material)
 {
+    textureType = texture;
     modelProps = getModelProperties(objectType, material);
     QVector<QVector3D> vertexLocations = modelProps.model.getVertices();
     QVector<QVector3D> vertexNormals = modelProps.model.getNormals();

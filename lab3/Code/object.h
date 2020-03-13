@@ -8,6 +8,7 @@
 #include <GL/gl.h>
 #include "model.h"
 #include <QMatrix4x4>
+#include "TextureType.h"
 
 struct Material {
     float ka = 0.5f;
@@ -22,6 +23,7 @@ struct ImportedObjectProperties {
     Model model = Model(":/models/cat.obj");
     float scalingFactor = 1.0f;
     Material material = Material();
+    GLsizei nTextures = 1;
 };
 
 
@@ -29,11 +31,12 @@ class ImportedObject
 {
 public:
     ImportedObject();
-    ImportedObject(ImportedObjectType objectType, Material material = Material());
+    ImportedObject(ImportedObjectType objectType, TextureType texture, Material material = Material());
     std::vector<vertex3d> vertices;
     QVector<QVector2D> textureCoordinates;
     GLuint vboId;
     GLuint vaoId;
+    TextureType textureType;
     ImportedObjectProperties modelProps;
     QMatrix4x4 translationMatrix;
     QMatrix4x4 rotationMatrix;

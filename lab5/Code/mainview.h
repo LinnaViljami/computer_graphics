@@ -19,6 +19,10 @@
 #include <gouraudshader.h>
 #include "TextureType.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 enum SceneObject {
     // add new object types between first and last
@@ -87,6 +91,7 @@ private:
     void loadTextures();
     void loadTexture(TextureType textureType, GLuint& texturePtr);
     void initializeAnimationTimer();
+    void rotateCamera();
 
     // Painting methods
     void paintObject(SceneObject objectId);

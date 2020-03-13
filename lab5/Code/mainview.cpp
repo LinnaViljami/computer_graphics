@@ -224,11 +224,31 @@ void MainView::initializeAnimationTimer() {
     timer.start(1000.0 / 60.0);
 }
 
+void MainView::rotateCamera() {
+    // Make camera spin
+    const float radius = 10.0f;
+    float cameraX = sin(rotationAngle) * radius;
+    float cameraZ = cos(rotationAngle) * radius;
+
+    // Calculate camera view
+    glm::vec3 eye(cameraX, 0.0f, cameraZ);
+    glm::vec3 center(0.0f, 0.0f, 0.0f);
+    glm::vec3 up(0.0f, 1.0f, 0.0f);
+    glm::mat4 view = glm::lookAt(eye, center, up);
+
+    QMatrix4x4 cameraCorrection(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    for (int i = 0; i < 4; i++) {
+        QVector4D row(view[i][0], view[i][1], view[i][2], view[i][3]);
+        cameraCorrection.setRow(i, row);
+        qDebug() << "row: " << row;
+    }
+}
+
 
 void MainView::paintObject(SceneObject objectId)
 {
     ImportedObject& object = objects.at(objectId);
-    qDebug("Paint object called");
+//    qDebug("Paint object called");
     object.setTranslation(0, -3, -10);
 
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
@@ -257,8 +277,10 @@ void MainView::paintGL() {
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Drive animations
     rotationAngle += 1.0f;
-    if (rotationAngle >= 360) rotationAngle -= 360;
+    if (rotationAngle >= 3600) rotationAngle -= 3600;
+    rotateCamera();
 
     setRotation(0, rotationAngle, 0);
 

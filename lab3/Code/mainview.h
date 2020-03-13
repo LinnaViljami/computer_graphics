@@ -17,15 +17,15 @@
 #include <phongshader.h>
 #include <normalshader.h>
 #include <gouraudshader.h>
-#include "TextureType.h"
 
+enum TextureType {
+    NoTexture, Diff, Norm, Spec, Rug};
 
-enum SceneObject {
-    // add new object types between first and last
-    FirstSceneObject,
-    Goat,
-
-    LastSceneObject};
+struct TextureProperties {
+  QString fileName = ":/textures/cat_diff.png";
+  int width = 512;
+  int height = 1024;
+};
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
@@ -39,6 +39,7 @@ public:
     void setRotation(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
+    void updatePhongExponentValue(float value);
 
     QVector<quint8> imageToBytes(QImage image);
 protected:
@@ -59,41 +60,43 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
-    void initializeObjects();
-    void initializeObject(SceneObject objectId, ImportedObjectType type, TextureType objectTexture);
+    void initializePerspectiveMatrix();
+    void initializeObject();
 
 
 private:
-    std::map<SceneObject, ImportedObject> objects;
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
+    ImportedObject object;
 
     // Shader programs
     Shader* currentShader;
     NormalShader normalShader;
+    GouraudShader gouraudShader;
     PhongShader phongShader;
     QVector<quint8> textureData;
-    void setDataToUniform(SceneObject objectId);
+    float phongExponent = 1;
+    void setDataToUniform();
 
     QVector3D getLightPosition();
     QVector3D getLightColor();
+    float getPhongExponent();
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
 
-
-    std::map<TextureType, GLuint> textureNames;
-    GLuint getTextureName(TextureType textureType);
-    void loadTextures();
-    void loadTexture(TextureType textureType, GLuint& texturePtr);
+    GLuint textureLocation;
+    TextureType currentTextureType;
+    bool useTextures;
+    void loadTexture(TextureProperties properties, GLuint texturePtr);
 
     // Painting methods
-    void paintObject(SceneObject objectId);
+    void paintObject();
 
     void createShaderPrograms(Shader::ShadingMode shadingMode);
 
 
 
-    QString getTextureFileName(TextureType texture);
+    TextureProperties getTextureProperties(TextureType texture );
 };
 
 #endif // MAINVIEW_H

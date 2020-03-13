@@ -12,6 +12,7 @@ public:
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
     GLint materialUniformLocation;
+    GLint materialColorUniformLocation;
     GLint lightPositionUniformLocation;
     GLint lightColorUniformLocation;
     GLint phongExponentUniformLocation;
@@ -22,9 +23,11 @@ public:
     void setUniformData(QMatrix4x4 transformationMatrix,
                         QMatrix4x4 perspectiveTransformationMatrix,
                         QMatrix3x3 normalTransformationMatrix,
-                        QVector4D material,
+                        QVector3D material,
+                        QVector3D materialColor,
                         QVector3D lightPosition,
                         QVector3D lightColor,
+                        float phongExponent,
                         bool useTextures);
     GLint * getTextureBufferLocation() override;
 private:

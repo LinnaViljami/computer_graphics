@@ -15,23 +15,31 @@ uniform vec3 lightColor;
 
 // Texture sampler.
 uniform sampler2D textureSampler;
-
+uniform bool useTextures;
 // Specify the output of the fragment shader.
 out vec4 vertColor;
 
 void main()
 {
     // Ambient color does not depend on any vectors.
+    vec3 materialColor = vec3(0.5, 0.7, 0.2);
     vec3 texColor = texture(textureSampler, texCoords).xyz;
-    vec3 color    = material.x * texColor;
 
+    vec3 color;
+    vec3 colorForCalcs;
+    if(useTextures){
+        colorForCalcs = texColor;
+    }else{
+        colorForCalcs = materialColor;
+    }
+    color = material.x * colorForCalcs;
     // Calculate light direction vectors in the Phong illumination model.
     vec3 lightDirection    = normalize(relativeLightPosition - vertPosition);
     vec3 normal            = normalize(vertNormal);
 
     // Diffuse color.
     float diffuseIntensity = max(dot(normal, lightDirection), 0.0F);
-    color += texColor * material.y * diffuseIntensity;
+    color += colorForCalcs * material.y * diffuseIntensity;
 
     // Specular color.
     vec3 viewDirection      = normalize(-vertPosition); // The camera is always at (0, 0, 0).

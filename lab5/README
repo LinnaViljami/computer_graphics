@@ -1,8 +1,11 @@
-This is a README file
+Instructions:
+In the fragshaser_gouraud.glsl, the user can uncomment a line of code (marked with a code comment) to switch between regular shading modes and added textures. The textures are not fully functional yet. 
 
-When submitting your assignment, describe (briefly) the changes you made and what difficulties you encountered in this file.
+We have implemented a spin box where you can update the specular component of the Phong and Gouraud shaders during runtime. This is located in the UI.
 
-Also describe what controls (key short-cuts, mouse clicks, mouse movement etc) and possible bonus assignments you implemented, so we can check them more easily.
+8. The normal mapping colours the object in such a way that the colour of a pixel differs based on the angle between that normal and the camera. For example, at a location where the normal is pointing at the camera, the colour is close to blue, while a place where the normal points to the right, from the camera's perspective, the colour is red.
 
-If you have any suggestions/feedback for improving the practical assignments or support from teaching assistants, you may include it here OR post in anonymously on Nestor under Feedback.
 
+
+Feedback:
+It was hard to determin when we got the shaders right, since the values for ka, kd, ks, material color, light color, light position, etc, were not known for the example images. This assigment was really hard and this made it even harder.

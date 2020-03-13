@@ -5,6 +5,9 @@
 #include <QTextStream>
 
 Model::Model(QString filename) {
+    hNorms = false;
+    hTexs = false;
+
     qDebug() << ":: Loading model:" << filename;
     QFile file(filename);
     if(file.open(QIODevice::ReadOnly)) {
@@ -42,7 +45,7 @@ Model::Model(QString filename) {
         // create an array version of the data
         unpackIndexes();
 
-        // Align all vertex indices with the right normal/texturecoord indices
+        // Allign all vertex indices with the right normal/texturecoord indices
         alignData();
     }
 }
@@ -52,11 +55,11 @@ Model::Model(QString filename) {
  *
  * Unitize the model by scaling so that it fits a box with sides 1
  * and origin at 0,0,0
- * Useful for models with different scales
+ * Usefull for models with different scales
  *
  */
 void Model::unitize() {
-    qDebug() << "Unitize not implemented.";
+    qDebug() << "TODO: implement this yourself";
 }
 
 QVector<QVector3D> Model::getVertices() {
@@ -124,7 +127,6 @@ QVector<float> Model::getVNTInterleaved() {
     return buffer;
 }
 
-// Throws when there are no normals or texture values
 QVector<float> Model::getVNInterleaved_indexed() {
     QVector<float> buffer;
 
@@ -142,7 +144,6 @@ QVector<float> Model::getVNInterleaved_indexed() {
     return buffer;
 }
 
-// Throws when there are no normals or texture values
 QVector<float> Model::getVNTInterleaved_indexed() {
     QVector<float> buffer;
 
@@ -162,6 +163,8 @@ QVector<float> Model::getVNTInterleaved_indexed() {
 
     return buffer;
 }
+
+
 
 /**
  * @brief Model::getNumTriangles

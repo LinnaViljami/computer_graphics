@@ -1,10 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QSurfaceFormat>
-#include <ctime>
 
-int main(int argc, char *argv[]) {
-    std::srand(std::time(nullptr));
+int main(int argc, char *argv[])
+{
     QApplication a(argc, argv);
 
     // Request OpenGL 3.3 Core

@@ -24,7 +24,7 @@ enum SceneObject {
     // add new object types between first and last
     FirstSceneObject,
     Goat,
-
+    MySphere,
     LastSceneObject};
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {

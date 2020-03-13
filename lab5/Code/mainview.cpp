@@ -138,6 +138,7 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
 void MainView::setDataToUniform(SceneObject objectId)
 {
     ImportedObject& object = objects.at(objectId);
+    bool useTextures = (object.textureType != TextureType::NoTexture);
     switch (currentShader->type()) {
     case Shader::PHONG:
         phongShader.setUniformData(object.getModelTransformationMatrix(),
@@ -146,7 +147,7 @@ void MainView::setDataToUniform(SceneObject objectId)
                                    object.getMaterialVector(),
                                    getLightPosition(),
                                    getLightColor(),
-                                   true);
+                                   useTextures);
         break;
     case Shader::NORMAL:
         normalShader.setUniformData(object.getModelTransformationMatrix(),
@@ -251,6 +252,7 @@ void MainView::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     paintObject(SceneObject::Goat);
+    paintObject(SceneObject::MySphere);
     currentShader->release();
 }
 
@@ -319,6 +321,9 @@ void MainView::initializeObjects()
         SceneObject objectId = (SceneObject)sceneObjectInt;
         switch (objectId) {
         case FirstSceneObject:
+            break;
+        case MySphere:
+            initializeObject(objectId, ImportedObjectType::sphere, TextureType::NoTexture);
             break;
 
         case Goat:

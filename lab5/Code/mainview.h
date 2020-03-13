@@ -67,6 +67,7 @@ private:
     std::map<SceneObject, ImportedObject> objects;
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
+    float rotationAngle;
 
     // Shader programs
     Shader* currentShader;
@@ -85,13 +86,12 @@ private:
     GLuint getTextureName(TextureType textureType);
     void loadTextures();
     void loadTexture(TextureType textureType, GLuint& texturePtr);
+    void initializeAnimationTimer();
 
     // Painting methods
     void paintObject(SceneObject objectId);
 
     void createShaderPrograms(Shader::ShadingMode shadingMode);
-
-
 
     QString getTextureFileName(TextureType texture);
 };

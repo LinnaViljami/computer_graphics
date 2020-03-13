@@ -69,6 +69,7 @@ void MainView::initializeGL() {
     createShaderPrograms(Shader::PHONG);
     initializeObjects();
     loadTextures();
+    initializeAnimationTimer();
 }
 
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
@@ -218,6 +219,11 @@ void MainView::loadTexture(TextureType textureType, GLuint& textureName)
 
 }
 
+void MainView::initializeAnimationTimer() {
+    rotationAngle = 0.0f;
+    timer.start(1000.0 / 60.0);
+}
+
 
 void MainView::paintObject(SceneObject objectId)
 {
@@ -250,6 +256,11 @@ void MainView::paintGL() {
     currentShader->bind();
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    rotationAngle += 1.0f;
+    if (rotationAngle >= 360) rotationAngle -= 360;
+
+    setRotation(0, rotationAngle, 0);
 
     paintObject(SceneObject::Goat);
     paintObject(SceneObject::MySphere);

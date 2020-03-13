@@ -21,6 +21,9 @@
 enum TextureType {
     NoTexture, Diff, Norm, Spec, Rug};
 
+enum SceneObject {
+    Goat};
+
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 
@@ -33,7 +36,6 @@ public:
     void setRotation(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
-    void updatePhongExponentValue(float value);
 
     QVector<quint8> imageToBytes(QImage image);
 protected:
@@ -54,26 +56,23 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
-    void initializePerspectiveMatrix();
-    void initializeObject();
+    void initializeObject(SceneObject objectId, ImportedObjectType type);
 
 
 private:
+    std::map<SceneObject, ImportedObject> objects;
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
-    ImportedObject object;
 
     // Shader programs
     Shader* currentShader;
     NormalShader normalShader;
     PhongShader phongShader;
     QVector<quint8> textureData;
-    float phongExponent = 1;
-    void setDataToUniform();
+    void setDataToUniform(SceneObject objectId);
 
     QVector3D getLightPosition();
     QVector3D getLightColor();
-    float getPhongExponent();
     // Transformation matrices
     QMatrix4x4 perspectiveTransformationMatrix;
 
@@ -83,7 +82,7 @@ private:
     void loadTexture(QString fileName , GLuint texturePtr);
 
     // Painting methods
-    void paintObject();
+    void paintObject(SceneObject objectId);
 
     void createShaderPrograms(Shader::ShadingMode shadingMode);
 

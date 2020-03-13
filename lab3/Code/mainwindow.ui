@@ -232,24 +232,11 @@
            <bool>true</bool>
           </property>
          </widget>
-         <widget class="QSpinBox" name="phongSpinBox">
-          <property name="geometry">
-           <rect>
-            <x>12</x>
-            <y>63</y>
-            <width>47</width>
-            <height>24</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-         </widget>
          <widget class="QRadioButton" name="NormalButton">
           <property name="geometry">
            <rect>
-            <x>12</x>
-            <y>96</y>
+            <x>10</x>
+            <y>60</y>
             <width>69</width>
             <height>21</height>
            </rect>
@@ -261,8 +248,8 @@
          <widget class="QRadioButton" name="GouraudButton">
           <property name="geometry">
            <rect>
-            <x>12</x>
-            <y>126</y>
+            <x>10</x>
+            <y>90</y>
             <width>77</width>
             <height>21</height>
            </rect>

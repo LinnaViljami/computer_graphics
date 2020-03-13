@@ -41,7 +41,9 @@ public:
     QMatrix4x4 getModelTransformationMatrix();
     QVector4D getMaterialVector();
     QVector3D getMaterialColorVector();
-
+    void setRotation(int rotateX, int rotateY, int rotateZ);
+    void setScale(int scale);
+    void setTranslation(float translateX, float translateY, float translateZ);
 
 private:
     ImportedObjectProperties getModelProperties(ImportedObjectType modelType, Material material);

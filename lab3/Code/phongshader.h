@@ -25,7 +25,6 @@ public:
                         QVector4D material,
                         QVector3D lightPosition,
                         QVector3D lightColor,
-                        float phongExponent,
                         bool useTextures);
     GLint * getTextureBufferLocation() override;
 private:

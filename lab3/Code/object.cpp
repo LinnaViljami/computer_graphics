@@ -1,4 +1,5 @@
 #include "object.h"
+#include <QtMath>
 
 ImportedObject::ImportedObject() : vertices({}), translationMatrix(), rotationMatrix(), textureCoordinates(), scalingMatrix()
 {
@@ -52,6 +53,9 @@ ImportedObject::ImportedObject(ImportedObjectType objectType, Material material)
     }
 
     vertices = vertices_init;
+    translationMatrix.setToIdentity();
+    rotationMatrix.setToIdentity();
+    scalingMatrix.setToIdentity();
 }
 
 QMatrix4x4 ImportedObject::getModelTransformationMatrix()
@@ -74,5 +78,55 @@ QVector4D ImportedObject::getMaterialVector()
 QVector3D ImportedObject::getMaterialColorVector()
 {
     return {0.4f, 0.4f, 0.4f};
+}
+
+void ImportedObject::setRotation(int rotateX, int rotateY, int rotateZ)
+{
+    qreal rotx_rad = static_cast<qreal>(rotateX)*2.0*3.141/360.0;
+    QMatrix4x4 xRotationMatrix = {
+            1 , 0, 0, 0,
+            0, static_cast<float>(qCos(rotx_rad)), static_cast<float>(-qSin(rotx_rad)), 0,
+            0, static_cast<float>(qSin(rotx_rad)), static_cast<float>(qCos(rotx_rad)), 0,
+            0, 0, 0, 1,
+    };
+
+    qreal roty_rad = static_cast<qreal>(rotateY)*2.0*3.141/360.0;
+    QMatrix4x4 yRotationMatrix = {
+            static_cast<float>(qCos(roty_rad)) , 0, static_cast<float>(qSin(roty_rad)), 0,
+            0, 1, 0, 0,
+            static_cast<float>(-qSin(roty_rad)), 0, static_cast<float>(qCos(roty_rad)), 0,
+            0, 0, 0, 1,
+    };
+
+    qreal rotz_rad = static_cast<qreal>(rotateZ)*2.0*3.141/360.0;
+    QMatrix4x4 zRotationMatrix = {
+        static_cast<float>(qCos(rotz_rad)), static_cast<float>(-qSin(rotz_rad)), 0,0,
+        static_cast<float>(qSin(rotz_rad)), static_cast<float>(qCos(rotz_rad)), 0, 0,
+        0,0,1,0,
+        0, 0, 0, 1,
+    };
+
+    rotationMatrix = xRotationMatrix * yRotationMatrix * zRotationMatrix;
+}
+
+void ImportedObject::setScale(int scale)
+{
+    scalingMatrix = {
+                static_cast<float>(scale)/100 , 0, 0, 0,
+                0, static_cast<float>(scale)/100, 0, 0,
+                0, 0, static_cast<float>(scale)/100, 0,
+                0, 0, 0, 1,
+    };
+}
+
+void ImportedObject::setTranslation(float translateX, float translateY, float translateZ)
+{
+    translationMatrix = {
+                1, 0, 0, translateX,
+                0, 1, 0, translateY,
+                0, 0, 1, translateZ,
+                0, 0, 0, 1,
+        };
+
 }
 

@@ -10,9 +10,10 @@
 #include <QMatrix4x4>
 
 struct Material {
-    float ka = 0.3f;
-    float kd = 0.7f;
-    float ks = 0.1f;
+    float ka = 0.5f;
+    float kd = 0.5f;
+    float ks = 0.5f;
+    float phongExponent = 5.0f;
 };
 
 enum ImportedObjectType {cat, sphere, cube, flat_surface};
@@ -38,7 +39,7 @@ public:
     QMatrix4x4 rotationMatrix;
     QMatrix4x4 scalingMatrix;
     QMatrix4x4 getModelTransformationMatrix();
-    QVector3D getMaterialVector();
+    QVector4D getMaterialVector();
     QVector3D getMaterialColorVector();
 
 

@@ -59,12 +59,13 @@ QMatrix4x4 ImportedObject::getModelTransformationMatrix()
     return translationMatrix * rotationMatrix * scalingMatrix;
 }
 
-QVector3D ImportedObject::getMaterialVector()
+QVector4D ImportedObject::getMaterialVector()
 {
     return {
             modelProps.material.ka,
             modelProps.material.kd,
-            modelProps.material.ks
+            modelProps.material.ks,
+            modelProps.material.phongExponent
         };
 }
 

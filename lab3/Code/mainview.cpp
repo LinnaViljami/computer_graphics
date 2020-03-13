@@ -73,6 +73,8 @@ void MainView::initializeGL() {
     initializePerspectiveMatrix();
 
     initializeObject();
+    currentTextureType = TextureType::Diff;
+    loadTexture(getTextureFileName(currentTextureType), textureLocation);
 }
 
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
@@ -80,17 +82,17 @@ void MainView::initializeGL() {
 void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
     phongShader.init();
     normalShader.init();
-    gouraudShader.init();
     setShadingMode(shadingMode);
 }
 
-TextureProperties MainView::getTextureProperties(TextureType texture)
+QString MainView::getTextureFileName(TextureType texture)
 {
     QString fileName;
     int width = 512;
     int height = 1024;
     switch (texture) {
     case NoTexture:
+        fileName = "no texture";
         break;
     case Diff:
         fileName = ":/textures/cat_diff.png";
@@ -106,7 +108,7 @@ TextureProperties MainView::getTextureProperties(TextureType texture)
         width = 1024;
         break;
     }
-    return TextureProperties{fileName, width, height};
+    return fileName;
 }
 
 
@@ -152,7 +154,6 @@ void MainView::setDataToUniform()
                                    perspectiveTransformationMatrix,
                                    object.rotationMatrix.normalMatrix(),
                                    object.getMaterialVector(),
-                                   object.getMaterialColorVector(),
                                    getLightPosition(),
                                    getLightColor(),
                                    getPhongExponent(),
@@ -164,15 +165,7 @@ void MainView::setDataToUniform()
                                    object.rotationMatrix.normalMatrix());
         break;
     case Shader::GOURAUD:
-        gouraudShader.setUniformData(object.getModelTransformationMatrix(),
-                                     perspectiveTransformationMatrix,
-                                     object.rotationMatrix.normalMatrix(),
-                                     object.getMaterialVector(),
-                                     object.getMaterialColorVector(),
-                                     getLightPosition(),
-                                     getLightColor(),
-                                     getPhongExponent(),
-                                     useTextures);
+        qDebug("gouraud shader not implemented");
         break;
     }
 }
@@ -180,9 +173,9 @@ void MainView::setDataToUniform()
 QVector3D MainView::getLightPosition()
 {
     return {
-        -4.0f,
-        6.0f,
-        8.0f
+        0.0f,
+        100.0f,
+        0.0f
     };
 }
 
@@ -195,17 +188,20 @@ QVector3D MainView::getLightColor()
     };
 }
 
-void MainView::loadTexture(TextureProperties properties, GLuint texturePtr)
+void MainView::loadTexture(QString fileName, GLuint texturePtr)
 {
 
         glBindTexture(GL_TEXTURE_2D, texturePtr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        textureData = imageToBytes(QImage(properties.fileName));
-        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, properties.width,properties.height,0,GL_RGBA, GL_UNSIGNED_BYTE, textureData.data());
-        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        // Push image data to texture.
+        QImage image(fileName);
+        QVector<quint8> imageData = imageToBytes(image);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width(), image.height(),
+                     0, GL_RGBA, GL_UNSIGNED_BYTE, imageData.data());
 
 
 
@@ -219,6 +215,7 @@ float MainView::getPhongExponent()
 
 void MainView::paintObject()
 {
+    qDebug("Paint object called");
     useTextures = true;
 
     object.translationMatrix = {
@@ -230,7 +227,6 @@ void MainView::paintObject()
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
     currentTextureType = TextureType::Diff;
     if(textureUniformLocation != nullptr && currentTextureType != TextureType::NoTexture){
-        loadTexture(getTextureProperties(currentTextureType), textureLocation);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,textureLocation);
         glUniform1i(*textureUniformLocation, 0);
@@ -348,7 +344,7 @@ void MainView::setShadingMode(Shader::ShadingMode shading) {
         currentShader = &normalShader;
         break;
     case Shader::GOURAUD:
-        currentShader = &gouraudShader;
+        qDebug("gouraud shader not implemented");
         break;
     }
 }

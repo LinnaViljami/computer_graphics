@@ -228,29 +228,37 @@ void MainView::initializeAnimationTimer() {
 
 void MainView::initializeCameraPosition() {
     movingForwards = movingBackwards = movingLeft = movingRight = false;
+    mouseOffsetKnown = false;
+    yaw = 90.0f;
+    pitch = roll = 0.0f;
     cameraX = 0.0f;
     cameraZ = -10.0f;
 
-    // Performs the Gram–Schmidt process
-    QVector3D cameraTarget(0.0f, 0.0f, 0.0f);
-    cameraPosition = QVector3D(cameraX, 0.0f, cameraZ);
-    QVector3D up(0.0f, 1.0f, 0.0f);
 
+    // Performs the Gram–Schmidt process
+
+    cameraPosition = QVector3D(cameraX, 0.0f, cameraZ);
+    QVector3D cameraTarget(0.0f, 0.0f, 0.0f);
     // This value is in the direction of the negative z-axis.
     cameraDirection = (cameraTarget - cameraPosition).normalized();
+
+    qDebug() << "initial cameraDirection: " << cameraDirection;
+    QVector3D up(0.0f, 1.0f, 0.0f);
     cameraRight = QVector3D::crossProduct(up, cameraDirection);
     cameraUp = QVector3D::crossProduct(cameraDirection, cameraRight);
 }
 
 void MainView::updateCamera() {
-    // Make camera spin
-//    const float radius = 10.0f;
-//    float cameraX = sin(rotationAngle) * radius;
-//    float cameraZ = cos(rotationAngle) * radius;
+    cameraDirection = QVector3D(
+                cos(qDegreesToRadians(yaw)) * cos(qDegreesToRadians(pitch)),
+                sin(qDegreesToRadians(pitch)),
+                sin(qDegreesToRadians(yaw)) * cos(qDegreesToRadians(pitch))
+                );
+    cameraDirection = cameraDirection.normalized();
 
-    // Calculate camera view
-//    QVector3D eye(cameraX, 0.0f, cameraZ);
-//    QVector3D center(0.0f, 0.0f, 0.0f);
+    QVector3D up(0.0f, 1.0f, 0.0f);
+    cameraRight = QVector3D::crossProduct(up, cameraDirection);
+    cameraUp = QVector3D::crossProduct(cameraDirection, cameraRight);
 
     QMatrix4x4 viewAngle;
     viewAngle.setToIdentity();

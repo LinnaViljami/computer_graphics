@@ -65,7 +65,32 @@ void MainView::mouseDoubleClickEvent(QMouseEvent *ev)
 // Triggered when moving the mouse inside the window (only when the mouse is clicked!)
 void MainView::mouseMoveEvent(QMouseEvent *ev)
 {
-    qDebug() << "x" << ev->x() << "y" << ev->y();
+    mouseX = ev->x();
+    mouseY = ev->y();
+
+    if (!mouseOffsetKnown) {
+        mouseOffsetX = mouseX;
+        mouseOffsetY = mouseY;
+        mouseOffsetKnown = true;
+    }
+
+    float deltaYaw = (mouseX - mouseOffsetX) * 0.05f;
+    qDebug() << "mouse X: " << mouseX << ", mouseOffsetX: " << mouseOffsetX;
+    qDebug() << "deltaYaw: " << deltaYaw;
+
+    yaw += (mouseX - mouseOffsetX) * 0.10f;
+    pitch += (mouseY - mouseOffsetY) * 0.10f;
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    mouseOffsetX = mouseX;
+    mouseOffsetY = mouseY;
+
+    qDebug() << "yaw: " << yaw << ", pitch: " << pitch;
 
     update();
 }
@@ -84,6 +109,7 @@ void MainView::mousePressEvent(QMouseEvent *ev)
 void MainView::mouseReleaseEvent(QMouseEvent *ev)
 {
     qDebug() << "Mouse button released" << ev->button();
+    mouseOffsetKnown = false;
 
     update();
 }

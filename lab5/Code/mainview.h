@@ -46,6 +46,9 @@ public:
 
     // Camera movement
     bool movingForwards, movingBackwards, movingLeft, movingRight;
+    bool mouseOffsetKnown;
+    int mouseOffsetX, mouseOffsetY;
+    int mouseX, mouseY;
 
     QVector<quint8> imageToBytes(QImage image);
 protected:
@@ -104,6 +107,7 @@ private:
     void initializeCameraPosition();
 
     // Camera position and movement
+    float pitch, yaw, roll;
     void moveForwards();
     void moveBackwards();
     void moveLeft();

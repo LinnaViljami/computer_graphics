@@ -19,11 +19,6 @@
 #include <gouraudshader.h>
 #include "TextureType.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-
 enum SceneObject {
     // add new object types between first and last
     FirstSceneObject,

@@ -143,6 +143,7 @@ void MainView::setDataToUniform(SceneObject objectId)
     switch (currentShader->type()) {
     case Shader::PHONG:
         phongShader.setUniformData(object.getModelTransformationMatrix(),
+                                   viewTransformationMatrix,
                                    perspectiveTransformationMatrix,
                                    object.rotationMatrix.normalMatrix(),
                                    object.getMaterialVector(),
@@ -224,24 +225,41 @@ void MainView::initializeAnimationTimer() {
     timer.start(1000.0 / 60.0);
 }
 
-void MainView::rotateCamera() {
+void MainView::updateCameraPosition() {
+    //    // Performs the Gram–Schmidt process
+    QVector3D cameraTarget(0.0f, 0.0f, 0.0f);
+    QVector3D cameraPosition(0.0f, 0.0f, -10.0f);
+    QVector3D up(0.0f, 1.0f, 0.0f);
+
+    // This value is in the direction of the negative z-axis.
+    QVector3D cameraDirection = (cameraTarget - cameraPosition).normalized();
+    QVector3D cameraRight = QVector3D::crossProduct(up, cameraDirection);
+    QVector3D cameraUp = QVector3D::crossProduct(cameraDirection, cameraRight);
+
     // Make camera spin
-    const float radius = 10.0f;
-    float cameraX = sin(rotationAngle) * radius;
-    float cameraZ = cos(rotationAngle) * radius;
+//    const float radius = 10.0f;
+//    float cameraX = sin(rotationAngle) * radius;
+//    float cameraZ = cos(rotationAngle) * radius;
 
     // Calculate camera view
-    glm::vec3 eye(cameraX, 0.0f, cameraZ);
-    glm::vec3 center(0.0f, 0.0f, 0.0f);
-    glm::vec3 up(0.0f, 1.0f, 0.0f);
-    glm::mat4 view = glm::lookAt(eye, center, up);
+//    QVector3D eye(cameraX, 0.0f, cameraZ);
+//    QVector3D center(0.0f, 0.0f, 0.0f);
 
-    QMatrix4x4 cameraCorrection(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    for (int i = 0; i < 4; i++) {
-        QVector4D row(view[i][0], view[i][1], view[i][2], view[i][3]);
-        cameraCorrection.setRow(i, row);
-        qDebug() << "row: " << row;
-    }
+    QMatrix4x4 viewAngle;
+    viewAngle.setToIdentity();
+    viewAngle.setRow(0, QVector4D(cameraRight, 0.0f));
+    viewAngle.setRow(1, QVector4D(cameraUp, 0.0f));
+    viewAngle.setRow(2, QVector4D(cameraDirection, 0.0f));
+    viewAngle.setRow(3, QVector4D(0.0f, 0.0f, 0.0f, 1.0f));
+
+    QMatrix4x4 viewPosition;
+    viewPosition.setToIdentity();
+    viewPosition.setRow(0, QVector4D(1.0f, 0.0f, 0.0f, cameraPosition.x()));
+    viewPosition.setRow(1, QVector4D(0.0f, 1.0f, 0.0f, cameraPosition.y()));
+    viewPosition.setRow(2, QVector4D(0.0f, 0.0f, 1.0f, cameraPosition.z()));
+    viewPosition.setRow(3, QVector4D(0.0f, 0.0f, 0.0f, 1.0f));
+
+    viewTransformationMatrix = viewAngle * viewPosition;
 }
 
 
@@ -280,7 +298,7 @@ void MainView::paintGL() {
     // Drive animations
     rotationAngle += 1.0f;
     if (rotationAngle >= 3600) rotationAngle -= 3600;
-    rotateCamera();
+    updateCameraPosition();
 
     setRotation(0, rotationAngle, 0);
 

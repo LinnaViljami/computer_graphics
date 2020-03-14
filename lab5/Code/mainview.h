@@ -83,6 +83,7 @@ private:
     QVector3D getLightPosition();
     QVector3D getLightColor();
     // Transformation matrices
+    QMatrix4x4 viewTransformationMatrix;
     QMatrix4x4 perspectiveTransformationMatrix;
 
 
@@ -91,7 +92,7 @@ private:
     void loadTextures();
     void loadTexture(TextureType textureType, GLuint& texturePtr);
     void initializeAnimationTimer();
-    void rotateCamera();
+    void updateCameraPosition();
 
     // Painting methods
     void paintObject(SceneObject objectId);

@@ -11,6 +11,7 @@ Shader::ShadingMode PhongShader::type()
 }
 
 void PhongShader::setUniformData(QMatrix4x4 transformationMatrix,
+                                 QMatrix4x4 viewTransformationMatrix,
                                  QMatrix4x4 perspectiveTransformationMatrix,
                                  QMatrix3x3 normalTransformationMatrix,
                                  QVector4D material,
@@ -21,6 +22,7 @@ void PhongShader::setUniformData(QMatrix4x4 transformationMatrix,
 {
     shaderProgram.setUniformValue(normalTransformationUniformLocation,normalTransformationMatrix);
     shaderProgram.setUniformValue(transformationUniformLocation, transformationMatrix);
+    shaderProgram.setUniformValue(viewTransformationUniformLocation, viewTransformationMatrix);
     shaderProgram.setUniformValue(projectionUniformLocation,  perspectiveTransformationMatrix);
     shaderProgram.setUniformValue(lightPositionUniformLocation, lightPosition);
     shaderProgram.setUniformValue(materialUniformLocation, material);
@@ -47,6 +49,7 @@ void PhongShader::createShaderPrograms()
 void PhongShader::setUniformLocations()
 {
     transformationUniformLocation = shaderProgram.uniformLocation("modelViewTransform");
+    viewTransformationUniformLocation = shaderProgram.uniformLocation("viewTransform");
     projectionUniformLocation = shaderProgram.uniformLocation("projectionTransform");
     normalTransformationUniformLocation = shaderProgram.uniformLocation("normalTransform");
     materialUniformLocation = shaderProgram.uniformLocation("material");

@@ -69,6 +69,7 @@ void MainView::initializeGL() {
     createShaderPrograms(Shader::PHONG);
     initializeObjects();
     loadTextures();
+    initializeCameraPosition();
     initializeAnimationTimer();
 }
 
@@ -225,10 +226,15 @@ void MainView::initializeAnimationTimer() {
     timer.start(1000.0 / 60.0);
 }
 
+void MainView::initializeCameraPosition() {
+    cameraX = 0.0f;
+    cameraZ = -10.0f;
+}
+
 void MainView::updateCameraPosition() {
     //    // Performs the Gram–Schmidt process
     QVector3D cameraTarget(0.0f, 0.0f, 0.0f);
-    QVector3D cameraPosition(0.0f, 0.0f, -10.0f);
+    QVector3D cameraPosition(cameraX, 0.0f, cameraZ);
     QVector3D up(0.0f, 1.0f, 0.0f);
 
     // This value is in the direction of the negative z-axis.
@@ -260,6 +266,15 @@ void MainView::updateCameraPosition() {
     viewPosition.setRow(3, QVector4D(0.0f, 0.0f, 0.0f, 1.0f));
 
     viewTransformationMatrix = viewAngle * viewPosition;
+}
+
+
+void MainView::moveForwards() {
+    cameraZ += 0.5f;
+}
+
+void MainView::moveBackwards() {
+    cameraZ -= 0.5f;
 }
 
 

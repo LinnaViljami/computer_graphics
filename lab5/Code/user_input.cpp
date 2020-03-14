@@ -8,9 +8,11 @@ void MainView::keyPressEvent(QKeyEvent *ev)
     switch(ev->key()) {
     case 'W':
         qDebug() << "Start moving forward";
+        MainView::moveForwards();
         break;
     case 'S':
         qDebug() << "Start moving backwards";
+        MainView::moveBackwards();
         break;
     case 'A':
         qDebug() << "Start moving left";

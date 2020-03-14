@@ -44,6 +44,10 @@ public:
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
 
+    // Camera movement
+    void moveForwards();
+    void moveBackwards();
+
     QVector<quint8> imageToBytes(QImage image);
 protected:
     void initializeGL();
@@ -72,6 +76,8 @@ private:
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
     float rotationAngle;
+    float cameraX;
+    float cameraZ;
 
     // Shader programs
     Shader* currentShader;
@@ -92,6 +98,7 @@ private:
     void loadTextures();
     void loadTexture(TextureType textureType, GLuint& texturePtr);
     void initializeAnimationTimer();
+    void initializeCameraPosition();
     void updateCameraPosition();
 
     // Painting methods

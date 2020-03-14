@@ -228,7 +228,7 @@ void MainView::initializeAnimationTimer() {
 
 void MainView::initializeCameraPosition() {
     movingForwards = movingBackwards = movingLeft = movingRight = false;
-    mouseOffsetKnown = false;
+    previousMouseCoordinatesKnown = false;
     yaw = 90.0f;
     pitch = roll = 0.0f;
     cameraX = 0.0f;

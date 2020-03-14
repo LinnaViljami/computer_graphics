@@ -68,18 +68,14 @@ void MainView::mouseMoveEvent(QMouseEvent *ev)
     mouseX = ev->x();
     mouseY = ev->y();
 
-    if (!mouseOffsetKnown) {
-        mouseOffsetX = mouseX;
-        mouseOffsetY = mouseY;
-        mouseOffsetKnown = true;
+    if (!previousMouseCoordinatesKnown) {
+        previousMouseX = mouseX;
+        previousMouseY = mouseY;
+        previousMouseCoordinatesKnown = true;
     }
 
-    float deltaYaw = (mouseX - mouseOffsetX) * 0.05f;
-    qDebug() << "mouse X: " << mouseX << ", mouseOffsetX: " << mouseOffsetX;
-    qDebug() << "deltaYaw: " << deltaYaw;
-
-    yaw += (mouseX - mouseOffsetX) * 0.10f;
-    pitch += (mouseY - mouseOffsetY) * 0.10f;
+    yaw += (mouseX - previousMouseX) * 0.10f;
+    pitch += (mouseY - previousMouseY) * 0.10f;
     if (pitch > 89.0f) {
         pitch = 89.0f;
     }
@@ -87,8 +83,8 @@ void MainView::mouseMoveEvent(QMouseEvent *ev)
         pitch = -89.0f;
     }
 
-    mouseOffsetX = mouseX;
-    mouseOffsetY = mouseY;
+    previousMouseX = mouseX;
+    previousMouseY = mouseY;
 
     qDebug() << "yaw: " << yaw << ", pitch: " << pitch;
 
@@ -109,7 +105,7 @@ void MainView::mousePressEvent(QMouseEvent *ev)
 void MainView::mouseReleaseEvent(QMouseEvent *ev)
 {
     qDebug() << "Mouse button released" << ev->button();
-    mouseOffsetKnown = false;
+    previousMouseCoordinatesKnown = false;
 
     update();
 }

@@ -41,8 +41,8 @@ public:
 
     // Camera movement
     bool movingForwards, movingBackwards, movingLeft, movingRight;
-    bool mouseOffsetKnown;
-    int mouseOffsetX, mouseOffsetY;
+    bool previousMouseCoordinatesKnown;
+    int previousMouseX, previousMouseY;
     int mouseX, mouseY;
 
     QVector<quint8> imageToBytes(QImage image);

@@ -16,9 +16,11 @@ void MainView::keyPressEvent(QKeyEvent *ev)
         break;
     case 'A':
         qDebug() << "Start moving left";
+        MainView::moveLeft();
         break;
     case 'D':
         qDebug() << "Start moving right";
+        MainView::moveRight();
         break;
     default:
         // ev->key() is an integer. For alpha numeric characters keys it equivalent with the char value ('A' == 65, '1' == 49)

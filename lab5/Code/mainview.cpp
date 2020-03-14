@@ -229,18 +229,20 @@ void MainView::initializeAnimationTimer() {
 void MainView::initializeCameraPosition() {
     cameraX = 0.0f;
     cameraZ = -10.0f;
-}
 
-void MainView::updateCameraPosition() {
-    //    // Performs the Gram–Schmidt process
+    // Performs the Gram–Schmidt process
     QVector3D cameraTarget(0.0f, 0.0f, 0.0f);
-    QVector3D cameraPosition(cameraX, 0.0f, cameraZ);
+    cameraPosition = QVector3D(cameraX, 0.0f, cameraZ);
     QVector3D up(0.0f, 1.0f, 0.0f);
 
     // This value is in the direction of the negative z-axis.
-    QVector3D cameraDirection = (cameraTarget - cameraPosition).normalized();
-    QVector3D cameraRight = QVector3D::crossProduct(up, cameraDirection);
-    QVector3D cameraUp = QVector3D::crossProduct(cameraDirection, cameraRight);
+    cameraDirection = (cameraTarget - cameraPosition).normalized();
+    cameraRight = QVector3D::crossProduct(up, cameraDirection);
+    cameraUp = QVector3D::crossProduct(cameraDirection, cameraRight);
+}
+
+void MainView::updateCameraPosition() {
+
 
     // Make camera spin
 //    const float radius = 10.0f;
@@ -270,12 +272,22 @@ void MainView::updateCameraPosition() {
 
 
 void MainView::moveForwards() {
-    cameraZ += 0.5f;
+    cameraPosition += cameraDirection * 0.5f;
 }
 
 void MainView::moveBackwards() {
-    cameraZ -= 0.5f;
+    cameraPosition -= cameraDirection * 0.5f;
 }
+
+void MainView::moveLeft() {
+    cameraPosition -= (QVector3D::crossProduct(cameraDirection, cameraUp).normalized()) * 0.5f;
+}
+
+void MainView::moveRight() {
+    cameraPosition += (QVector3D::crossProduct(cameraDirection, cameraUp).normalized()) * 0.5f;
+}
+
+
 
 
 void MainView::paintObject(SceneObject objectId)
@@ -333,7 +345,7 @@ void MainView::paintGL() {
 void MainView::resizeGL(int newWidth, int newHeight) {
     qDebug() << "resize called.";
     perspectiveTransformationMatrix.setToIdentity();
-    perspectiveTransformationMatrix.perspective(60, ((float)newWidth)/newHeight, 0.2f, 20.0f);
+    perspectiveTransformationMatrix.perspective(60, ((float)newWidth)/newHeight, 0.2f, 50.0f);
 }
 
 // --- Public interface

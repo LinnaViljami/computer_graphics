@@ -47,6 +47,8 @@ public:
     // Camera movement
     void moveForwards();
     void moveBackwards();
+    void moveLeft();
+    void moveRight();
 
     QVector<quint8> imageToBytes(QImage image);
 protected:
@@ -78,6 +80,10 @@ private:
     float rotationAngle;
     float cameraX;
     float cameraZ;
+    QVector3D cameraPosition;
+    QVector3D cameraDirection;
+    QVector3D cameraRight;
+    QVector3D cameraUp;
 
     // Shader programs
     Shader* currentShader;

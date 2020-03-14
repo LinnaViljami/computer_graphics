@@ -7,20 +7,16 @@ void MainView::keyPressEvent(QKeyEvent *ev)
 {
     switch(ev->key()) {
     case 'W':
-        qDebug() << "Start moving forward";
-        MainView::moveForwards();
+        MainView::movingForwards = true;
         break;
     case 'S':
-        qDebug() << "Start moving backwards";
-        MainView::moveBackwards();
+        MainView::movingBackwards = true;
         break;
     case 'A':
-        qDebug() << "Start moving left";
-        MainView::moveLeft();
+        MainView::movingLeft = true;
         break;
     case 'D':
-        qDebug() << "Start moving right";
-        MainView::moveRight();
+        MainView::movingRight = true;
         break;
     default:
         // ev->key() is an integer. For alpha numeric characters keys it equivalent with the char value ('A' == 65, '1' == 49)
@@ -38,16 +34,16 @@ void MainView::keyReleaseEvent(QKeyEvent *ev)
 {
     switch(ev->key()) {
     case 'W':
-        qDebug() << "Stop moving forward";
+        MainView::movingForwards = false;
         break;
     case 'S':
-        qDebug() << "Stop moving backwards";
+        MainView::movingBackwards = false;
         break;
     case 'A':
-        qDebug() << "Stop moving left";
+        MainView::movingLeft = false;
         break;
     case 'D':
-        qDebug() << "Stop moving right";
+        MainView::movingRight= false;
         break;
     default:
         qDebug() << ev->key() << "released";

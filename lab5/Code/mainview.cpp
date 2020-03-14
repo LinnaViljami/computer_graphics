@@ -227,6 +227,7 @@ void MainView::initializeAnimationTimer() {
 }
 
 void MainView::initializeCameraPosition() {
+    movingForwards = movingBackwards = movingLeft = movingRight = false;
     cameraX = 0.0f;
     cameraZ = -10.0f;
 
@@ -241,9 +242,7 @@ void MainView::initializeCameraPosition() {
     cameraUp = QVector3D::crossProduct(cameraDirection, cameraRight);
 }
 
-void MainView::updateCameraPosition() {
-
-
+void MainView::updateCamera() {
     // Make camera spin
 //    const float radius = 10.0f;
 //    float cameraX = sin(rotationAngle) * radius;
@@ -287,7 +286,20 @@ void MainView::moveRight() {
     cameraPosition += (QVector3D::crossProduct(cameraDirection, cameraUp).normalized()) * 0.5f;
 }
 
-
+void MainView::updatePosition() {
+    if (movingForwards) {
+        moveForwards();
+    }
+    if (movingBackwards) {
+        moveBackwards();
+    }
+    if (movingLeft) {
+        moveLeft();
+    }
+    if (movingRight) {
+        moveRight();
+    }
+}
 
 
 void MainView::paintObject(SceneObject objectId)
@@ -325,7 +337,9 @@ void MainView::paintGL() {
     // Drive animations
     rotationAngle += 1.0f;
     if (rotationAngle >= 3600) rotationAngle -= 3600;
-    updateCameraPosition();
+    updatePosition();
+    updateCamera();
+
 
     setRotation(0, rotationAngle, 0);
 

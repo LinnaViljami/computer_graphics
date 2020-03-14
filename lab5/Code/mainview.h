@@ -45,10 +45,7 @@ public:
     void setShadingMode(Shader::ShadingMode shading);
 
     // Camera movement
-    void moveForwards();
-    void moveBackwards();
-    void moveLeft();
-    void moveRight();
+    bool movingForwards, movingBackwards, movingLeft, movingRight;
 
     QVector<quint8> imageToBytes(QImage image);
 protected:
@@ -105,7 +102,14 @@ private:
     void loadTexture(TextureType textureType, GLuint& texturePtr);
     void initializeAnimationTimer();
     void initializeCameraPosition();
-    void updateCameraPosition();
+
+    // Camera position and movement
+    void moveForwards();
+    void moveBackwards();
+    void moveLeft();
+    void moveRight();
+    void updatePosition();
+    void updateCamera();
 
     // Painting methods
     void paintObject(SceneObject objectId);

@@ -12,6 +12,7 @@ SOURCES += \
     circleanimation.cpp \
     cube.cpp \
     gouraudshader.cpp \
+    jumpanimation.cpp \
     main.cpp \
     mainwindow.cpp \
     mainview.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     circleanimation.h \
     cube.h \
     gouraudshader.h \
+    jumpanimation.h \
     mainwindow.h \
     mainview.h \
     model.h \

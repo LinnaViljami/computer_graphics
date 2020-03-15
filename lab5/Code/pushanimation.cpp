@@ -13,6 +13,7 @@ PushAnimation::PushAnimation(int centerX, int centerY, int centerZ, double anima
     stepSize(animationSpeed),
     object(animatedObject)
 {
+    object->setTranslation(x, y, z);
 
 }
 

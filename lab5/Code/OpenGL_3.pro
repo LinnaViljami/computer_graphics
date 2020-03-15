@@ -9,6 +9,7 @@ CONFIG += c++14
 
 SOURCES += \
     animation.cpp \
+    bouncingballanimation.cpp \
     circleanimation.cpp \
     cube.cpp \
     gouraudshader.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
 HEADERS += \
     TextureType.h \
     animation.h \
+    bouncingballanimation.h \
     circleanimation.h \
     cube.h \
     gouraudshader.h \

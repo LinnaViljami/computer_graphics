@@ -1,6 +1,7 @@
 #include "circleanimation.h"
 #include "jumpanimation.h"
 #include "pushanimation.h"
+#include "bouncingballanimation.h"
 #include "mainview.h"
 #include <QDateTime>
 #include <QtMath>
@@ -140,12 +141,14 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
 
 void MainView::initializeAnimations()
 {
-    auto catAnimPointer = std::make_shared<JumpAnimation>(-2, -2, -5, 4, 2.5, &objects.at(CatDIff));
+    auto catAnimPointer = std::make_shared<JumpAnimation>(-8, -2, -5, 4, 4.5, &objects.at(CatDIff));
     animations[CatDIff] = catAnimPointer;
-    auto rugCatAnimPointer = std::make_shared<CircleAnimation>(2, 1, 2, 12.0, 0.5, true, &objects.at(RugCat));
+    auto rugCatAnimPointer = std::make_shared<CircleAnimation>(0, -2, -10, 12.0, 0.5, true, &objects.at(RugCat));
     animations[RugCat] = rugCatAnimPointer;
-    auto goatPushAnimPointer = std::make_shared<PushAnimation>(-2, -2, 4, 2.5, &objects.at(Goat));
+    auto goatPushAnimPointer = std::make_shared<PushAnimation>(0, -2, -10, 2.5, &objects.at(Goat));
     animations[Goat] = goatPushAnimPointer;
+    auto ballAnimPointer = std::make_shared<BouncingBallAnimation>(10, -2, -10, 2.5, 5, &objects.at(MySphere));
+    animations[MySphere] = ballAnimPointer;
 
 }
 

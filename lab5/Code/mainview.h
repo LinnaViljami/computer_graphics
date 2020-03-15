@@ -23,7 +23,8 @@
 enum SceneObject {
     // add new object types between first and last
     FirstSceneObject,
-    Goat,
+    CatDIff,
+    RugCat,
     MySphere,
     LastSceneObject};
 

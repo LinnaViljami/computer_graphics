@@ -140,8 +140,10 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
 
 void MainView::initializeAnimations()
 {
-    auto circleAnimPointer = std::make_shared<CircleAnimation>(10.0, 0.5, true, &objects.at(Goat));
-    animations[Goat] = circleAnimPointer;
+    auto catAnimPointer = std::make_shared<CircleAnimation>(4.0, 1.7, true, &objects.at(CatDIff));
+    animations[CatDIff] = catAnimPointer;
+    auto rugCatAnimPointer = std::make_shared<CircleAnimation>(12.0, 0.5, true, &objects.at(RugCat));
+    animations[RugCat] = rugCatAnimPointer;
 }
 
 
@@ -366,8 +368,9 @@ void MainView::paintGL() {
 
 //    setRotationToAllObjects(0, rotationAngle, 0);
 
-    paintObject(SceneObject::Goat);
+    paintObject(SceneObject::CatDIff);
     paintObject(SceneObject::MySphere);
+    paintObject(SceneObject::RugCat);
     currentShader->release();
 }
 
@@ -435,13 +438,16 @@ void MainView::initializeObjects()
     for (int sceneObjectInt = SceneObject::FirstSceneObject; sceneObjectInt != SceneObject::LastSceneObject; sceneObjectInt++){
         SceneObject objectId = (SceneObject)sceneObjectInt;
         switch (objectId) {
+        case RugCat:
+            initializeObject(objectId, ImportedObjectType::cat, TextureType::Rug);
+            break;
         case FirstSceneObject:
             break;
         case MySphere:
             initializeObject(objectId, ImportedObjectType::sphere, TextureType::NoTexture);
             break;
 
-        case Goat:
+        case CatDIff:
             initializeObject(objectId, ImportedObjectType::cat, TextureType::Diff);
             break;
 

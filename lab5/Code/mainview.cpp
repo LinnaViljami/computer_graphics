@@ -1,5 +1,6 @@
 #include "circleanimation.h"
 #include "jumpanimation.h"
+#include "pushanimation.h"
 #include "mainview.h"
 #include <QDateTime>
 #include <QtMath>
@@ -143,6 +144,9 @@ void MainView::initializeAnimations()
     animations[CatDIff] = catAnimPointer;
     auto rugCatAnimPointer = std::make_shared<CircleAnimation>(2, 1, 2, 12.0, 0.5, true, &objects.at(RugCat));
     animations[RugCat] = rugCatAnimPointer;
+    auto goatPushAnimPointer = std::make_shared<PushAnimation>(-2, -2, 4, 2.5, &objects.at(Goat));
+    animations[Goat] = goatPushAnimPointer;
+
 }
 
 

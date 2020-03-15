@@ -18,6 +18,7 @@ SOURCES += \
     mainview.cpp \
     normalshader.cpp \
     phongshader.cpp \
+    pushanimation.cpp \
     pyramid.cpp \
     shader.cpp \
     user_input.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     model.h \
     normalshader.h \
     phongshader.h \
+    pushanimation.h \
     pyramid.h \
     object.h \
     shader.h \

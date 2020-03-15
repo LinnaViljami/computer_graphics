@@ -1,3 +1,4 @@
+#include "circleanimation.h"
 #include "mainview.h"
 #include <QDateTime>
 #include <QtMath>
@@ -68,6 +69,7 @@ void MainView::initializeGL() {
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
     createShaderPrograms(Shader::PHONG);
     initializeObjects();
+    initializeAnimations();
     loadTextures();
     initializeCameraPosition();
     initializeAnimationTimer();
@@ -134,6 +136,12 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
     glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(vertex3d), (GLvoid*)(colorPtrIndex));
     glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, sizeof(vertex3d), (GLvoid*)(texturePtrIndex));
 
+}
+
+void MainView::initializeAnimations()
+{
+    auto circleAnimPointer = std::make_shared<CircleAnimation>(10.0, 0.5, true, &objects.at(Goat));
+    animations[Goat] = circleAnimPointer;
 }
 
 
@@ -277,6 +285,14 @@ void MainView::updateCamera() {
     viewTransformationMatrix = viewAngle * viewPosition;
 }
 
+void MainView::animateObjects()
+{
+    for(auto& anim_pair : animations){
+        Animation* anim = anim_pair.second.get();
+        anim->update();
+    }
+}
+
 
 void MainView::moveForwards() {
     cameraPosition += cameraDirection * 0.5f;
@@ -313,8 +329,6 @@ void MainView::updatePosition() {
 void MainView::paintObject(SceneObject objectId)
 {
     ImportedObject& object = objects.at(objectId);
-//    qDebug("Paint object called");
-    object.setTranslation(0, -3, -10);
 
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
     if(textureUniformLocation != nullptr && object.textureType != TextureType::NoTexture){
@@ -343,13 +357,14 @@ void MainView::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Drive animations
-    rotationAngle += 1.0f;
-    if (rotationAngle >= 3600) rotationAngle -= 3600;
+//    rotationAngle += 1.0f;
+//    if (rotationAngle >= 3600) rotationAngle -= 3600;
     updatePosition();
     updateCamera();
 
+    animateObjects();
 
-    setRotation(0, rotationAngle, 0);
+//    setRotationToAllObjects(0, rotationAngle, 0);
 
     paintObject(SceneObject::Goat);
     paintObject(SceneObject::MySphere);
@@ -372,7 +387,7 @@ void MainView::resizeGL(int newWidth, int newHeight) {
 
 // --- Public interface
 
-void MainView::setRotation(int rotateX, int rotateY, int rotateZ) {
+void MainView::setRotationToAllObjects(int rotateX, int rotateY, int rotateZ) {
     for (auto& object : objects){
         object.second.setRotation(rotateX, rotateY, rotateZ);
     }

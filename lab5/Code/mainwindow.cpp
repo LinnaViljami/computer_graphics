@@ -21,23 +21,23 @@ void MainWindow::on_ResetRotationButton_clicked(bool checked) {
     ui->RotationDialX->setValue(0);
     ui->RotationDialY->setValue(0);
     ui->RotationDialZ->setValue(0);
-    ui->mainView->setRotation(0, 0, 0);
+    ui->mainView->setRotationToAllObjects(0, 0, 0);
 }
 
 void MainWindow::on_RotationDialX_sliderMoved(int value) {
-    ui->mainView->setRotation(value,
+    ui->mainView->setRotationToAllObjects(value,
                               ui->RotationDialY->value(),
                               ui->RotationDialZ->value());
 }
 
 void MainWindow::on_RotationDialY_sliderMoved(int value) {
-    ui->mainView->setRotation(ui->RotationDialX->value(),
+    ui->mainView->setRotationToAllObjects(ui->RotationDialX->value(),
                               value,
                               ui->RotationDialZ->value());
 }
 
 void MainWindow::on_RotationDialZ_sliderMoved(int value) {
-    ui->mainView->setRotation(ui->RotationDialX->value(),
+    ui->mainView->setRotationToAllObjects(ui->RotationDialX->value(),
                               ui->RotationDialY->value(),
                               value);
 }

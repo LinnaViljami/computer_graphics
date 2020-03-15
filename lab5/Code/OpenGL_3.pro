@@ -8,6 +8,8 @@ TEMPLATE = app
 CONFIG += c++14
 
 SOURCES += \
+    animation.cpp \
+    circleanimation.cpp \
     cube.cpp \
     gouraudshader.cpp \
     main.cpp \
@@ -24,6 +26,8 @@ SOURCES += \
 
 HEADERS += \
     TextureType.h \
+    animation.h \
+    circleanimation.h \
     cube.h \
     gouraudshader.h \
     mainwindow.h \

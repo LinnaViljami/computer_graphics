@@ -18,6 +18,7 @@
 #include <normalshader.h>
 #include <gouraudshader.h>
 #include "TextureType.h"
+#include "animation.h"
 
 enum SceneObject {
     // add new object types between first and last
@@ -35,7 +36,7 @@ public:
     ~MainView();
 
     // Functions for widget input events
-    void setRotation(int rotateX, int rotateY, int rotateZ);
+    void setRotationToAllObjects(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
     void setShadingMode(Shader::ShadingMode shading);
 
@@ -66,10 +67,12 @@ private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
     void initializeObjects();
     void initializeObject(SceneObject objectId, ImportedObjectType type, TextureType objectTexture);
+    void initializeAnimations();
 
 
 private:
     std::map<SceneObject, ImportedObject> objects;
+    std::map<SceneObject, std::shared_ptr<Animation>> animations;
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
     float rotationAngle;
@@ -109,7 +112,7 @@ private:
     void moveRight();
     void updatePosition();
     void updateCamera();
-
+    void animateObjects();
     // Painting methods
     void paintObject(SceneObject objectId);
 

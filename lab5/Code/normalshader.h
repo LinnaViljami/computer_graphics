@@ -17,12 +17,12 @@ public:
 
     // Shader interface
 public:
-    ShadingMode type();
+    ShadingMode type() override;
     void setUniformData(QMatrix4x4 transformationMatrix, QMatrix4x4 projectionMatrix, QMatrix3x3 normalTransformationMatrix);
 
 private:
-    void createShaderPrograms();
-    void setUniformLocations();
+    void createShaderPrograms() override;
+    void setUniformLocations() override;
 
     // Shader interface
 };

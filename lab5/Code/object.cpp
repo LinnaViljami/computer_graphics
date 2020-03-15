@@ -1,5 +1,6 @@
 #include "object.h"
 #include <QtMath>
+#include "circleanimation.h"
 
 ImportedObject::ImportedObject() : vertices({}), translationMatrix(), rotationMatrix(), textureCoordinates(), scalingMatrix()
 {

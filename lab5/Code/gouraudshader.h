@@ -33,8 +33,8 @@ public:
                         bool useTextures);
     GLint * getTextureBufferLocation() override;
 private:
-    void createShaderPrograms();
-    void setUniformLocations();
+    void createShaderPrograms() override;
+    void setUniformLocations() override;
 
     // Shader interface
 };

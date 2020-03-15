@@ -9,6 +9,7 @@
 #include "model.h"
 #include <QMatrix4x4>
 #include "TextureType.h"
+#include <memory>
 
 struct Material {
     float ka = 0.5f;

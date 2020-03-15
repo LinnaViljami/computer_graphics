@@ -6,10 +6,11 @@ JumpAnimation::JumpAnimation()
 
 }
 
-JumpAnimation::JumpAnimation(int centerX, int centerY, int centerZ, double animationStepAngle, ImportedObject *animatedObject) :
+JumpAnimation::JumpAnimation(int centerX, int centerY, int centerZ, double jumpHeight, double animationStepAngle, ImportedObject *animatedObject) :
     x(centerX),
     y(centerY),
     z(centerZ),
+    height(jumpHeight),
     stepAngle(animationStepAngle),
     currentPhase(0),
     object(animatedObject)
@@ -26,7 +27,8 @@ void JumpAnimation::update()
         angle -= 360;
     }
     currentPhase = angle;
-    object->setRotation(0, static_cast<int>(-sin(currentPhase)), 0);
-    object->setTranslation(0, static_cast<float>(cos(currentPhase)), 0);
+    double radAngle = (currentPhase / 360.0) * 2 * M_PI;
+    object->setRotation(0, 0, static_cast<float>(-sin(radAngle - M_PI)*50));
+    object->setTranslation(0, static_cast<float>(height *(1 + cos(radAngle - M_PI))), 0);
 
 }

@@ -8,13 +8,14 @@ class JumpAnimation : public Animation
 {
 public:
     JumpAnimation();
-    JumpAnimation(int centerX, int centerY, int centerZ, double animationStepAngle, ImportedObject* animatedObject);
+    JumpAnimation(int centerX, int centerY, int centerZ, double jumpHeight, double animationStepAngle, ImportedObject* animatedObject);
     void update() override;
 
 private:
     int x;
     int y;
     int z;
+    double height;
     double stepAngle;
     double currentPhase;
     ImportedObject* object;

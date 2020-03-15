@@ -18,7 +18,7 @@ struct Material {
     float phongExponent = 5.0f;
 };
 
-enum ImportedObjectType {cat, sphere, cube, flat_surface};
+enum ImportedObjectType {cat, sphere, cube, flat_surface, goat};
 
 struct ImportedObjectProperties {
     Model model = Model(":/models/cat.obj");
@@ -45,7 +45,7 @@ public:
     QMatrix4x4 getModelTransformationMatrix();
     QVector4D getMaterialVector();
     QVector3D getMaterialColorVector();
-    void setRotation(int rotateX, int rotateY, int rotateZ);
+    void setRotation(float rotateX, float rotateY, float rotateZ);
     void setScale(int scale);
     void setTranslation(float translateX, float translateY, float translateZ);
 

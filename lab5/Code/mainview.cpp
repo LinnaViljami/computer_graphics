@@ -1,4 +1,5 @@
 #include "circleanimation.h"
+#include "jumpanimation.h"
 #include "mainview.h"
 #include <QDateTime>
 #include <QtMath>
@@ -86,13 +87,10 @@ void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
 QString MainView::getTextureFileName(TextureType texture)
 {
     QString fileName = "no filename";
-    int width = 512;
-    int height = 1024;
     switch (texture) {
     case NoTexture:
         break;
-    case LastTexture:
-        break;
+
     case Diff:
         fileName = ":/textures/cat_diff.png";
         break;
@@ -104,7 +102,8 @@ QString MainView::getTextureFileName(TextureType texture)
         break;
     case Rug:
         fileName = ":/textures/rug_logo.png";
-        width = 1024;
+        break;
+    case LastTexture:
         break;
     }
     return fileName;
@@ -122,7 +121,7 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
     glBindVertexArray(object->vaoId);
     glBindBuffer(GL_ARRAY_BUFFER, object->vboId);
 
-    glBufferData(GL_ARRAY_BUFFER, object->vertices.size()*sizeof(vertex3d), object->vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(object->vertices.size()*sizeof(vertex3d)), object->vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -140,7 +139,7 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
 
 void MainView::initializeAnimations()
 {
-    auto catAnimPointer = std::make_shared<CircleAnimation>(-2, -2, -5, 4.0, 1.7, true, &objects.at(CatDIff));
+    auto catAnimPointer = std::make_shared<JumpAnimation>(-2, -2, -5, 4, 2.5, &objects.at(CatDIff));
     animations[CatDIff] = catAnimPointer;
     auto rugCatAnimPointer = std::make_shared<CircleAnimation>(2, 1, 2, 12.0, 0.5, true, &objects.at(RugCat));
     animations[RugCat] = rugCatAnimPointer;
@@ -341,7 +340,7 @@ void MainView::paintObject(SceneObject objectId)
     }
     setDataToUniform(objectId);
     glBindVertexArray(object.vaoId);
-    glDrawArrays(GL_TRIANGLES, 0, object.vertices.size());
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(object.vertices.size()));
 }
 
 
@@ -358,19 +357,15 @@ void MainView::paintGL() {
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Drive animations
-//    rotationAngle += 1.0f;
-//    if (rotationAngle >= 3600) rotationAngle -= 3600;
     updatePosition();
     updateCamera();
 
     animateObjects();
 
-//    setRotationToAllObjects(0, rotationAngle, 0);
-
     paintObject(SceneObject::CatDIff);
     paintObject(SceneObject::MySphere);
     paintObject(SceneObject::RugCat);
+    paintObject(SceneObject::Goat);
     currentShader->release();
 }
 
@@ -438,11 +433,15 @@ void MainView::initializeObjects()
     for (int sceneObjectInt = SceneObject::FirstSceneObject; sceneObjectInt != SceneObject::LastSceneObject; sceneObjectInt++){
         SceneObject objectId = (SceneObject)sceneObjectInt;
         switch (objectId) {
+        case FirstSceneObject:
+            break;
+        case Goat:
+            initializeObject(objectId, ImportedObjectType::goat, TextureType::Diff);
+            break;
         case RugCat:
             initializeObject(objectId, ImportedObjectType::cat, TextureType::Rug);
             break;
-        case FirstSceneObject:
-            break;
+
         case MySphere:
             initializeObject(objectId, ImportedObjectType::sphere, TextureType::NoTexture);
             break;

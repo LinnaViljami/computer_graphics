@@ -35,7 +35,7 @@ void CircleAnimation::rotateObject()
         angle -= 360;
     }
     currentPhase = angle;
-    object->setRotation(0, static_cast<int>(currentPhase), 0);
+    object->setRotation(0, static_cast<float>(currentPhase), 0);
 }
 
 void CircleAnimation::translateObject()

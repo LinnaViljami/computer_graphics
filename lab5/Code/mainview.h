@@ -26,6 +26,7 @@ enum SceneObject {
     CatDIff,
     RugCat,
     MySphere,
+    Goat,
     LastSceneObject};
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
@@ -33,7 +34,7 @@ class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
 
 public:
 
-    MainView(QWidget *parent = 0);
+    MainView(QWidget *parent = nullptr);
     ~MainView();
 
     // Functions for widget input events

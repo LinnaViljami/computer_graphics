@@ -11,6 +11,10 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
 {
     ImportedObjectProperties properties;
     switch (modelType) {
+    case goat:
+        properties.model = Model(":/models/goat.obj");
+        properties.scalingFactor = 10.0f;
+        break;
     case cat:
         properties.model = Model(":/models/cat.obj");
         properties.scalingFactor = 8.0f;
@@ -82,7 +86,7 @@ QVector3D ImportedObject::getMaterialColorVector()
     return {0.4f, 0.4f, 0.4f};
 }
 
-void ImportedObject::setRotation(int rotateX, int rotateY, int rotateZ)
+void ImportedObject::setRotation(float rotateX, float rotateY, float rotateZ)
 {
     qreal rotx_rad = static_cast<qreal>(rotateX)*2.0*3.141/360.0;
     QMatrix4x4 xRotationMatrix = {

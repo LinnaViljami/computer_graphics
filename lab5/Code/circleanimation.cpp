@@ -6,7 +6,10 @@ CircleAnimation::CircleAnimation()
 
 }
 
-CircleAnimation::CircleAnimation(double circleRadius, double animationStepAngle, bool rotateClockwise, ImportedObject* animatedObject) :
+CircleAnimation::CircleAnimation(int centerX, int centerY, int centerZ, double circleRadius, double animationStepAngle, bool rotateClockwise, ImportedObject* animatedObject) :
+    x(centerX),
+    y(centerY),
+    z(centerZ),
     radius(circleRadius),
     stepAngle(animationStepAngle),
     clockwise(rotateClockwise),
@@ -38,8 +41,8 @@ void CircleAnimation::rotateObject()
 void CircleAnimation::translateObject()
 {
     double radAngle = (currentPhase / 360.0) * 2 * M_PI;
-    float translateX = static_cast<float>(sin(radAngle) * radius);
-    float translateZ = static_cast<float>(cos(radAngle) * radius);
-    object->setTranslation(translateX, 0.0f,translateZ);
+    float translateX = x + static_cast<float>(sin(radAngle) * radius);
+    float translateZ = z + static_cast<float>(cos(radAngle) * radius);
+    object->setTranslation(translateX, y,translateZ);
 }
 

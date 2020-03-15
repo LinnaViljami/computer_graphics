@@ -8,7 +8,7 @@ class CircleAnimation : public Animation
 {
 public:
     CircleAnimation();
-    CircleAnimation(double circleRadius, double animationStepAngle, bool rotateClockwise, ImportedObject* animatedObject);
+    CircleAnimation(int centerX, int centerY, int centerZ, double circleRadius, double animationStepAngle, bool rotateClockwise, ImportedObject* animatedObject);
 
 
     // Animation interface
@@ -17,6 +17,9 @@ public:
 
 
 private:
+    int x;
+    int y;
+    int z;
     double radius;
     double stepAngle;
     bool clockwise;

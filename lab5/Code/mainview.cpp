@@ -140,9 +140,9 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
 
 void MainView::initializeAnimations()
 {
-    auto catAnimPointer = std::make_shared<CircleAnimation>(4.0, 1.7, true, &objects.at(CatDIff));
+    auto catAnimPointer = std::make_shared<CircleAnimation>(-2, -2, -5, 4.0, 1.7, true, &objects.at(CatDIff));
     animations[CatDIff] = catAnimPointer;
-    auto rugCatAnimPointer = std::make_shared<CircleAnimation>(12.0, 0.5, true, &objects.at(RugCat));
+    auto rugCatAnimPointer = std::make_shared<CircleAnimation>(2, 1, 2, 12.0, 0.5, true, &objects.at(RugCat));
     animations[RugCat] = rugCatAnimPointer;
 }
 

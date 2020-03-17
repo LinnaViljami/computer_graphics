@@ -16,7 +16,7 @@
 #include <memory>
 #include <phongshader.h>
 #include <normalshader.h>
-#include <gouraudshader.h>
+#include <watershader.h>
 #include "TextureType.h"
 #include "animation.h"
 
@@ -90,6 +90,7 @@ private:
     Shader* currentShader;
     NormalShader normalShader;
     PhongShader phongShader;
+    WaterShader waterShader;
     QVector<quint8> textureData;
     void setDataToUniform(SceneObject objectId);
 

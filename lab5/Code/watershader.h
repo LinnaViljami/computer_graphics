@@ -23,13 +23,12 @@ public:
 public:
     ShadingMode type();
     void setUniformData(QMatrix4x4 transformationMatrix,
+                        QMatrix4x4 viewTransformationMatrix,
                         QMatrix4x4 perspectiveTransformationMatrix,
                         QMatrix3x3 normalTransformationMatrix,
-                        QVector3D material,
-                        QVector3D materialColor,
+                        QVector4D material,
                         QVector3D lightPosition,
                         QVector3D lightColor,
-                        float phongExponent,
                         bool useTextures);
     GLint * getTextureBufferLocation() override;
 private:

@@ -68,7 +68,7 @@ void MainWindow::on_NormalButton_toggled(bool checked) {
 
 void MainWindow::on_GouraudButton_toggled(bool checked) {
     if (checked) {
-        ui->mainView->setShadingMode(Shader::GOURAUD);
+        ui->mainView->setShadingMode(Shader::WATER);
         ui->mainView->update();
     }
 }

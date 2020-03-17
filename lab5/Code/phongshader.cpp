@@ -17,8 +17,7 @@ void PhongShader::setUniformData(QMatrix4x4 transformationMatrix,
                                  QVector4D material,
                                  QVector3D lightPosition,
                                  QVector3D lightColor,
-                                 bool useTextures
-                                 )
+                                 bool useTextures)
 {
     shaderProgram.setUniformValue(normalTransformationUniformLocation,normalTransformationMatrix);
     shaderProgram.setUniformValue(transformationUniformLocation, transformationMatrix);
@@ -35,14 +34,12 @@ GLint *PhongShader::getTextureBufferLocation()
     return &textureUniformLocation;
 }
 
-
 void PhongShader::createShaderPrograms()
 {
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
                                            ":/shaders/vertshader_phong.glsl");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
                                            ":/shaders/fragshader_phong.glsl");
-
     shaderProgram.link();
 }
 
@@ -57,6 +54,5 @@ void PhongShader::setUniformLocations()
     lightColorUniformLocation = shaderProgram.uniformLocation("lightColor");
     textureUniformLocation = shaderProgram.uniformLocation("textureSampler");
     useTexturesUniformLocation = shaderProgram.uniformLocation("useTextures");
-
 }
 

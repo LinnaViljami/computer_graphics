@@ -84,6 +84,7 @@ void MainView::initializeGL() {
 void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
     phongShader.init();
     normalShader.init();
+    waterShader.init();
     setShadingMode(shadingMode);
 }
 
@@ -174,8 +175,15 @@ void MainView::setDataToUniform(SceneObject objectId)
                                    perspectiveTransformationMatrix,
                                    object.rotationMatrix.normalMatrix());
         break;
-    case Shader::GOURAUD:
-        qDebug("gouraud shader not implemented");
+    case Shader::WATER:
+        waterShader.setUniformData(object.getModelTransformationMatrix(),
+                                   viewTransformationMatrix,
+                                   perspectiveTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix(),
+                                   object.getMaterialVector(),
+                                   getLightPosition(),
+                                   getLightColor(),
+                                   useTextures);
         break;
     }
 }
@@ -416,8 +424,8 @@ void MainView::setShadingMode(Shader::ShadingMode shading) {
     case Shader::NORMAL:
         currentShader = &normalShader;
         break;
-    case Shader::GOURAUD:
-        qDebug("gouraud shader not implemented");
+    case Shader::WATER:
+        currentShader = &waterShader;
         break;
     }
 }

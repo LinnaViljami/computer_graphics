@@ -8,7 +8,6 @@ WaterShader::WaterShader()
 Shader::ShadingMode WaterShader::type()
 {
     return ShadingMode::WATER;
-
 }
 
 void WaterShader::setUniformData(QMatrix4x4 transformationMatrix,
@@ -47,7 +46,7 @@ void WaterShader::createShaderPrograms()
 void WaterShader::setUniformLocations()
 {
     transformationUniformLocation = shaderProgram.uniformLocation("modelViewTransform");
-    viewTransformationUniformLocation = shaderProgram.uniformLocation("viewTransformation");
+    viewTransformationUniformLocation = shaderProgram.uniformLocation("viewTransform");
     projectionUniformLocation = shaderProgram.uniformLocation("projectionTransform");
     normalTransformationUniformLocation = shaderProgram.uniformLocation("normalTransform");
     materialUniformLocation = shaderProgram.uniformLocation("material");

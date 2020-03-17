@@ -27,9 +27,10 @@ void main()
 
     // Pass the required information to the fragment shader stage.
     relativeLightPosition = vec3(modelViewTransform * vec4(lightPosition, 1.0F));
+
+    float z = 1.0f * sin(texCoords.x);
     vec3 position = vec3(modelViewTransform * vec4(vertCoordinates_in, 1.0F));
 
-    vertPosition = position;
     vertNormal   = normalize(normalTransform * vertNormals_in);
     texCoords    = texCoords_in;
 }

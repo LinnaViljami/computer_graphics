@@ -47,5 +47,6 @@ void main()
     float specularIntensity = max(dot(reflectDirection, viewDirection), 0.0F);
     color += lightColor * material.z * pow(specularIntensity, material.w);
 
+//    fColor = vec4(color, 1.0F);
     fColor = vec4(texCoords, 0.0f, 1.0F);
 }

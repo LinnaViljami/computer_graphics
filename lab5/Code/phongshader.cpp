@@ -55,4 +55,3 @@ void PhongShader::setUniformLocations()
     textureUniformLocation = shaderProgram.uniformLocation("textureSampler");
     useTexturesUniformLocation = shaderProgram.uniformLocation("useTextures");
 }
-

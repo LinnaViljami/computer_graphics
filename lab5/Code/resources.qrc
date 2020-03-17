@@ -13,7 +13,9 @@
         <file>models/sphere.obj</file>
         <file>shaders/fragshader_normal.glsl</file>
         <file>shaders/fragshader_phong.glsl</file>
+        <file>shaders/fragshader_water.glsl</file>
         <file>shaders/vertshader_normal.glsl</file>
         <file>shaders/vertshader_phong.glsl</file>
+        <file>shaders/vertshader_water.glsl</file>
     </qresource>
 </RCC>

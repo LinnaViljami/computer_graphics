@@ -5,18 +5,18 @@
 #include <QOpenGLShaderProgram>
 #include <shader.h>
 
-class GouraudShader : public Shader
+class WaterShader : public Shader
 {
 public:
-    GouraudShader();
+    WaterShader();
     GLint transformationUniformLocation;
+    GLint viewTransformationUniformLocation;
     GLint projectionUniformLocation;
     GLint normalTransformationUniformLocation;
     GLint materialUniformLocation;
     GLint materialColorUniformLocation;
     GLint lightPositionUniformLocation;
     GLint lightColorUniformLocation;
-    GLint phongExponentUniformLocation;
     GLint textureUniformLocation;
     GLint useTexturesUniformLocation;
     // Shader interface

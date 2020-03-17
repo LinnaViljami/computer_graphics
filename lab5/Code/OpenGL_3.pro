@@ -12,7 +12,6 @@ SOURCES += \
     bouncingballanimation.cpp \
     circleanimation.cpp \
     cube.cpp \
-    gouraudshader.cpp \
     jumpanimation.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -25,7 +24,8 @@ SOURCES += \
     user_input.cpp \
     model.cpp \
     object.cpp \
-    utility.cpp
+    utility.cpp \
+    watershader.cpp
 
 HEADERS += \
     TextureType.h \
@@ -33,7 +33,7 @@ HEADERS += \
     bouncingballanimation.h \
     circleanimation.h \
     cube.h \
-    gouraudshader.h \
+    watershader.h \
     jumpanimation.h \
     mainwindow.h \
     mainview.h \
@@ -44,7 +44,6 @@ HEADERS += \
     pyramid.h \
     object.h \
     shader.h \
-    vertex3d.h
 
 FORMS += \
     mainwindow.ui

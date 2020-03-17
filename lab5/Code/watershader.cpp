@@ -1,17 +1,17 @@
-#include "gouraudshader.h"
+#include "watershader.h"
 
-GouraudShader::GouraudShader()
+WaterShader::WaterShader()
 {
 
 }
 
-Shader::ShadingMode GouraudShader::type()
+Shader::ShadingMode WaterShader::type()
 {
-    return ShadingMode::GOURAUD;
+    return ShadingMode::WATER;
 
 }
 
-void GouraudShader::setUniformData(QMatrix4x4 transformationMatrix,
+void WaterShader::setUniformData(QMatrix4x4 transformationMatrix,
                                    QMatrix4x4 perspectiveTransformationMatrix,
                                    QMatrix3x3 normalTransformationMatrix,
                                    QVector3D material,
@@ -32,30 +32,29 @@ void GouraudShader::setUniformData(QMatrix4x4 transformationMatrix,
     shaderProgram.setUniformValue(useTexturesUniformLocation, useTextures);
 }
 
-GLint *GouraudShader::getTextureBufferLocation()
+GLint *WaterShader::getTextureBufferLocation()
 {
     return &textureUniformLocation;
 }
 
-void GouraudShader::createShaderPrograms()
+void WaterShader::createShaderPrograms()
 {
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                           ":/shaders/vertshader_gouraud.glsl");
+                                           ":/shaders/vertshader_water.glsl");
     shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                           ":/shaders/fragshader_gouraud.glsl");
+                                           ":/shaders/fragshader_water.glsl");
     shaderProgram.link();
 }
 
-void GouraudShader::setUniformLocations()
+void WaterShader::setUniformLocations()
 {
-    transformationUniformLocation = shaderProgram.uniformLocation("transformation");
-    projectionUniformLocation = shaderProgram.uniformLocation("projection");
-    normalTransformationUniformLocation = shaderProgram.uniformLocation("normalTransformation");
+    transformationUniformLocation = shaderProgram.uniformLocation("modelViewTransform");
+    viewTransformationUniformLocation = shaderProgram.uniformLocation("viewTransform");
+    projectionUniformLocation = shaderProgram.uniformLocation("projectionTransform");
+    normalTransformationUniformLocation = shaderProgram.uniformLocation("normalTransform");
     materialUniformLocation = shaderProgram.uniformLocation("material");
-    materialColorUniformLocation = shaderProgram.uniformLocation("materialColor");
     lightPositionUniformLocation = shaderProgram.uniformLocation("lightPosition");
     lightColorUniformLocation = shaderProgram.uniformLocation("lightColor");
-    phongExponentUniformLocation = shaderProgram.uniformLocation("phongExponent");
-    textureUniformLocation = shaderProgram.uniformLocation("textureUniform");
+    textureUniformLocation = shaderProgram.uniformLocation("textureSampler");
     useTexturesUniformLocation = shaderProgram.uniformLocation("useTextures");
 }

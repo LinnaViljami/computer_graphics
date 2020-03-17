@@ -18,7 +18,7 @@ struct Material {
     float phongExponent = 5.0f;
 };
 
-enum ImportedObjectType {cat, sphere, cube, flat_surface, goat};
+enum ImportedObjectType {cat, sphere, cube, flat_surface, goat, water};
 
 struct ImportedObjectProperties {
     Model model = Model(":/models/cat.obj");

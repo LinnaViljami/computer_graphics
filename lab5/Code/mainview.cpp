@@ -64,7 +64,8 @@ void MainView::initializeGL() {
 
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_CULL_FACE);
+    // Disable backface culling to see both sides of the water surface.
+//    glEnable(GL_CULL_FACE);
 
     glDepthFunc(GL_LEQUAL);
 
@@ -251,11 +252,9 @@ void MainView::initializeCameraPosition() {
     cameraZ = -10.0f;
 
 
-    // Performs the Gram–Schmidt process
-
+    // Perform the Gram–Schmidt process
     cameraPosition = QVector3D(cameraX, 0.0f, cameraZ);
     QVector3D cameraTarget(0.0f, 0.0f, 0.0f);
-    // This value is in the direction of the negative z-axis.
     cameraDirection = (cameraTarget - cameraPosition).normalized();
 
     qDebug() << "initial cameraDirection: " << cameraDirection;
@@ -373,6 +372,7 @@ void MainView::paintGL() {
     paintObject(SceneObject::MySphere);
     paintObject(SceneObject::RugCat);
     paintObject(SceneObject::Goat);
+    paintObject(SceneObject::Water);
     currentShader->release();
 }
 
@@ -456,7 +456,9 @@ void MainView::initializeObjects()
         case CatDIff:
             initializeObject(objectId, ImportedObjectType::cat, TextureType::Diff);
             break;
-
+        case Water:
+            initializeObject(objectId, ImportedObjectType::water, TextureType::NoTexture);
+            break;
         case LastSceneObject:
             break;
         }

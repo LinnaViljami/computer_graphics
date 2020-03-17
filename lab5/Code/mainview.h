@@ -27,6 +27,7 @@ enum SceneObject {
     RugCat,
     MySphere,
     Goat,
+    Water,
     LastSceneObject};
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {

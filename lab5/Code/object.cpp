@@ -25,6 +25,9 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
         break;
     case cube:
         break;
+    case water:
+        properties.model = Model(":/models/grid.obj");
+        properties.scalingFactor = 1.0f;
     case flat_surface:
         break;
     }

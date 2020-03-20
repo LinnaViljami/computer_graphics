@@ -17,6 +17,7 @@
 #include <phongshader.h>
 #include <normalshader.h>
 #include <gouraudshader.h>
+#include "watershader.h"
 #include "TextureType.h"
 #include "animation.h"
 
@@ -27,6 +28,7 @@ enum SceneObject {
     RugCat,
     MySphere,
     Goat,
+    Water,
     LastSceneObject};
 
 class MainView : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core {
@@ -40,7 +42,6 @@ public:
     // Functions for widget input events
     void setRotationToAllObjects(int rotateX, int rotateY, int rotateZ);
     void setScale(int scale);
-    void setShadingMode(Shader::ShadingMode shading);
 
     // Camera movement
     bool movingForwards, movingBackwards, movingLeft, movingRight;
@@ -67,14 +68,16 @@ protected:
 
 private slots:
     void onMessageLogged( QOpenGLDebugMessage Message );
-    void initializeObjects();
-    void initializeObject(SceneObject objectId, ImportedObjectType type, TextureType objectTexture);
-    void initializeAnimations();
 
 
 private:
+    void initializeObjects();
+    void initializeObject(SceneObject objectId, ImportedObjectType type, TextureType objectTexture);
+    void initializeAnimations();
+    void linkShaderToObject(SceneObject objectId);
     std::map<SceneObject, ImportedObject> objects;
     std::map<SceneObject, std::shared_ptr<Animation>> animations;
+    std::map<SceneObject, Shader*> objectShaders;
     QOpenGLDebugLogger debugLogger;
     QTimer timer; // timer used for animation
     float rotationAngle;
@@ -86,9 +89,9 @@ private:
     QVector3D cameraUp;
 
     // Shader programs
-    Shader* currentShader;
     NormalShader normalShader;
     PhongShader phongShader;
+    WaterShader waterShader;
     QVector<quint8> textureData;
     void setDataToUniform(SceneObject objectId);
 
@@ -118,7 +121,7 @@ private:
     // Painting methods
     void paintObject(SceneObject objectId);
 
-    void createShaderPrograms(Shader::ShadingMode shadingMode);
+    void createShaderPrograms();
 
     QString getTextureFileName(TextureType texture);
 };

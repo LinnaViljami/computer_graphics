@@ -25,7 +25,8 @@ SOURCES += \
     user_input.cpp \
     model.cpp \
     object.cpp \
-    utility.cpp
+    utility.cpp \
+    watershader.cpp
 
 HEADERS += \
     TextureType.h \
@@ -44,10 +45,13 @@ HEADERS += \
     pyramid.h \
     object.h \
     shader.h \
-    vertex3d.h
+    vertex3d.h \
+    watershader.h
 
 FORMS += \
     mainwindow.ui
 
 RESOURCES += \
     resources.qrc
+
+DISTFILES +=

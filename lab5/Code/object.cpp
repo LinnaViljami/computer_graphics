@@ -11,6 +11,10 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
 {
     ImportedObjectProperties properties;
     switch (modelType) {
+    case grid:
+        properties.model = Model(":/models/grid.obj");
+        properties.scalingFactor = 5.0f;
+        break;
     case goat:
         properties.model = Model(":/models/goat.obj");
         properties.scalingFactor = 10.0f;
@@ -26,6 +30,8 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
     case cube:
         break;
     case flat_surface:
+        properties.model = Model(":/models/flat_surface.obj");
+        properties.scalingFactor = 5.0f;
         break;
     }
     properties.material = material;

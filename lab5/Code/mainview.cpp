@@ -64,13 +64,13 @@ void MainView::initializeGL() {
 
     glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     glDepthFunc(GL_LEQUAL);
 
     // Set the color to be used by glClear. This is, effectively, the background color.
     glClearColor(0.2f, 0.5f, 0.7f, 0.0f);
-    createShaderPrograms(Shader::PHONG);
+    createShaderPrograms();
     initializeObjects();
     initializeAnimations();
     loadTextures();
@@ -80,10 +80,10 @@ void MainView::initializeGL() {
 
 // Adds and links a vertex shader and a fragment shader, based on which ShaderType
 // is passed as parameter.
-void MainView::createShaderPrograms(Shader::ShadingMode shadingMode) {
+void MainView::createShaderPrograms() {
     phongShader.init();
     normalShader.init();
-    setShadingMode(shadingMode);
+    waterShader.init();
 }
 
 QString MainView::getTextureFileName(TextureType texture)
@@ -116,6 +116,7 @@ void MainView::initializeObject(SceneObject objectId, ImportedObjectType type, T
 
 
     objects[objectId] = ImportedObject(type, objectTexture);
+    linkShaderToObject(objectId);
     ImportedObject* object = &objects.at(objectId);
     glGenBuffers(1, &object->vboId);
     glGenVertexArrays(1, &object->vaoId);
@@ -152,12 +153,49 @@ void MainView::initializeAnimations()
 
 }
 
+void MainView::linkShaderToObject(SceneObject objectId)
+{
+    switch (objectId) {
+    case FirstSceneObject:
+        break;
+    case CatDIff:
+        objectShaders[objectId] = &phongShader;
+        break;
+    case RugCat:
+        objectShaders[objectId] = &phongShader;
+        break;
+    case MySphere:
+        objectShaders[objectId] = &normalShader;
+        break;
+    case Goat:
+        objectShaders[objectId] = &phongShader;
+        break;
+    case Water:
+        objectShaders[objectId] = &normalShader;
+        break;
+    case LastSceneObject:
+        break;
+
+    }
+
+}
+
 
 void MainView::setDataToUniform(SceneObject objectId)
 {
     ImportedObject& object = objects.at(objectId);
+    Shader* currentShader = objectShaders.at(objectId);
     bool useTextures = (object.textureType != TextureType::NoTexture);
     switch (currentShader->type()) {
+    case Shader::WATER:
+        waterShader.setUniformData(object.getModelTransformationMatrix(),
+                                   perspectiveTransformationMatrix,
+                                   viewTransformationMatrix,
+                                   object.rotationMatrix.normalMatrix(),
+                                   1,
+                                   1,
+                                   1);
+        break;
     case Shader::PHONG:
         phongShader.setUniformData(object.getModelTransformationMatrix(),
                                    viewTransformationMatrix,
@@ -170,8 +208,9 @@ void MainView::setDataToUniform(SceneObject objectId)
         break;
     case Shader::NORMAL:
         normalShader.setUniformData(object.getModelTransformationMatrix(),
-                                   perspectiveTransformationMatrix,
-                                   object.rotationMatrix.normalMatrix());
+                                    perspectiveTransformationMatrix,
+                                    viewTransformationMatrix,
+                                    object.rotationMatrix.normalMatrix());
         break;
     case Shader::GOURAUD:
         qDebug("gouraud shader not implemented");
@@ -337,7 +376,8 @@ void MainView::updatePosition() {
 void MainView::paintObject(SceneObject objectId)
 {
     ImportedObject& object = objects.at(objectId);
-
+    Shader* currentShader = objectShaders.at(objectId);
+    currentShader->bind();
     GLint * textureUniformLocation = currentShader->getTextureBufferLocation();
     if(textureUniformLocation != nullptr && object.textureType != TextureType::NoTexture){
         glActiveTexture(GL_TEXTURE0);
@@ -348,6 +388,7 @@ void MainView::paintObject(SceneObject objectId)
     setDataToUniform(objectId);
     glBindVertexArray(object.vaoId);
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLint>(object.vertices.size()));
+    currentShader->release();
 }
 
 
@@ -360,7 +401,7 @@ void MainView::paintObject(SceneObject objectId)
  *
  */
 void MainView::paintGL() {
-    currentShader->bind();
+
     // Clear the screen before rendering
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -373,7 +414,7 @@ void MainView::paintGL() {
     paintObject(SceneObject::MySphere);
     paintObject(SceneObject::RugCat);
     paintObject(SceneObject::Goat);
-    currentShader->release();
+    paintObject(SceneObject::Water);
 }
 
 /**
@@ -407,20 +448,6 @@ void MainView::setScale(int scale) {
     update();
 }
 
-void MainView::setShadingMode(Shader::ShadingMode shading) {
-    qDebug() << "Changed shading to" << shading;
-    switch (shading) {
-    case Shader::PHONG:
-        currentShader = &phongShader;
-        break;
-    case Shader::NORMAL:
-        currentShader = &normalShader;
-        break;
-    case Shader::GOURAUD:
-        qDebug("gouraud shader not implemented");
-        break;
-    }
-}
 
 // --- Private helpers ---
 
@@ -440,6 +467,9 @@ void MainView::initializeObjects()
     for (int sceneObjectInt = SceneObject::FirstSceneObject; sceneObjectInt != SceneObject::LastSceneObject; sceneObjectInt++){
         SceneObject objectId = (SceneObject)sceneObjectInt;
         switch (objectId) {
+        case Water:
+            initializeObject(objectId, ImportedObjectType::flat_surface, TextureType::NoTexture);
+            break;
         case FirstSceneObject:
             break;
         case Goat:

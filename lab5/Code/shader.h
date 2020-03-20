@@ -11,7 +11,7 @@ class Shader
 public:
 
     enum ShadingMode : GLuint {
-        PHONG = 0, NORMAL, GOURAUD
+        PHONG = 0, NORMAL, GOURAUD, WATER
     };
     Shader();
     virtual ShadingMode type() = 0;

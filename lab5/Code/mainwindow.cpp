@@ -54,21 +54,21 @@ void MainWindow::on_ScaleSlider_sliderMoved(int value) {
 
 void MainWindow::on_PhongButton_toggled(bool checked) {
     if (checked) {
-        ui->mainView->setShadingMode(Shader::PHONG);
+        //ui->mainView->setShadingMode(Shader::PHONG);
         ui->mainView->update();
     }
 }
 
 void MainWindow::on_NormalButton_toggled(bool checked) {
     if (checked) {
-        ui->mainView->setShadingMode(Shader::NORMAL);
+        //ui->mainView->setShadingMode(Shader::NORMAL);
         ui->mainView->update();
     }
 }
 
 void MainWindow::on_GouraudButton_toggled(bool checked) {
     if (checked) {
-        ui->mainView->setShadingMode(Shader::GOURAUD);
+        //ui->mainView->setShadingMode(Shader::GOURAUD);
         ui->mainView->update();
     }
 }

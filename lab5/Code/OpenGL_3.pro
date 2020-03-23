@@ -11,6 +11,7 @@ SOURCES += \
     animation.cpp \
     bouncingballanimation.cpp \
     circleanimation.cpp \
+    constantwaveanimation.cpp \
     cube.cpp \
     gouraudshader.cpp \
     jumpanimation.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     animation.h \
     bouncingballanimation.h \
     circleanimation.h \
+    constantwaveanimation.h \
     cube.h \
     gouraudshader.h \
     jumpanimation.h \
@@ -46,7 +48,8 @@ HEADERS += \
     object.h \
     shader.h \
     vertex3d.h \
-    watershader.h
+    watershader.h \
+    wave.h
 
 FORMS += \
     mainwindow.ui

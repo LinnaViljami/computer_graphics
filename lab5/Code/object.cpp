@@ -10,6 +10,7 @@ ImportedObject::ImportedObject() : vertices({}), translationMatrix(), rotationMa
 ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType modelType, Material material)
 {
     ImportedObjectProperties properties;
+    properties.material = material;
     switch (modelType) {
     case grid:
         properties.model = Model(":/models/grid.obj");
@@ -32,9 +33,13 @@ ImportedObjectProperties ImportedObject::getModelProperties(ImportedObjectType m
     case flat_surface:
         properties.model = Model(":/models/flat_surface.obj");
         properties.scalingFactor = 5.0f;
+        properties.material.ks = 0.3f;
+        properties.material.ka = 0.7f;
+        properties.material.kd = 0.8f;
+        properties.material.phongExponent = 5.0f;
         break;
     }
-    properties.material = material;
+
     return properties;
 }
 

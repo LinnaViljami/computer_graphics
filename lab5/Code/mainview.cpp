@@ -2,6 +2,7 @@
 #include "jumpanimation.h"
 #include "pushanimation.h"
 #include "bouncingballanimation.h"
+#include "constantwaveanimation.h"
 #include "mainview.h"
 #include <QDateTime>
 #include <QtMath>
@@ -150,6 +151,9 @@ void MainView::initializeAnimations()
     animations[Goat] = goatPushAnimPointer;
     auto ballAnimPointer = std::make_shared<BouncingBallAnimation>(10, -2, -10, 2.5, 5, &objects.at(MySphere));
     animations[MySphere] = ballAnimPointer;
+    std::vector<Wave> waves = {{0.1f, 0.2f},{0.1f, 0.7f},{0.1f, 1.0f}};
+    auto waveAnimPointer = std::make_shared<ConstantWaveAnimation>(waves,2);
+    animations[Water] = waveAnimPointer;
 
 }
 
@@ -162,7 +166,7 @@ void MainView::linkShaderToObject(SceneObject objectId)
         objectShaders[objectId] = &phongShader;
         break;
     case RugCat:
-        objectShaders[objectId] = &phongShader;
+        objectShaders[objectId] = &normalShader;
         break;
     case MySphere:
         objectShaders[objectId] = &normalShader;
@@ -171,7 +175,7 @@ void MainView::linkShaderToObject(SceneObject objectId)
         objectShaders[objectId] = &phongShader;
         break;
     case Water:
-        objectShaders[objectId] = &normalShader;
+        objectShaders[objectId] = &waterShader;
         break;
     case LastSceneObject:
         break;
@@ -187,15 +191,25 @@ void MainView::setDataToUniform(SceneObject objectId)
     Shader* currentShader = objectShaders.at(objectId);
     bool useTextures = (object.textureType != TextureType::NoTexture);
     switch (currentShader->type()) {
-    case Shader::WATER:
+    case Shader::WATER: {
+        std::vector<Wave> waves;
+        float phase = 0;
+        if(animations.find(objectId) != animations.end()){
+            ConstantWaveAnimation* waveAnimation = (ConstantWaveAnimation*)animations.at(objectId).get();
+            phase = waveAnimation->getPhaseRad();
+            waves = waveAnimation->waves;
+        }
         waterShader.setUniformData(object.getModelTransformationMatrix(),
                                    perspectiveTransformationMatrix,
                                    viewTransformationMatrix,
                                    object.rotationMatrix.normalMatrix(),
-                                   1,
-                                   1,
-                                   1);
+                                   getLightPosition(),
+                                   getLightColor(),
+                                   object.getMaterialVector(),
+                                   phase,
+                                   waves);
         break;
+    }
     case Shader::PHONG:
         phongShader.setUniformData(object.getModelTransformationMatrix(),
                                    viewTransformationMatrix,
@@ -221,8 +235,8 @@ void MainView::setDataToUniform(SceneObject objectId)
 QVector3D MainView::getLightPosition()
 {
     return {
-        0.0f,
-        100.0f,
+        300.0f,
+        300.0f,
         0.0f
     };
 }

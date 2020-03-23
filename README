@@ -1,0 +1,3 @@
+We have added a few animated objects to the scene. The user can walk around the scene with the WSAD keys and by dragging their mouse (while clicking).
+
+We did add the water wave shader, but we did not get the wave working in time, which is why there's a flat surface in the scene.

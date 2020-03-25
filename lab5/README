@@ -1,3 +1,4 @@
+
 Instructions:
 In the fragshaser_gouraud.glsl, the user can uncomment a line of code (marked with a code comment) to switch between regular shading modes and added textures. The textures are not fully functional yet. 
 
@@ -9,3 +10,4 @@ We have implemented a spin box where you can update the specular component of th
 
 Feedback:
 It was hard to determin when we got the shaders right, since the values for ka, kd, ks, material color, light color, light position, etc, were not known for the example images. This assigment was really hard and this made it even harder.
+

@@ -3,19 +3,20 @@
 #include <QDebug>
 
 // Triggered by pressing a key
-void MainView::keyPressEvent(QKeyEvent *ev) {
+void MainView::keyPressEvent(QKeyEvent *ev)
+{
     switch(ev->key()) {
     case 'W':
-        qDebug() << "Move forward";
+        MainView::movingForwards = true;
         break;
     case 'S':
-        qDebug() << "Move backwards";
+        MainView::movingBackwards = true;
         break;
     case 'A':
-        qDebug() << "Move left";
+        MainView::movingLeft = true;
         break;
     case 'D':
-        qDebug() << "Move right";
+        MainView::movingRight = true;
         break;
     default:
         // ev->key() is an integer. For alpha numeric characters keys it equivalent with the char value ('A' == 65, '1' == 49)
@@ -29,19 +30,20 @@ void MainView::keyPressEvent(QKeyEvent *ev) {
 }
 
 // Triggered by releasing a key
-void MainView::keyReleaseEvent(QKeyEvent *ev) {
+void MainView::keyReleaseEvent(QKeyEvent *ev)
+{
     switch(ev->key()) {
     case 'W':
-        qDebug() << "Move forward";
+        MainView::movingForwards = false;
         break;
     case 'S':
-        qDebug() << "Move backwards";
+        MainView::movingBackwards = false;
         break;
     case 'A':
-        qDebug() << "Move left";
+        MainView::movingLeft = false;
         break;
     case 'D':
-        qDebug() << "Move right";
+        MainView::movingRight= false;
         break;
     default:
         qDebug() << ev->key() << "released";
@@ -53,21 +55,45 @@ void MainView::keyReleaseEvent(QKeyEvent *ev) {
 
 // Triggered by clicking two subsequent times on any mouse button
 // It also fires two mousePress and mouseRelease events!
-void MainView::mouseDoubleClickEvent(QMouseEvent *ev) {
+void MainView::mouseDoubleClickEvent(QMouseEvent *ev)
+{
     qDebug() << "Mouse double clicked:" << ev->button();
 
     update();
 }
 
 // Triggered when moving the mouse inside the window (only when the mouse is clicked!)
-void MainView::mouseMoveEvent(QMouseEvent *ev) {
-    qDebug() << "x" << ev->x() << "y" << ev->y();
+void MainView::mouseMoveEvent(QMouseEvent *ev)
+{
+    mouseX = ev->x();
+    mouseY = ev->y();
+
+    if (!previousMouseCoordinatesKnown) {
+        previousMouseX = mouseX;
+        previousMouseY = mouseY;
+        previousMouseCoordinatesKnown = true;
+    }
+
+    yaw += (mouseX - previousMouseX) * 0.10f;
+    pitch += (mouseY - previousMouseY) * 0.10f;
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    previousMouseX = mouseX;
+    previousMouseY = mouseY;
+
+    qDebug() << "yaw: " << yaw << ", pitch: " << pitch;
 
     update();
 }
 
 // Triggered when pressing any mouse button
-void MainView::mousePressEvent(QMouseEvent *ev) {
+void MainView::mousePressEvent(QMouseEvent *ev)
+{
     qDebug() << "Mouse button pressed:" << ev->button();
 
     update();
@@ -76,14 +102,18 @@ void MainView::mousePressEvent(QMouseEvent *ev) {
 }
 
 // Triggered when releasing any mouse button
-void MainView::mouseReleaseEvent(QMouseEvent *ev) {
+void MainView::mouseReleaseEvent(QMouseEvent *ev)
+{
     qDebug() << "Mouse button released" << ev->button();
+    previousMouseCoordinatesKnown = false;
 
     update();
 }
 
 // Triggered when clicking scrolling with the scroll wheel on the mouse
-void MainView::wheelEvent(QWheelEvent *ev) {
+void MainView::wheelEvent(QWheelEvent *ev)
+{
+    // Implement something
     qDebug() << "Mouse wheel:" << ev->delta();
 
     update();

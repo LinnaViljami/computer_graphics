@@ -10,6 +10,7 @@ layout (location = 2) in vec2 texCoords_in;
 
 // Specify the uniforms of the vertex shader.
 uniform mat4 modelViewTransform;
+uniform mat4 viewTransform;
 uniform mat4 projectionTransform;
 uniform vec3 lightPosition;
 uniform mat3 normalTransform;
@@ -22,7 +23,7 @@ out vec2 texCoords;
 
 void main()
 {
-    gl_Position  = projectionTransform * modelViewTransform * vec4(vertCoordinates_in, 1.0F);
+    gl_Position  = projectionTransform * viewTransform * modelViewTransform * vec4(vertCoordinates_in, 1.0F);
 
     // Pass the required information to the fragment shader stage.
     relativeLightPosition = vec3(modelViewTransform * vec4(lightPosition, 1.0F));

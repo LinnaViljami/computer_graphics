@@ -1,3 +1,13 @@
-In this scene we display goats and cats with different textures and animations. 
 
-Also we represent water surface with waving animation.
+Instructions:
+In the fragshaser_gouraud.glsl, the user can uncomment a line of code (marked with a code comment) to switch between regular shading modes and added textures. The textures are not fully functional yet. 
+
+We have implemented a spin box where you can update the specular component of the Phong and Gouraud shaders during runtime. This is located in the UI.
+
+8. The normal mapping colours the object in such a way that the colour of a pixel differs based on the angle between that normal and the camera. For example, at a location where the normal is pointing at the camera, the colour is close to blue, while a place where the normal points to the right, from the camera's perspective, the colour is red.
+
+
+
+Feedback:
+It was hard to determin when we got the shaders right, since the values for ka, kd, ks, material color, light color, light position, etc, were not known for the example images. This assigment was really hard and this made it even harder.
+

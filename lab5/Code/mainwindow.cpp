@@ -52,12 +52,6 @@ void MainWindow::on_ScaleSlider_sliderMoved(int value) {
     ui->mainView->setScale(value);
 }
 
-void MainWindow::on_PhongButton_toggled(bool checked) {
-    if (checked) {
-        //ui->mainView->setShadingMode(Shader::PHONG);
-        ui->mainView->update();
-    }
-}
 
 void MainWindow::on_NormalButton_toggled(bool checked) {
     if (checked) {
